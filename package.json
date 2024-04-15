@@ -14,6 +14,14 @@
 		"onCommand:iotworkbench.configureDevice"
 	],
 	"aiKey": "[AIKEY PLACEHOLDER]",
+	"author": {
+		"email": "Land@Playform.Cloud",
+		"name": "Land",
+		"url": "HTTPS://Land.Playform.Cloud"
+	},
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandIotWorkbench/issues"
+	},
 	"codeGenConfigUrl": "https://aka.ms/iot-codegen-cli-for-workbench-staging",
 	"contributes": {
 		"commands": [
@@ -171,6 +179,7 @@
 	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
 	"devDependencies": {
 		"@playform/build": "0.0.7",
+		"@playform/document": "0.0.6",
 		"@types/adm-zip": "0.5.5",
 		"@types/crc": "3.8.3",
 		"@types/extract-zip": "2.0.0",
@@ -198,9 +207,19 @@
 		"vsciot-vscode.azure-iot-toolkit",
 		"vsciot-vscode.vscode-iot-device-cube"
 	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandIotWorkbench#readme",
 	"icon": "logo.png",
+	"license": "SEE LICENSE IN LICENSE",
 	"main": "./dist/extension",
 	"name": "vscode-iot-workbench",
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandIotWorkbench.git"
+	},
 	"scripts": {
 		"Document": "Document 'Source/**/*.ts'",
 		"compile": "tsc -p ./",
@@ -212,5 +231,7 @@
 		"update:package": "rm -rf node_modules && npm update --save-dev && npm update --save",
 		"validateLinks": "tsc scripts/mdLinkChecker/mdLinkChecker.ts && node scripts/mdLinkChecker/mdLinkChecker.js --rootDir=.",
 		"webpack": "webpack --mode development"
-	}
+	},
+	"type": "module",
+	"version": "0.0.1"
 }
