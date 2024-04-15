@@ -4,13 +4,13 @@
 	"version": "0.0.1",
 	"private": false,
 	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
-	"homepage": "https://github.com/CodeEditorLand/Foundation#readme",
+	"homepage": "HTTPS://github.com/CodeEditorLand/LandIotWorkbench#readme",
 	"bugs": {
-		"url": "https://github.com/CodeEditorLand/Foundation/issues"
+		"url": "HTTPS://github.com/CodeEditorLand/LandIotWorkbench/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/Foundation.git"
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandIotWorkbench.git"
 	},
 	"license": "SEE LICENSE IN LICENSE",
 	"author": {
