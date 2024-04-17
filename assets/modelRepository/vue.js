@@ -321,7 +321,7 @@
           /* istanbul ignore next */
           return false;
         }
-      } catch (e) {
+      } catch (_Error) {
         /* istanbul ignore next */
         return false;
       }
@@ -538,7 +538,7 @@
         }
       }); // https://github.com/facebook/flow/issues/285
       window.addEventListener("test-passive", null, opts);
-    } catch (e) {}
+    } catch (_Error) {}
   }
 
   // this needs to be lazy-evaled because vue may be required before
@@ -1761,7 +1761,7 @@
               if (capture) {
                 return;
               }
-            } catch (e) {
+            } catch (_Error) {
               globalHandleError(e, cur, "errorCaptured hook");
             }
           }
@@ -1775,7 +1775,7 @@
     if (config.errorHandler) {
       try {
         return config.errorHandler.call(null, err, vm, info);
-      } catch (e) {
+      } catch (_Error) {
         logError(e, null, "config.errorHandler");
       }
     }
@@ -1891,7 +1891,7 @@
       if (cb) {
         try {
           cb.call(ctx);
-        } catch (e) {
+        } catch (_Error) {
           handleError(e, ctx, "nextTick");
         }
       } else if (_resolve) {
@@ -2614,7 +2614,7 @@
         for (let i = 0, l = cbs.length; i < l; i++) {
           try {
             cbs[i].apply(vm, args);
-          } catch (e) {
+          } catch (_Error) {
             handleError(e, vm, 'event handler for "' + event + '"');
           }
         }
@@ -3001,7 +3001,7 @@
       for (let i = 0, j = handlers.length; i < j; i++) {
         try {
           handlers[i].call(vm);
-        } catch (e) {
+        } catch (_Error) {
           handleError(e, vm, hook + " hook");
         }
       }
@@ -3215,7 +3215,7 @@
     const vm = this.vm;
     try {
       value = this.getter.call(vm, vm);
-    } catch (e) {
+    } catch (_Error) {
       if (this.user) {
         handleError(e, vm, 'getter for watcher "' + this.expression + '"');
       } else {
@@ -3306,7 +3306,7 @@
         if (this.user) {
           try {
             this.cb.call(this.vm, value, oldValue);
-          } catch (e) {
+          } catch (_Error) {
             handleError(
               e,
               this.vm,
@@ -3507,7 +3507,7 @@
     pushTarget();
     try {
       return data.call(vm, vm);
-    } catch (e) {
+    } catch (_Error) {
       handleError(e, vm, "data()");
       return {};
     } finally {
@@ -4635,7 +4635,7 @@
       let vnode;
       try {
         vnode = render.call(vm._renderProxy, vm.$createElement);
-      } catch (e) {
+      } catch (_Error) {
         handleError(e, vm, "render");
         // return error render result,
         // or previous vnode to prevent render error causing blank component
@@ -4648,7 +4648,7 @@
                 vm.$createElement,
                 e
               );
-            } catch (e) {
+            } catch (_Error) {
               handleError(e, vm, "renderError");
               vnode = vm._vnode;
             }
@@ -6536,7 +6536,7 @@
     if (fn) {
       try {
         fn(vnode.elm, dir, vnode, oldVnode, isDestroy);
-      } catch (e) {
+      } catch (_Error) {
         handleError(
           e,
           vnode.context,
@@ -7463,7 +7463,7 @@
     // work around IE bug when accessing document.activeElement in an iframe
     try {
       notInFocus = document.activeElement !== elm;
-    } catch (e) {}
+    } catch (_Error) {}
     return notInFocus && elm.value !== checkVal;
   }
 
@@ -11182,7 +11182,7 @@
     if (typeof ident === "string") {
       try {
         new Function("var " + ident + "=_");
-      } catch (e) {
+      } catch (_Error) {
         errors.push(
           "invalid " + type + ' "' + ident + '" in expression: ' + text.trim()
         );
@@ -11193,7 +11193,7 @@
   function checkExpression(exp, text, errors) {
     try {
       new Function("return " + exp);
-    } catch (e) {
+    } catch (_Error) {
       const keywordMatch = exp
         .replace(stripStringRE, "")
         .match(prohibitedKeywordRE);
@@ -11245,7 +11245,7 @@
         // detect possible CSP restriction
         try {
           new Function("return 1");
-        } catch (e) {
+        } catch (_Error) {
           if (e.toString().match(/unsafe-eval|CSP/)) {
             warn$$1(
               "It seems you are using the standalone build of Vue.js in an " +
