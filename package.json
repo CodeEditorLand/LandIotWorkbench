@@ -4,6 +4,9 @@
 	"version": "0.0.1",
 	"private": false,
 	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
+	"keywords": [
+		"land"
+	],
 	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandIotWorkbench#readme",
 	"bugs": {
 		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandIotWorkbench/issues"
