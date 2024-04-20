@@ -1,20 +1,39 @@
 {
-	"activationEvents": [
-		"*",
-		"workspaceContains:**/.iotworkbenchproject",
-		"onCommand:iotworkbench.initializeProject",
-		"onCommand:iotworkbench.configureProjectEnvironment",
-		"onCommand:iotworkbench.examples",
-		"onCommand:iotworkbench.help",
-		"onCommand:iotworkbench.workbench",
-		"onCommand:iotworkbench.deviceCompile",
-		"onCommand:iotworkbench.deviceUpload",
-		"onCommand:iotworkbench.azureProvision",
-		"onCommand:iotworkbench.azureDeploy",
-		"onCommand:iotworkbench.configureDevice"
+	"name": "vscode-iot-workbench",
+	"displayName": "Azure IoT Device Workbench",
+	"version": "0.0.1",
+	"private": false,
+	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
+	"keywords": [
+		"land"
 	],
-	"aiKey": "[AIKEY PLACEHOLDER]",
-	"codeGenConfigUrl": "https://aka.ms/iot-codegen-cli-for-workbench-staging",
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandIotWorkbench#readme",
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandIotWorkbench/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandIotWorkbench.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "Land",
+		"email": "Land@Playform.Cloud",
+		"url": "HTTPS://Land.Playform.Cloud"
+	},
+	"type": "module",
+	"main": "./dist/extension",
+	"scripts": {
+		"Document": "Document 'Source/**/*.ts'",
+		"compile": "tsc -p ./",
+		"fix": "node ./node_modules/eslint/bin/eslint.js . --ext .ts --fix",
+		"prepare": "npm run compile",
+		"prepublishOnly": "Build 'Source/**/*.ts'",
+		"test:coverage": "jest --coverage",
+		"update:package": "rm -rf node_modules && npm update --save-dev && npm update --save",
+		"validateLinks": "tsc scripts/mdLinkChecker/mdLinkChecker.ts && node scripts/mdLinkChecker/mdLinkChecker.js --rootDir=.",
+		"webpack": "webpack --mode development"
+	},
 	"contributes": {
 		"commands": [
 			{
@@ -141,6 +160,20 @@
 			}
 		]
 	},
+	"activationEvents": [
+		"*",
+		"workspaceContains:**/.iotworkbenchproject",
+		"onCommand:iotworkbench.initializeProject",
+		"onCommand:iotworkbench.configureProjectEnvironment",
+		"onCommand:iotworkbench.examples",
+		"onCommand:iotworkbench.help",
+		"onCommand:iotworkbench.workbench",
+		"onCommand:iotworkbench.deviceCompile",
+		"onCommand:iotworkbench.deviceUpload",
+		"onCommand:iotworkbench.azureProvision",
+		"onCommand:iotworkbench.azureDeploy",
+		"onCommand:iotworkbench.configureDevice"
+	],
 	"dependencies": {
 		"adm-zip": "0.5.12",
 		"broken-link": "1.0.1",
@@ -168,9 +201,9 @@
 		"validator": "13.11.0",
 		"winreg": "1.2.5"
 	},
-	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
 	"devDependencies": {
 		"@playform/build": "0.0.7",
+		"@playform/document": "0.0.6",
 		"@types/adm-zip": "0.5.5",
 		"@types/crc": "3.8.3",
 		"@types/extract-zip": "2.0.0",
@@ -193,23 +226,14 @@
 		"ts-loader": "9.5.1",
 		"yargs": "17.7.2"
 	},
-	"displayName": "Azure IoT Device Workbench",
 	"extensionDependencies": [
 		"vsciot-vscode.azure-iot-toolkit",
 		"vsciot-vscode.vscode-iot-device-cube"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"icon": "logo.png",
-	"main": "./dist/extension",
-	"name": "vscode-iot-workbench",
-	"scripts": {
-		"Document": "Document 'Source/**/*.ts'",
-		"compile": "tsc -p ./",
-		"fix": "node ./node_modules/eslint/bin/eslint.js . --ext .ts --fix",
-		"prepare": "npm run compile",
-		"prepublishOnly": "Build 'Source/**/*.ts'",
-		"test:coverage": "jest --coverage",
-		"update:package": "rm -rf node_modules && npm update --save-dev && npm update --save",
-		"validateLinks": "tsc scripts/mdLinkChecker/mdLinkChecker.ts && node scripts/mdLinkChecker/mdLinkChecker.js --rootDir=.",
-		"webpack": "webpack --mode development"
-	}
+	"aiKey": "[AIKEY PLACEHOLDER]",
+	"codeGenConfigUrl": "https://aka.ms/iot-codegen-cli-for-workbench-staging"
 }
