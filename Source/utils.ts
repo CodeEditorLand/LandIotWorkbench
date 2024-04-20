@@ -88,7 +88,7 @@ export function getRegistryValues(hive: string, key: string, name: string): Prom
 export function directoryExistsSync(dirPath: string): boolean {
   try {
     return fs.statSync(dirPath).isDirectory();
-  } catch (_Error) {
+  } catch (e) {
     return false;
   }
 }
@@ -111,7 +111,7 @@ export function mkdirRecursivelySync(dirPath: string): void {
 export function fileExistsSync(filePath: string): boolean {
   try {
     return fs.statSync(filePath).isFile();
-  } catch (_Error) {
+  } catch (e) {
     return false;
   }
 }
