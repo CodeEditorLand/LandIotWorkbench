@@ -1,39 +1,28 @@
 {
-	"name": "vscode-iot-workbench",
-	"displayName": "Azure IoT Device Workbench",
-	"version": "0.0.1",
-	"private": false,
-	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
-	"keywords": [
-		"land"
+	"activationEvents": [
+		"*",
+		"workspaceContains:**/.iotworkbenchproject",
+		"onCommand:iotworkbench.initializeProject",
+		"onCommand:iotworkbench.configureProjectEnvironment",
+		"onCommand:iotworkbench.examples",
+		"onCommand:iotworkbench.help",
+		"onCommand:iotworkbench.workbench",
+		"onCommand:iotworkbench.deviceCompile",
+		"onCommand:iotworkbench.deviceUpload",
+		"onCommand:iotworkbench.azureProvision",
+		"onCommand:iotworkbench.azureDeploy",
+		"onCommand:iotworkbench.configureDevice"
 	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandIOTWorkbench#readme",
+	"aiKey": "[AIKEY PLACEHOLDER]",
+	"author": {
+		"email": "Land@PlayForm.Cloud",
+		"name": "🌆 — Land —",
+		"url": "HTTPS://Land.PlayForm.Cloud"
+	},
 	"bugs": {
 		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandIOTWorkbench/issues"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/LandIOTWorkbench.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "🌆 — Land —",
-		"email": "Land@PlayForm.Cloud",
-		"url": "HTTPS://Land.PlayForm.Cloud"
-	},
-	"type": "module",
-	"main": "./dist/extension",
-	"scripts": {
-		"Document": "Document 'Source/**/*.ts'",
-		"compile": "tsc -p ./",
-		"fix": "node ./node_modules/eslint/bin/eslint.js . --ext .ts --fix",
-		"prepare": "npm run compile",
-		"prepublishOnly": "Build 'Source/**/*.ts'",
-		"test:coverage": "jest --coverage",
-		"update:package": "rm -rf node_modules && npm update --save-dev && npm update --save",
-		"validateLinks": "tsc scripts/mdLinkChecker/mdLinkChecker.ts && node scripts/mdLinkChecker/mdLinkChecker.js --rootDir=.",
-		"webpack": "webpack --mode development"
-	},
+	"codeGenConfigUrl": "https://aka.ms/iot-codegen-cli-for-workbench-staging",
 	"contributes": {
 		"commands": [
 			{
@@ -160,20 +149,6 @@
 			}
 		]
 	},
-	"activationEvents": [
-		"*",
-		"workspaceContains:**/.iotworkbenchproject",
-		"onCommand:iotworkbench.initializeProject",
-		"onCommand:iotworkbench.configureProjectEnvironment",
-		"onCommand:iotworkbench.examples",
-		"onCommand:iotworkbench.help",
-		"onCommand:iotworkbench.workbench",
-		"onCommand:iotworkbench.deviceCompile",
-		"onCommand:iotworkbench.deviceUpload",
-		"onCommand:iotworkbench.azureProvision",
-		"onCommand:iotworkbench.azureDeploy",
-		"onCommand:iotworkbench.configureDevice"
-	],
 	"dependencies": {
 		"adm-zip": "0.5.12",
 		"broken-link": "1.0.1",
@@ -201,6 +176,7 @@
 		"validator": "13.11.0",
 		"winreg": "1.2.5"
 	},
+	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
 	"devDependencies": {
 		"@playform/build": "0.0.7",
 		"@playform/document": "0.0.6",
@@ -226,14 +202,38 @@
 		"ts-loader": "9.5.1",
 		"yargs": "17.7.2"
 	},
+	"displayName": "Azure IoT Device Workbench",
 	"extensionDependencies": [
 		"vsciot-vscode.azure-iot-toolkit",
 		"vsciot-vscode.vscode-iot-device-cube"
 	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandIOTWorkbench#readme",
+	"icon": "logo.png",
+	"keywords": [
+		"land"
+	],
+	"license": "SEE LICENSE IN LICENSE",
+	"main": "./dist/extension",
+	"name": "vscode-iot-workbench",
+	"private": false,
 	"publishConfig": {
 		"access": "public"
 	},
-	"icon": "logo.png",
-	"aiKey": "[AIKEY PLACEHOLDER]",
-	"codeGenConfigUrl": "https://aka.ms/iot-codegen-cli-for-workbench-staging"
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/LandIOTWorkbench.git"
+	},
+	"scripts": {
+		"Document": "Document 'Source/**/*.ts'",
+		"compile": "tsc -p ./",
+		"fix": "node ./node_modules/eslint/bin/eslint.js . --ext .ts --fix",
+		"prepare": "npm run compile",
+		"prepublishOnly": "Build 'Source/**/*.ts'",
+		"test:coverage": "jest --coverage",
+		"update:package": "rm -rf node_modules && npm update --save-dev && npm update --save",
+		"validateLinks": "tsc scripts/mdLinkChecker/mdLinkChecker.ts && node scripts/mdLinkChecker/mdLinkChecker.js --rootDir=.",
+		"webpack": "webpack --mode development"
+	},
+	"type": "module",
+	"version": "0.0.1"
 }
