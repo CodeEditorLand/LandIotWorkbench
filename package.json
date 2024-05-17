@@ -1,27 +1,7 @@
 {
 	"name": "vscode-iot-workbench",
 	"displayName": "Azure IoT Device Workbench",
-	"version": "0.0.1",
-	"private": false,
 	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
-	"keywords": [
-		"land"
-	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/LandIOTWorkbench#readme",
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/LandIOTWorkbench/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/LandIOTWorkbench.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "🛬 Land —",
-		"email": "Land@PlayForm.Cloud",
-		"url": "HTTPS://Land.PlayForm.Cloud"
-	},
-	"type": "module",
 	"main": "./dist/extension",
 	"scripts": {
 		"Document": "Document 'Source/**/*.ts'",
@@ -203,7 +183,6 @@
 	},
 	"devDependencies": {
 		"@playform/build": "0.0.7",
-		"@playform/document": "0.0.6",
 		"@types/adm-zip": "0.5.5",
 		"@types/crc": "3.8.3",
 		"@types/extract-zip": "2.0.0",
@@ -230,9 +209,6 @@
 		"vsciot-vscode.azure-iot-toolkit",
 		"vsciot-vscode.vscode-iot-device-cube"
 	],
-	"publishConfig": {
-		"access": "public"
-	},
 	"icon": "logo.png",
 	"aiKey": "[AIKEY PLACEHOLDER]",
 	"codeGenConfigUrl": "https://aka.ms/iot-codegen-cli-for-workbench-staging"
