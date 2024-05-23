@@ -196,7 +196,7 @@
 		"@types/ssh2": "1.15.0",
 		"@types/unzip": "0.1.4",
 		"@types/winreg": "1.2.36",
-		"glob": "10.3.15",
+		"glob": "10.3.16",
 		"node-gyp": "10.1.0",
 		"node-loader": "2.0.0",
 		"ts-loader": "9.5.1",
