@@ -25,8 +25,8 @@ device and restrieve its connection string.
    either you have already or just created.
 
 5. On the sidebar, in **AZURE IOT HUB** section, click More Actions button and
-select **Create Device** to create a new IoT Hub device.
-<img src="./images/more-actions.png" width=500 />
+   select **Create Device** to create a new IoT Hub device.
+   <img src="./images/more-actions.png" width=500 />
 
  <img src="./images/create-device.png" width=400 />
 
