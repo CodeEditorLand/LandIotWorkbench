@@ -142,7 +142,7 @@
 		]
 	},
 	"dependencies": {
-		"adm-zip": "0.5.14",
+		"adm-zip": "0.5.15",
 		"broken-link": "1.0.1",
 		"clipboardy": "4.0.0",
 		"crc": "4.3.2",
@@ -180,7 +180,7 @@
 		"@types/lodash.foreach": "4.5.9",
 		"@types/lodash.trimstart": "4.5.9",
 		"@types/lodash.uniq": "4.5.9",
-		"@types/node": "22.0.2",
+		"@types/node": "22.1.0",
 		"@types/opn": "5.5.0",
 		"@types/request-promise": "4.1.51",
 		"@types/ssh2": "1.15.0",
