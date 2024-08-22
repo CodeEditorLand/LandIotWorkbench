@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # set -x
 
 # By default install latest AZ3166 version: 1.6.2 
