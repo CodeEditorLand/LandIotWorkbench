@@ -1,1 +1,2 @@
-Move all files under this folder to `.git/hooks` or symlink them in `.git/hooks` to make hooks work.
+Move all files under this folder to `.git/hooks` or symlink them in `.git/hooks`
+to make hooks work.
