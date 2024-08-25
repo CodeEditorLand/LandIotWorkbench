@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -x
 check_docker=`docker -v`
 if [[ $? != 0 ]]; then

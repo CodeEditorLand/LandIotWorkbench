@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "Checking TypeScript style..."
 if [[ $(gts check) ]]; then

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Add script to install external libs in this file.
 # If you haven't built the project container, run command "Remote-Containers: Reopen in container" to open the project in your customized docker image.
