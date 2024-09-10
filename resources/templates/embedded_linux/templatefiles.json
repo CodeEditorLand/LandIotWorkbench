@@ -1,0 +1,14 @@
+{
+  "templateFiles": [
+    {
+        "fileName": "CMakeLists.txt",
+        "sourcePath" : ".",
+        "targetPath" : "."
+    },
+    {
+        "fileName": "main.c",
+        "sourcePath" : ".",
+        "targetPath" : "."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${CROSS_ROOT}/**",
+                "/work/vcpkg/installed/arm-linux-custom/include/**",
+                "/work/vcpkg/installed/arm-linux-custom/include/azureiot/**",
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "${CC}"
+        }
+    ],
+    "version": 4
+}

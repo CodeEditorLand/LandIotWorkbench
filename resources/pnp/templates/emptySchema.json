@@ -1,0 +1,10 @@
+{
+  "anyOf": [
+    { "type": "object" },
+    { "type": "array" },
+    { "type": "string" },
+    { "type": "number" },
+    { "type": "boolean" },
+    { "type": "null" }
+  ]
+}
