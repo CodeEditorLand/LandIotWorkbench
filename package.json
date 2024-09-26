@@ -190,7 +190,7 @@
 		"@types/lodash.foreach": "4.5.9",
 		"@types/lodash.trimstart": "4.5.9",
 		"@types/lodash.uniq": "4.5.9",
-		"@types/node": "22.7.2",
+		"@types/node": "22.7.3",
 		"@types/opn": "5.5.0",
 		"@types/request-promise": "4.1.51",
 		"@types/ssh2": "1.15.1",
