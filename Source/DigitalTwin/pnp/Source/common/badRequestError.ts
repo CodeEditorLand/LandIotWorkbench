@@ -5,8 +5,8 @@
  * Error for user bad request
  */
 export class BadRequestError extends Error {
-  constructor(message: string) {
-    super(`Bad request: ${message}`);
-    this.name = "BadRequestError";
-  }
+	constructor(message: string) {
+		super(`Bad request: ${message}`);
+		this.name = "BadRequestError";
+	}
 }
