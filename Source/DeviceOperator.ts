@@ -9,39 +9,51 @@ import { TelemetryContext } from "./telemetry";
 import { constructAndLoadIoTProject } from "./utils";
 
 export class DeviceOperator {
-  async compile(
-    context: vscode.ExtensionContext,
-    channel: vscode.OutputChannel,
-    telemetryContext: TelemetryContext
-  ): Promise<void> {
-    const iotProject = await constructAndLoadIoTProject(context, channel, telemetryContext);
-    if (!iotProject) {
-      return;
-    }
-    await iotProject.compile();
-  }
+	async compile(
+		context: vscode.ExtensionContext,
+		channel: vscode.OutputChannel,
+		telemetryContext: TelemetryContext,
+	): Promise<void> {
+		const iotProject = await constructAndLoadIoTProject(
+			context,
+			channel,
+			telemetryContext,
+		);
+		if (!iotProject) {
+			return;
+		}
+		await iotProject.compile();
+	}
 
-  async upload(
-    context: vscode.ExtensionContext,
-    channel: vscode.OutputChannel,
-    telemetryContext: TelemetryContext
-  ): Promise<void> {
-    const iotProject = await constructAndLoadIoTProject(context, channel, telemetryContext);
-    if (!iotProject) {
-      return;
-    }
-    await iotProject.upload();
-  }
+	async upload(
+		context: vscode.ExtensionContext,
+		channel: vscode.OutputChannel,
+		telemetryContext: TelemetryContext,
+	): Promise<void> {
+		const iotProject = await constructAndLoadIoTProject(
+			context,
+			channel,
+			telemetryContext,
+		);
+		if (!iotProject) {
+			return;
+		}
+		await iotProject.upload();
+	}
 
-  async configDeviceSettings(
-    context: vscode.ExtensionContext,
-    channel: vscode.OutputChannel,
-    telemetryContext: TelemetryContext
-  ): Promise<void> {
-    const iotProject = await constructAndLoadIoTProject(context, channel, telemetryContext);
-    if (!iotProject) {
-      return;
-    }
-    await iotProject.configDeviceSettings();
-  }
+	async configDeviceSettings(
+		context: vscode.ExtensionContext,
+		channel: vscode.OutputChannel,
+		telemetryContext: TelemetryContext,
+	): Promise<void> {
+		const iotProject = await constructAndLoadIoTProject(
+			context,
+			channel,
+			telemetryContext,
+		);
+		if (!iotProject) {
+			return;
+		}
+		await iotProject.configDeviceSettings();
+	}
 }
