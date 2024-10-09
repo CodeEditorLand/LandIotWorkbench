@@ -2,5 +2,5 @@
 // Licensed under the MIT License.
 
 export interface Compilable {
-  compile(): Promise<boolean>;
+	compile(): Promise<boolean>;
 }

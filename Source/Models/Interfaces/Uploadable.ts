@@ -2,5 +2,5 @@
 // Licensed under the MIT License.
 
 export interface Uploadable {
-  upload(): Promise<boolean>;
+	upload(): Promise<boolean>;
 }

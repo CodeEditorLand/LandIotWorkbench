@@ -4,7 +4,10 @@ import { ScaffoldType } from "../../constants";
 import { ComponentInfo, DependencyConfig } from "../AzureComponentConfig";
 
 export interface Provisionable {
-  dependencies: DependencyConfig[];
-  provision(): Promise<boolean>;
-  updateConfigSettings(type: ScaffoldType, componentInfo?: ComponentInfo): void;
+	dependencies: DependencyConfig[];
+	provision(): Promise<boolean>;
+	updateConfigSettings(
+		type: ScaffoldType,
+		componentInfo?: ComponentInfo,
+	): void;
 }

@@ -2,5 +2,5 @@
 // Licensed under the MIT License.
 
 export interface Deployable {
-  deploy(): Promise<boolean>;
+	deploy(): Promise<boolean>;
 }

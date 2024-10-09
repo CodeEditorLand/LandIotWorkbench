@@ -1,20 +1,17 @@
 {
-	"activationEvents": [
-		"*",
-		"workspaceContains:**/.iotworkbenchproject",
-		"onCommand:iotworkbench.initializeProject",
-		"onCommand:iotworkbench.configureProjectEnvironment",
-		"onCommand:iotworkbench.examples",
-		"onCommand:iotworkbench.help",
-		"onCommand:iotworkbench.workbench",
-		"onCommand:iotworkbench.deviceCompile",
-		"onCommand:iotworkbench.deviceUpload",
-		"onCommand:iotworkbench.azureProvision",
-		"onCommand:iotworkbench.azureDeploy",
-		"onCommand:iotworkbench.configureDevice"
-	],
-	"aiKey": "[AIKEY PLACEHOLDER]",
-	"codeGenConfigUrl": "https://aka.ms/iot-codegen-cli-for-workbench-staging",
+	"name": "vscode-iot-workbench",
+	"displayName": "Azure IoT Device Workbench",
+	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
+	"main": "./dist/extension",
+	"scripts": {
+		"compile": "tsc -p ./",
+		"fix": "node ./node_modules/eslint/bin/eslint.js . --ext .ts --fix",
+		"prepare": "npm run compile",
+		"test:coverage": "jest --coverage",
+		"update:package": "rm -rf node_modules && npm update --save-dev && npm update --save",
+		"validateLinks": "tsc scripts/mdLinkChecker/mdLinkChecker.ts && node scripts/mdLinkChecker/mdLinkChecker.js --rootDir=.",
+		"webpack": "webpack --mode development"
+	},
 	"contributes": {
 		"commands": [
 			{
@@ -141,6 +138,20 @@
 			}
 		]
 	},
+	"activationEvents": [
+		"*",
+		"workspaceContains:**/.iotworkbenchproject",
+		"onCommand:iotworkbench.initializeProject",
+		"onCommand:iotworkbench.configureProjectEnvironment",
+		"onCommand:iotworkbench.examples",
+		"onCommand:iotworkbench.help",
+		"onCommand:iotworkbench.workbench",
+		"onCommand:iotworkbench.deviceCompile",
+		"onCommand:iotworkbench.deviceUpload",
+		"onCommand:iotworkbench.azureProvision",
+		"onCommand:iotworkbench.azureDeploy",
+		"onCommand:iotworkbench.configureDevice"
+	],
 	"dependencies": {
 		"adm-zip": "0.5.16",
 		"broken-link": "1.0.1",
@@ -168,7 +179,6 @@
 		"validator": "13.12.0",
 		"winreg": "1.2.5"
 	},
-	"description": "This extension is now a part of Azure IoT Tools extension pack. We highly recommend installing Azure IoT Tools to get full capabilities for Azure IoT development.",
 	"devDependencies": {
 		"@types/adm-zip": "0.5.5",
 		"@types/crc": "3.8.3",
@@ -192,21 +202,11 @@
 		"ts-loader": "9.5.1",
 		"yargs": "17.7.2"
 	},
-	"displayName": "Azure IoT Device Workbench",
 	"extensionDependencies": [
 		"vsciot-vscode.azure-iot-toolkit",
 		"vsciot-vscode.vscode-iot-device-cube"
 	],
 	"icon": "logo.png",
-	"main": "./dist/extension",
-	"name": "vscode-iot-workbench",
-	"scripts": {
-		"compile": "tsc -p ./",
-		"fix": "node ./node_modules/eslint/bin/eslint.js . --ext .ts --fix",
-		"prepare": "npm run compile",
-		"test:coverage": "jest --coverage",
-		"update:package": "rm -rf node_modules && npm update --save-dev && npm update --save",
-		"validateLinks": "tsc scripts/mdLinkChecker/mdLinkChecker.ts && node scripts/mdLinkChecker/mdLinkChecker.js --rootDir=.",
-		"webpack": "webpack --mode development"
-	}
+	"aiKey": "[AIKEY PLACEHOLDER]",
+	"codeGenConfigUrl": "https://aka.ms/iot-codegen-cli-for-workbench-staging"
 }

@@ -1,18 +1,18 @@
 {
-    "configurations": [
-        {
-            "name": "Linux",
-            "includePath": [
-                "${CROSS_ROOT}/**",
-                "/work/vcpkg/installed/x64-linux/include/**",
-                "/work/vcpkg/installed/x64-linux/include/azureiot/**",
-                "${workspaceFolder}/**"
-            ],
-            "defines": [],
-            "cStandard": "c11",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
-        }
-    ],
-    "version": 4
+	"configurations": [
+		{
+			"name": "Linux",
+			"includePath": [
+				"${CROSS_ROOT}/**",
+				"/work/vcpkg/installed/x64-linux/include/**",
+				"/work/vcpkg/installed/x64-linux/include/azureiot/**",
+				"${workspaceFolder}/**"
+			],
+			"defines": [],
+			"cStandard": "c11",
+			"cppStandard": "c++17",
+			"intelliSenseMode": "gcc-x64"
+		}
+	],
+	"version": 4
 }
