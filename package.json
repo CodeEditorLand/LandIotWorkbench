@@ -188,7 +188,7 @@
 		"@types/winreg": "1.2.36",
 		"glob": "11.0.0",
 		"node-gyp": "10.2.0",
-		"node-loader": "2.0.0",
+		"node-loader": "2.1.0",
 		"ts-loader": "9.5.1",
 		"yargs": "17.7.2"
 	},
