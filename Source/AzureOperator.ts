@@ -17,10 +17,12 @@ export class AzureOperator {
 			channel,
 			telemetryContext,
 		);
+
 		if (!iotProject) {
 			return;
 		}
 		const status = await iotProject.provision();
+
 		if (status) {
 			vscode.window.showInformationMessage("Azure provision succeeded.");
 		}
@@ -42,6 +44,7 @@ export class AzureOperator {
 			channel,
 			telemetryContext,
 		);
+
 		if (iotProject) {
 			await iotProject.deploy();
 		}

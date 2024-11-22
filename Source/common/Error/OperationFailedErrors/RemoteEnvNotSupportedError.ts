@@ -12,6 +12,7 @@ export class RemoteEnvNotSupportedError extends OperationFailedError {
 	constructor(operation: string) {
 		const suggestedOperation =
 			"Open a new window and run this command again";
+
 		super(
 			operation,
 			`The operation is not supported to be run in remote environment.`,

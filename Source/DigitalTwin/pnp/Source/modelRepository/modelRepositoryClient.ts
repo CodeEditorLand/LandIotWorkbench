@@ -44,6 +44,7 @@ export class ModelRepositoryClient {
 				repoInfo,
 				modelId,
 			);
+
 		if (expand) {
 			options.qs.expand = "true";
 		}
@@ -57,6 +58,7 @@ export class ModelRepositoryClient {
 						modelId: response.headers["x-ms-model-id"],
 						content: response.body,
 					};
+
 					return resolve(result);
 				})
 				.catch((err) => {
@@ -82,8 +84,10 @@ export class ModelRepositoryClient {
 	): Promise<SearchResult> {
 		const options: request.OptionsWithUri =
 			ModelRepositoryClient.createOptions(HttpMethod.Post, repoInfo);
+
 		const modelFilterType: MetaModelType =
 			ModelRepositoryClient.convertToMetaModelType(type);
+
 		const payload: SearchOptions = {
 			searchKeyword: keyword,
 			modelFilterType,
@@ -91,10 +95,12 @@ export class ModelRepositoryClient {
 			pageSize,
 		};
 		options.body = payload;
+
 		return new Promise<SearchResult>((resolve, reject) => {
 			request(options)
 				.then((response) => {
 					const result = response.body as SearchResult;
+
 					return resolve(result);
 				})
 				.catch((err) => {
@@ -122,11 +128,13 @@ export class ModelRepositoryClient {
 				modelId,
 			);
 		options.body = content;
+
 		return new Promise<string>((resolve, reject) => {
 			request(options)
 				.then((response) => {
 					const result: string =
 						response.headers[ModelRepositoryClient.ETAG_HEADER];
+
 					return resolve(result);
 				})
 				.catch((err) => {
@@ -150,6 +158,7 @@ export class ModelRepositoryClient {
 				repoInfo,
 				modelId,
 			);
+
 		return new Promise<void>((resolve, reject) => {
 			request(options)
 				.then(() => {
@@ -171,8 +180,10 @@ export class ModelRepositoryClient {
 		switch (type) {
 			case ModelType.Interface:
 				return MetaModelType.Interface;
+
 			case ModelType.CapabilityModel:
 				return MetaModelType.CapabilityModel;
+
 			default:
 				return MetaModelType.None;
 		}
@@ -194,10 +205,12 @@ export class ModelRepositoryClient {
 			: `${repoInfo.hostname}/models/search`;
 		// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 		const qs: any = { "api-version": repoInfo.apiVersion };
+
 		if (repoInfo.repositoryId) {
 			qs.repositoryId = repoInfo.repositoryId;
 		}
 		const accessToken = repoInfo.accessToken || Constants.EMPTY_STRING;
+
 		const options: request.OptionsWithUri = {
 			method,
 			uri,
@@ -210,6 +223,7 @@ export class ModelRepositoryClient {
 			},
 			resolveWithFullResponse: true,
 		};
+
 		return options;
 	}
 

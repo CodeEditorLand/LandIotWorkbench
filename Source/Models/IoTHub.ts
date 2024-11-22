@@ -28,6 +28,7 @@ export class IoTHub implements Component, Provisionable {
 	private projectRootPath: string;
 	private componentId: string;
 	private azureConfigFileHandler: AzureConfigFileHandler;
+
 	get id(): string {
 		return this.componentId;
 	}
@@ -58,6 +59,7 @@ export class IoTHub implements Component, Provisionable {
 				ScaffoldType.Workspace,
 				this.componentType,
 			);
+
 		if (componentConfig) {
 			this.componentId = componentConfig.id;
 			this.dependencies = componentConfig.dependencies;
@@ -81,6 +83,7 @@ export class IoTHub implements Component, Provisionable {
 				detail: "create",
 			},
 		];
+
 		const selection = await vscode.window.showQuickPick(
 			provisionIothubSelection,
 			{
@@ -94,6 +97,7 @@ export class IoTHub implements Component, Provisionable {
 		}
 
 		const toolkit = getExtension(ExtensionName.Toolkit);
+
 		if (!toolkit) {
 			throw new DependentExtensionNotFoundError(
 				"provision IoT Hub",
@@ -102,7 +106,9 @@ export class IoTHub implements Component, Provisionable {
 		}
 
 		let iothub = null;
+
 		const subscriptionId = AzureUtility.subscriptionId;
+
 		const resourceGroup = AzureUtility.resourceGroup;
 
 		switch (selection.detail) {
@@ -111,7 +117,9 @@ export class IoTHub implements Component, Provisionable {
 					this.channel,
 					subscriptionId,
 				);
+
 				break;
+
 			case "create":
 				if (this.channel) {
 					channelShowAndAppendLine(
@@ -125,7 +133,9 @@ export class IoTHub implements Component, Provisionable {
 					subscriptionId,
 					resourceGroup,
 				);
+
 				break;
+
 			default:
 				break;
 		}
@@ -138,6 +148,7 @@ export class IoTHub implements Component, Provisionable {
 			const sharedAccessKeyMatches = iothub.iotHubConnectionString.match(
 				/SharedAccessKey=([^;]*)/,
 			);
+
 			if (!sharedAccessKeyMatches || sharedAccessKeyMatches.length < 2) {
 				throw new OperationFailedError(
 					"parse shared access key from IoT Hub connection string",
@@ -150,6 +161,7 @@ export class IoTHub implements Component, Provisionable {
 
 			const eventHubConnectionString = `Endpoint=${iothub.properties.eventHubEndpoints.events.endpoint};\
       SharedAccessKeyName=iothubowner;SharedAccessKey=${sharedAccessKey}`;
+
 			const eventHubConnectionPath =
 				iothub.properties.eventHubEndpoints.events.path;
 

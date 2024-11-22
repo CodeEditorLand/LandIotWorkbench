@@ -54,10 +54,12 @@ export class AzureConfigFileHandler {
 
 	async createIfNotExists(type: ScaffoldType): Promise<void> {
 		const azureConfigs: AzureConfigs = { componentConfigs: [] };
+
 		const azureConfigFolderPath = path.join(
 			this.projectRootPath,
 			AzureComponentsStorage.folderName,
 		);
+
 		if (!(await FileUtility.directoryExists(type, azureConfigFolderPath))) {
 			await FileUtility.mkdirRecursively(type, azureConfigFolderPath);
 		}
@@ -84,9 +86,11 @@ export class AzureConfigFileHandler {
 			configFilePath,
 			"utf8",
 		);
+
 		const azureConfigs = JSON.parse(
 			azureConfigContent as string,
 		) as AzureConfigs;
+
 		return azureConfigs;
 	}
 
@@ -97,22 +101,29 @@ export class AzureConfigFileHandler {
 			type,
 			this.configFilePath,
 		);
+
 		const components: AzureComponentConfig[] = [];
+
 		const componentConfigs = azureConfigs.componentConfigs;
+
 		const sortedComponentIds: string[] = [];
+
 		let lastSortedCount = 0;
 
 		do {
 			lastSortedCount = components.length;
+
 			for (const componentConfig of componentConfigs) {
 				if (sortedComponentIds.indexOf(componentConfig.id) > -1) {
 					continue;
 				}
 
 				let hold = false;
+
 				for (const dependency of componentConfig.dependencies) {
 					if (sortedComponentIds.indexOf(dependency.id) === -1) {
 						hold = true;
+
 						break;
 					}
 				}
@@ -128,6 +139,7 @@ export class AzureConfigFileHandler {
 			lastSortedCount < componentConfigs.length &&
 			lastSortedCount < components.length
 		);
+
 		return components;
 	}
 
@@ -139,9 +151,11 @@ export class AzureConfigFileHandler {
 			type,
 			this.configFilePath,
 		);
+
 		const componentIndex = azureConfigs.componentConfigs.findIndex(
 			(config) => config.id === id,
 		);
+
 		return componentIndex;
 	}
 
@@ -153,9 +167,11 @@ export class AzureConfigFileHandler {
 			type,
 			this.configFilePath,
 		);
+
 		const componentConfig = azureConfigs.componentConfigs.find(
 			(config) => config.id === id,
 		);
+
 		return componentConfig;
 	}
 
@@ -173,6 +189,7 @@ export class AzureConfigFileHandler {
 			this.configFilePath,
 			azureConfigs,
 		);
+
 		return azureConfigs;
 	}
 
@@ -185,7 +202,9 @@ export class AzureConfigFileHandler {
 			type,
 			this.configFilePath,
 		);
+
 		const component = azureConfigs.componentConfigs[index];
+
 		if (!component) {
 			throw new AzureConfigNotFoundError(
 				`component of config index ${index}`,
@@ -197,6 +216,7 @@ export class AzureConfigFileHandler {
 			this.configFilePath,
 			azureConfigs,
 		);
+
 		return azureConfigs;
 	}
 
@@ -208,9 +228,11 @@ export class AzureConfigFileHandler {
 			type,
 			this.configFilePath,
 		);
+
 		const componentConfig = azureConfigs.componentConfigs.find(
 			(config) => config.type === componentType,
 		);
+
 		return componentConfig;
 	}
 
@@ -222,9 +244,11 @@ export class AzureConfigFileHandler {
 			type,
 			this.configFilePath,
 		);
+
 		const componentConfig = azureConfigs.componentConfigs.find(
 			(config) => config.folder === folder,
 		);
+
 		return componentConfig;
 	}
 }

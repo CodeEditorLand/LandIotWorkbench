@@ -65,13 +65,19 @@ export class UI {
 		switch (type) {
 			case MessageType.Info:
 				vscode.window.showInformationMessage(message);
+
 				break;
+
 			case MessageType.Warn:
 				vscode.window.showWarningMessage(message);
+
 				break;
+
 			case MessageType.Error:
 				vscode.window.showErrorMessage(message);
+
 				break;
+
 			default:
 		}
 	}
@@ -90,10 +96,12 @@ export class UI {
 		}
 		// select workspace or open specified folder
 		let items: vscode.QuickPickItem[] = [];
+
 		if (vscode.workspace.workspaceFolders) {
 			items = vscode.workspace.workspaceFolders.map(
 				(f: vscode.WorkspaceFolder) => {
 					const fsPath: string = f.uri.fsPath;
+
 					return {
 						label: path.basename(fsPath),
 						description: fsPath,
@@ -105,10 +113,12 @@ export class UI {
 			label: UIConstants.BROWSE_LABEL,
 			description: Constants.EMPTY_STRING,
 		});
+
 		const selected: vscode.QuickPickItem = await UI.showQuickPick(
 			label,
 			items,
 		);
+
 		return selected.description || (await UI.showOpenDialog(label));
 	}
 
@@ -125,8 +135,10 @@ export class UI {
 			placeHolder: label,
 			ignoreFocusOut: true,
 		};
+
 		const selected: vscode.QuickPickItem | undefined =
 			await vscode.window.showQuickPick(items, options);
+
 		if (!selected) {
 			throw new UserCancelledError(label);
 		}
@@ -149,8 +161,10 @@ export class UI {
 			canSelectFolders: true,
 			canSelectMany: false,
 		};
+
 		const selected: vscode.Uri[] | undefined =
 			await vscode.window.showOpenDialog(options);
+
 		if (!selected || !selected.length) {
 			throw new UserCancelledError(label);
 		}
@@ -169,11 +183,13 @@ export class UI {
 		folder: string,
 	): Promise<string> {
 		const placeHolder = `${type} name`;
+
 		const validateInput = async (
 			name: string,
 		): Promise<string | undefined> => {
 			return await Utility.validateModelName(name, type, folder);
 		};
+
 		return await UI.showInputBox(label, placeHolder, validateInput);
 	}
 
@@ -201,8 +217,10 @@ export class UI {
 			value,
 			ignoreFocusOut,
 		};
+
 		const input: string | undefined =
 			await vscode.window.showInputBox(options);
+
 		if (!input) {
 			throw new UserCancelledError(label);
 		}
@@ -217,6 +235,7 @@ export class UI {
 		const validateInput = (name: string): string | undefined => {
 			return Utility.validateNotEmpty(name, "Connection string");
 		};
+
 		return await UI.showInputBox(
 			label,
 			UIConstants.REPOSITORY_CONNECTION_STRING_TEMPLATE,
@@ -234,11 +253,13 @@ export class UI {
 		type?: ModelType,
 	): Promise<string[]> {
 		const fileInfos: ModelFileInfo[] = await UI.findModelFiles(type);
+
 		if (!fileInfos.length) {
 			UI.showNotification(
 				MessageType.Warn,
 				UIConstants.MODELS_NOT_FOUND_MSG,
 			);
+
 			return [];
 		}
 		const items: Array<QuickPickItemWithData<string>> = fileInfos.map(
@@ -250,6 +271,7 @@ export class UI {
 				};
 			},
 		);
+
 		const selected: Array<QuickPickItemWithData<string>> | undefined =
 			await vscode.window.showQuickPick(items, {
 				placeHolder: label,
@@ -257,6 +279,7 @@ export class UI {
 				canPickMany: true,
 				matchOnDescription: true,
 			});
+
 		if (!selected || !selected.length) {
 			throw new UserCancelledError(label);
 		}
@@ -273,11 +296,13 @@ export class UI {
 		type?: ModelType,
 	): Promise<string> {
 		const fileInfos: ModelFileInfo[] = await UI.findModelFiles(type);
+
 		if (!fileInfos.length) {
 			UI.showNotification(
 				MessageType.Warn,
 				UIConstants.MODELS_NOT_FOUND_MSG,
 			);
+
 			return Constants.EMPTY_STRING;
 		}
 		const items: Array<QuickPickItemWithData<string>> = fileInfos.map(
@@ -289,6 +314,7 @@ export class UI {
 				};
 			},
 		);
+
 		const selected: QuickPickItemWithData<string> | undefined =
 			await vscode.window.showQuickPick(items, {
 				placeHolder: label,
@@ -296,6 +322,7 @@ export class UI {
 				canPickMany: false,
 				matchOnDescription: true,
 			});
+
 		if (!selected) {
 			throw new UserCancelledError(label);
 		}
@@ -308,9 +335,11 @@ export class UI {
 	 */
 	static async findModelFiles(type?: ModelType): Promise<ModelFileInfo[]> {
 		const fileInfos: ModelFileInfo[] = [];
+
 		const files: vscode.Uri[] = await vscode.workspace.findFiles(
 			UIConstants.MODEL_FILE_GLOB,
 		);
+
 		if (!files.length) {
 			return fileInfos;
 		}
@@ -318,6 +347,7 @@ export class UI {
 		await Promise.all(
 			files.map(async (f) => {
 				let fileInfo: ModelFileInfo | undefined;
+
 				try {
 					fileInfo = await Utility.getModelFileInfo(f.fsPath);
 				} catch {
@@ -332,6 +362,7 @@ export class UI {
 				}
 			}),
 		);
+
 		return fileInfos;
 	}
 
@@ -346,22 +377,27 @@ export class UI {
 	): Promise<void> {
 		const dirtyFiles: vscode.TextDocument[] =
 			vscode.workspace.textDocuments.filter((f) => f.isDirty);
+
 		const unsaved: vscode.TextDocument[] = dirtyFiles.filter((f) =>
 			files.some((file) => file === f.fileName),
 		);
+
 		if (!unsaved.length) {
 			return;
 		}
 		const nameList: string = unsaved
 			.map((f) => path.basename(f.fileName))
 			.toString();
+
 		const message = `${UIConstants.ASK_TO_SAVE_MSG} [${nameList}]`;
+
 		const choice: string | undefined =
 			await vscode.window.showWarningMessage(
 				message,
 				ChoiceType.Yes,
 				ChoiceType.Cancel,
 			);
+
 		if (choice === ChoiceType.Yes) {
 			await Promise.all(unsaved.map((f) => f.save()));
 		} else {

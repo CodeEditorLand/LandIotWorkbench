@@ -19,6 +19,7 @@ export class DeviceOperator {
 			channel,
 			telemetryContext,
 		);
+
 		if (!iotProject) {
 			return;
 		}
@@ -35,6 +36,7 @@ export class DeviceOperator {
 			channel,
 			telemetryContext,
 		);
+
 		if (!iotProject) {
 			return;
 		}
@@ -51,6 +53,7 @@ export class DeviceOperator {
 			channel,
 			telemetryContext,
 		);
+
 		if (!iotProject) {
 			return;
 		}

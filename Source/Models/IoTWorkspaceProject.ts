@@ -30,13 +30,19 @@ import {
 } from "./IoTWorkbenchProjectBase";
 
 const importLazy = require("import-lazy");
+
 const az3166DeviceModule = importLazy(() => require("./AZ3166Device"))();
+
 const azureComponentConfigModule = importLazy(() =>
 	require("./AzureComponentConfig"),
 )();
+
 const azureFunctionsModule = importLazy(() => require("./AzureFunctions"))();
+
 const esp32DeviceModule = importLazy(() => require("./Esp32Device"))();
+
 const ioTHubModule = importLazy(() => require("./IoTHub"))();
+
 const ioTHubDeviceModule = importLazy(() => require("./IoTHubDevice"))();
 
 export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
@@ -56,6 +62,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 	) {
 		super(context, channel, telemetryContext);
 		this.projectHostType = ProjectHostType.Workspace;
+
 		if (!rootFolderPath) {
 			throw new ArgumentEmptyOrNullError(
 				"construct iot workspace project",
@@ -72,10 +79,12 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 
 		// Init device root path
 		const devicePath = ConfigHandler.get<string>(ConfigKey.devicePath);
+
 		if (!devicePath) {
 			throw new WorkspaceConfigNotFoundError(ConfigKey.devicePath);
 		}
 		this.deviceRootPath = path.join(this.projectRootPath, devicePath);
+
 		if (
 			!(await FileUtility.directoryExists(
 				scaffoldType,
@@ -110,6 +119,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 		}
 
 		const boardId = ConfigHandler.get<string>(ConfigKey.boardId);
+
 		if (!boardId) {
 			throw new WorkspaceConfigNotFoundError(ConfigKey.boardId);
 		}
@@ -141,6 +151,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 		openInNewWindow: boolean,
 	): Promise<void> {
 		const createTimeScaffoldType = ScaffoldType.Local;
+
 		const workspace: Workspace = { folders: [], settings: {} };
 
 		// Init device root path
@@ -211,6 +222,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 			);
 		} catch (error) {
 			fs.removeSync(this.projectRootPath);
+
 			throw error;
 		}
 
@@ -249,6 +261,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 				const telemetryWorker = TelemetryWorker.getInstance(
 					this.extensionContext,
 				);
+
 				const eventNames =
 					openScenario === OpenScenario.createNewProject
 						? EventNames.createNewProjectEvent
@@ -288,6 +301,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 		}
 
 		let device: Component;
+
 		if (boardId === az3166DeviceModule.AZ3166Device.boardId) {
 			device = new az3166DeviceModule.AZ3166Device(
 				this.extensionContext,
@@ -346,11 +360,13 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 
 		// Init azure function
 		const functionPath = ConfigHandler.get<string>(ConfigKey.functionPath);
+
 		if (functionPath) {
 			const functionLocation = path.join(
 				this.projectRootPath,
 				functionPath,
 			);
+
 			const functionApp = new azureFunctionsModule.AzureFunctions(
 				this.projectRootPath,
 				functionLocation,
@@ -411,6 +427,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 					const functionPath = ConfigHandler.get<string>(
 						ConfigKey.functionPath,
 					);
+
 					if (!functionPath) {
 						throw new WorkspaceConfigNotFoundError(
 							ConfigKey.functionPath,
@@ -421,6 +438,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 						this.projectRootPath,
 						functionPath,
 					);
+
 					if (functionLocation) {
 						const functionApp =
 							new azureFunctionsModule.AzureFunctions(
@@ -491,12 +509,14 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 			case ProjectTemplateType.Basic:
 				// Save data to configFile
 				break;
+
 			case ProjectTemplateType.IotHub: {
 				const iothub = new ioTHubModule.IoTHub(
 					this.projectRootPath,
 					this.channel,
 				);
 				this.componentList.push(iothub);
+
 				break;
 			}
 			case ProjectTemplateType.AzureFunctions: {
@@ -509,6 +529,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 					this.projectRootPath,
 					IoTWorkspaceProject.folderName.functionDefaultFolderName,
 				);
+
 				const azureFunctions = new azureFunctionsModule.AzureFunctions(
 					this.projectRootPath,
 					functionDir,
@@ -534,6 +555,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 
 				this.componentList.push(iothub);
 				this.componentList.push(azureFunctions);
+
 				break;
 			}
 			default:
@@ -555,6 +577,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 		);
 
 		const workspaceFile = getWorkspaceFile(this.projectRootPath);
+
 		if (!workspaceFile) {
 			throw new FileNotFoundError(
 				"init iot project workspace file path",

@@ -74,15 +74,20 @@ enum ReGenResult {
 
 function compareVersion(verion1: string, verion2: string): 1 | -1 | 0 {
 	const ver1 = verion1.split(".");
+
 	const ver2 = verion2.split(".");
+
 	let i = 0;
+
 	let v1: number, v2: number;
 
 	/* default is 0, version format should be 1.1.0 */
 	while (i < 3) {
 		v1 = Number(ver1[i]);
 		v2 = Number(ver2[i]);
+
 		if (v1 > v2) return 1;
+
 		if (v1 < v2) return -1;
 		i++;
 	}
@@ -105,6 +110,7 @@ export class CodeGeneratorCore {
 		);
 
 		const rootPath = utils.getProjectDeviceRootPath();
+
 		if (!rootPath) {
 			throw new WorkspaceNotOpenError("generate device code stub");
 		}
@@ -127,6 +133,7 @@ export class CodeGeneratorCore {
 			channel,
 			telemetryContext,
 		);
+
 		if (regenResult === ReGenResult.Succeeded) {
 			return;
 		}
@@ -228,6 +235,7 @@ export class CodeGeneratorCore {
 			const codeGenExecutions: CodeGenExecutions = JSON.parse(
 				fs.readFileSync(codeGenConfigPath, "utf8"),
 			);
+
 			if (codeGenExecutions) {
 				codeGenExecutionItem =
 					codeGenExecutions.codeGenExecutionItems.find(
@@ -291,6 +299,7 @@ export class CodeGeneratorCore {
 					channel,
 					telemetryContext,
 				);
+
 				return ReGenResult.Succeeded;
 			} else {
 				return ReGenResult.Skipped;
@@ -333,11 +342,13 @@ export class CodeGeneratorCore {
 
 		if (fs.isDirectorySync(projectPath)) {
 			const messge = `The folder ${projectPath} already exists. Do you want to overwrite the contents in this folder?`;
+
 			const choice = await vscode.window.showWarningMessage(
 				messge,
 				DialogResponses.yes,
 				DialogResponses.no,
 			);
+
 			if (choice !== DialogResponses.yes) {
 				throw new OperationCanceledError(
 					`Valid project name is not specified, cancelled.`,
@@ -349,6 +360,7 @@ export class CodeGeneratorCore {
 			channel,
 			`Input project name: ${codeGenProjectName}`,
 		);
+
 		return codeGenProjectName;
 	}
 
@@ -365,6 +377,7 @@ export class CodeGeneratorCore {
 				FileNames.codeGenOptionsFileName,
 			),
 		);
+
 		return JSON.parse(fs.readFileSync(codeGenConfigFilePath, "utf8"));
 	}
 
@@ -392,6 +405,7 @@ export class CodeGeneratorCore {
 			channel,
 			`Selected CodeGen language: ${languageSelection.label}`,
 		);
+
 		return languageSelection.label;
 	}
 
@@ -455,6 +469,7 @@ export class CodeGeneratorCore {
 			channel,
 			`Selected device connection type: ${connectionType}`,
 		);
+
 		return connectionType;
 	}
 
@@ -534,6 +549,7 @@ export class CodeGeneratorCore {
 			channel,
 			`Selected CodeGen project type: ${codeGenProjectType}`,
 		);
+
 		return codeGenProjectType;
 	}
 
@@ -544,10 +560,13 @@ export class CodeGeneratorCore {
 		codegenOptionsConfig: any,
 	): Promise<DeviceSdkReferenceType> {
 		let deviceSdkReferenceType = undefined;
+
 		switch (projectType) {
 			case CodeGenProjectType.IoTDevKit:
 				deviceSdkReferenceType = DeviceSdkReferenceType.DevKitSDK;
+
 				break;
+
 			case CodeGenProjectType.CMakeWindows:
 			case CodeGenProjectType.CMakeLinux: {
 				// Load available Azure IoT connection types from JSON configuration
@@ -606,6 +625,7 @@ export class CodeGeneratorCore {
 				}
 
 				deviceSdkReferenceType = sdkReferenceType;
+
 				break;
 			}
 			default:
@@ -619,6 +639,7 @@ export class CodeGeneratorCore {
 			channel,
 			`Selected device SDK reference type: ${deviceSdkReferenceType}`,
 		);
+
 		return deviceSdkReferenceType;
 	}
 
@@ -638,6 +659,7 @@ export class CodeGeneratorCore {
 		const codeGenerator = codeGenFactory.createCodeGeneratorImpl(
 			codeGenExecutionInfo.languageLabel,
 		);
+
 		if (!codeGenerator) {
 			return false;
 		}
@@ -646,6 +668,7 @@ export class CodeGeneratorCore {
 		const capabilityModel = await Utility.getJsonContent(
 			codeGenExecutionInfo.capabilityModelFilePath,
 		);
+
 		const capabilityModelId = capabilityModel["@id"];
 
 		await vscode.window.withProgress(
@@ -656,6 +679,7 @@ export class CodeGeneratorCore {
 			async () => {
 				const result =
 					await codeGenerator.generateCode(codeGenExecutionInfo);
+
 				if (result) {
 					vscode.window.showInformationMessage(
 						`Generate PnP device code for ${capabilityModelId} completed`,
@@ -663,6 +687,7 @@ export class CodeGeneratorCore {
 				}
 			},
 		);
+
 		return true;
 	}
 
@@ -680,6 +705,7 @@ export class CodeGeneratorCore {
 
 		try {
 			let codeGenExecutions: CodeGenExecutions;
+
 			if (await FileUtility.fileExists(type, codeGenConfigPath)) {
 				const codeGenConfig = await FileUtility.readFile(
 					type,
@@ -724,6 +750,7 @@ export class CodeGeneratorCore {
 		const extensionPackage = await Utility.getJsonContent(
 			context.asAbsolutePath("./package.json"),
 		);
+
 		const extensionVersion = extensionPackage.version;
 
 		// Download the config file for CodeGen cli
@@ -738,6 +765,7 @@ export class CodeGeneratorCore {
 
 		const codeGenConfig: CodeGeneratorConfig =
 			await request(options).promise();
+
 		if (codeGenConfig) {
 			codeGenConfig.codeGeneratorConfigItems.sort(
 				(configItem1, configItem2) => {
@@ -760,6 +788,7 @@ export class CodeGeneratorCore {
 						) >= 0
 					) {
 						targetConfigItem = item;
+
 						break;
 					}
 				}
@@ -778,13 +807,16 @@ export class CodeGeneratorCore {
 	private async checkLocalCodeGenCli(): Promise<string | null> {
 		// Check version of existing CodeGen CLI
 		const platform = os.platform();
+
 		const currentVersion = ConfigHandler.get<string>(
 			ConfigKey.codeGeneratorVersion,
 		);
+
 		let codeGenCliAppPath = path.join(
 			localCodeGenCliPath(),
 			DigitalTwinConstants.codeGenCliApp,
 		);
+
 		if (platform === OSPlatform.WIN32) {
 			codeGenCliAppPath += ".exe";
 		}
@@ -804,8 +836,11 @@ export class CodeGeneratorCore {
 		newVersion: string,
 	): Promise<boolean> {
 		let packageUri: string;
+
 		let md5value: string;
+
 		const platform = os.platform();
+
 		if (platform === OSPlatform.WIN32) {
 			packageUri = targetConfigItem.codeGeneratorLocation.win32PackageUrl;
 			md5value = targetConfigItem.codeGeneratorLocation.win32Md5;
@@ -823,16 +858,20 @@ export class CodeGeneratorCore {
 			channel,
 			`Step 1: Downloading ${DigitalTwinConstants.codeGenCli} v${newVersion} package ...`,
 		);
+
 		const downloadOption: request.OptionsWithUri = {
 			method: "GET",
 			uri: packageUri,
 			encoding: null,
 		};
+
 		const zipData = await request(downloadOption).promise();
+
 		const tempPath = path.join(
 			os.tmpdir(),
 			FileNames.iotworkbenchTempFolder,
 		);
+
 		const filePath = path.join(tempPath, `${md5value}.zip`);
 		fs.writeFileSync(filePath, zipData);
 		utils.channelShowAndAppendLine(channel, " download complete.");
@@ -843,23 +882,28 @@ export class CodeGeneratorCore {
 			channel,
 			"Step 2: Validating hash code for the package ...",
 		);
+
 		const hashvalue = await FileUtility.getFileHash(filePath);
+
 		if (hashvalue !== md5value) {
 			utils.channelShowAndAppendLine(
 				channel,
 				`the downloaded ${DigitalTwinConstants.codeGenCli} v${newVersion} package has been corrupted.`,
 			);
+
 			if (installOrUpgrade === CodeGenCliOperation.Install) {
 				utils.channelShowAndAppendLine(
 					channel,
 					`${DigitalTwinConstants.dtPrefix} Abort generating device code stub.`,
 				);
+
 				return false;
 			} else {
 				utils.channelShowAndAppendLine(
 					channel,
 					`        Abort the installation and continue generating device code stub.`,
 				);
+
 				return true;
 			}
 		} else {
@@ -883,6 +927,7 @@ export class CodeGeneratorCore {
 			channel,
 			`${DigitalTwinConstants.dtPrefix} The ${DigitalTwinConstants.codeGenCli} v${newVersion} is ready to use.`,
 		);
+
 		return true;
 	}
 
@@ -894,17 +939,21 @@ export class CodeGeneratorCore {
 			channel,
 			`${DigitalTwinConstants.dtPrefix} Check ${DigitalTwinConstants.codeGenCli} ...`,
 		);
+
 		const targetConfigItem = await this.getCodeGenCliPackageInfo(
 			context,
 			channel,
 		);
+
 		if (targetConfigItem === null) {
 			return false;
 		}
 
 		// Check version of existing CodeGen CLI
 		let installOrUpgrade: CodeGenCliOperation = CodeGenCliOperation.None;
+
 		const currentVersion = await this.checkLocalCodeGenCli();
+
 		if (currentVersion == null) {
 			installOrUpgrade = CodeGenCliOperation.Install;
 		} else {
@@ -925,14 +974,17 @@ export class CodeGeneratorCore {
 				channel,
 				`CodeGen CLI v${currentVersion} is installed and ready to use.`,
 			);
+
 			return true;
 		}
 
 		const newVersion = targetConfigItem.codeGeneratorVersion;
+
 		const processTitle =
 			installOrUpgrade === CodeGenCliOperation.Install
 				? `Installing ${DigitalTwinConstants.codeGenCli}`
 				: `Upgrading ${DigitalTwinConstants.codeGenCli}`;
+
 		const message =
 			installOrUpgrade === CodeGenCliOperation.Install
 				? ` not installed, start installing:`

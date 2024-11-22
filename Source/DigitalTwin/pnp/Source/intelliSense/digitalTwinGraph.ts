@@ -19,6 +19,7 @@ export interface ClassNode {
 	children?: ClassNode[];
 	properties?: PropertyNode[];
 	enums?: string[];
+
 	constraint?: ConstraintNode;
 	version?: VersionNode;
 }
@@ -32,6 +33,7 @@ export interface PropertyNode {
 	isArray?: boolean;
 	comment?: string;
 	range?: ClassNode[];
+
 	constraint?: ConstraintNode;
 	version?: VersionNode;
 }
@@ -154,6 +156,7 @@ export class DigitalTwinGraph {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	private static resolveContainerType(object: any): ContainerType {
 		const container = object[DigitalTwinConstants.CONTAINER];
+
 		if (!container || typeof container !== "string") {
 			return ContainerType.None;
 		}
@@ -161,8 +164,10 @@ export class DigitalTwinGraph {
 			case DigitalTwinConstants.LIST:
 			case DigitalTwinConstants.SET:
 				return ContainerType.Array;
+
 			case DigitalTwinConstants.LANGUAGE:
 				return ContainerType.Language;
+
 			default:
 				return ContainerType.None;
 		}
@@ -185,6 +190,7 @@ export class DigitalTwinGraph {
 				fileName,
 			),
 		);
+
 		return await Utility.getJsonContent(filePath);
 	}
 
@@ -218,6 +224,7 @@ export class DigitalTwinGraph {
 	 */
 	getPropertyNode(name: string): PropertyNode | undefined {
 		const id: string = this.reversedIndex.get(name) || name;
+
 		return this.propertyNodes.get(id);
 	}
 
@@ -227,6 +234,7 @@ export class DigitalTwinGraph {
 	 */
 	getClassNode(name: string): ClassNode | undefined {
 		const id: string = this.reversedIndex.get(name) || this.getId(name);
+
 		return this.classNodes.get(id);
 	}
 
@@ -244,7 +252,9 @@ export class DigitalTwinGraph {
 	 */
 	private async init(context: vscode.ExtensionContext): Promise<void> {
 		let contextJson;
+
 		let constraintJson;
+
 		let graphJson;
 		// load definition file
 		try {
@@ -252,6 +262,7 @@ export class DigitalTwinGraph {
 				context,
 				Constants.CONTEXT_FILE_NAME,
 			);
+
 			constraintJson = await DigitalTwinGraph.resolveDefinition(
 				context,
 				Constants.CONSTRAINT_FILE_NAME,
@@ -284,13 +295,16 @@ export class DigitalTwinGraph {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	private buildContext(contextJson: any): void {
 		let id: string;
+
 		const context = contextJson[DigitalTwinConstants.CONTEXT];
 		this.vocabulary = context[DigitalTwinConstants.VOCABULARY] as string;
+
 		for (const key in context) {
 			if (IntelliSenseUtility.isReservedName(key)) {
 				continue;
 			}
 			const value = context[key];
+
 			if (typeof value === "string") {
 				id = this.getId(value);
 				this.contextNodes.set(id, {
@@ -357,22 +371,34 @@ export class DigitalTwinGraph {
 		switch (edge.Label) {
 			case EdgeType.Type:
 				this.handleEdgeOfType(edge);
+
 				break;
+
 			case EdgeType.Label:
 				this.handleEdgeOfLabel(edge);
+
 				break;
+
 			case EdgeType.Domain:
 				this.handleEdgeOfDomain(edge);
+
 				break;
+
 			case EdgeType.Range:
 				this.handleEdgeOfRange(edge);
+
 				break;
+
 			case EdgeType.SubClassOf:
 				this.handleEdgeOfSubClassOf(edge);
+
 				break;
+
 			case EdgeType.Comment:
 				this.handleEdgeOfComment(edge);
+
 				break;
+
 			default:
 		}
 	}
@@ -386,20 +412,29 @@ export class DigitalTwinGraph {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	private handleEdgeOfType(edge: any): void {
 		const id: string = edge.SourceNode.Id as string;
+
 		const type: string = edge.TargetNode.Id as string;
+
 		switch (type) {
 			case NodeType.Class:
 				this.ensureClassNode(id);
+
 				break;
+
 			case NodeType.Property:
 				this.ensurePropertyNode(id);
+
 				break;
+
 			default: {
 				// mark target class as enum node
 				const contextNode: ContextNode | undefined =
 					this.contextNodes.get(id);
+
 				const enumValue: string = contextNode ? contextNode.name : id;
+
 				const enumNode: ClassNode = this.ensureClassNode(type);
+
 				if (!enumNode.enums) {
 					enumNode.enums = [];
 				}
@@ -417,7 +452,9 @@ export class DigitalTwinGraph {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	private handleEdgeOfLabel(edge: any): void {
 		const id: string = edge.SourceNode.Id as string;
+
 		const label: string = edge.TargetNode.Value as string;
+
 		const propertyNode: PropertyNode | undefined =
 			this.propertyNodes.get(id);
 		// skip property node since value has been set in Type edge
@@ -425,10 +462,13 @@ export class DigitalTwinGraph {
 			return;
 		}
 		const classNode: ClassNode = this.ensureClassNode(id);
+
 		if (!classNode.label) {
 			classNode.label = label;
+
 			const constraintNode: ConstraintNode | undefined =
 				this.constraintNodes.get(label);
+
 			if (constraintNode) {
 				classNode.constraint = constraintNode;
 			}
@@ -443,9 +483,13 @@ export class DigitalTwinGraph {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	private handleEdgeOfDomain(edge: any): void {
 		const id: string = edge.SourceNode.Id as string;
+
 		const classId: string = edge.TargetNode.Id as string;
+
 		const propertyNode: PropertyNode = this.ensurePropertyNode(id);
+
 		const classNode: ClassNode = this.ensureClassNode(classId);
+
 		if (!classNode.properties) {
 			classNode.properties = [];
 		}
@@ -460,9 +504,13 @@ export class DigitalTwinGraph {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	private handleEdgeOfRange(edge: any): void {
 		const id: string = edge.SourceNode.Id as string;
+
 		const classId: string = edge.TargetNode.Id as string;
+
 		const propertyNode: PropertyNode = this.ensurePropertyNode(id);
+
 		const classNode: ClassNode = this.ensureClassNode(classId);
+
 		if (!propertyNode.range) {
 			propertyNode.range = [];
 		}
@@ -477,9 +525,13 @@ export class DigitalTwinGraph {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	private handleEdgeOfSubClassOf(edge: any): void {
 		const id: string = edge.SourceNode.Id as string;
+
 		const baseId: string = edge.TargetNode.Id as string;
+
 		const classNode: ClassNode = this.ensureClassNode(id);
+
 		const baseClassNode: ClassNode = this.ensureClassNode(baseId);
+
 		if (!baseClassNode.children) {
 			baseClassNode.children = [];
 		}
@@ -494,9 +546,12 @@ export class DigitalTwinGraph {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	private handleEdgeOfComment(edge: any): void {
 		const id: string = edge.SourceNode.Id as string;
+
 		const comment: string = edge.TargetNode.Value as string;
+
 		const propertyNode: PropertyNode | undefined =
 			this.propertyNodes.get(id);
+
 		if (propertyNode) {
 			propertyNode.comment = comment;
 		}
@@ -508,14 +563,19 @@ export class DigitalTwinGraph {
 	 */
 	private ensureClassNode(id: string): ClassNode {
 		let classNode: ClassNode | undefined = this.classNodes.get(id);
+
 		if (!classNode) {
 			classNode = { id };
+
 			const contextNode: ContextNode | undefined =
 				this.contextNodes.get(id);
+
 			if (contextNode) {
 				classNode.label = contextNode.name;
+
 				const constraintNode: ConstraintNode | undefined =
 					this.constraintNodes.get(contextNode.name);
+
 				if (constraintNode) {
 					classNode.constraint = constraintNode;
 				}
@@ -531,10 +591,13 @@ export class DigitalTwinGraph {
 	 */
 	private ensurePropertyNode(id: string): PropertyNode {
 		let propertyNode: PropertyNode | undefined = this.propertyNodes.get(id);
+
 		if (!propertyNode) {
 			propertyNode = { id };
+
 			const contextNode: ContextNode | undefined =
 				this.contextNodes.get(id);
+
 			if (contextNode) {
 				propertyNode.label = contextNode.name;
 				propertyNode.isArray =
@@ -549,6 +612,7 @@ export class DigitalTwinGraph {
 				}
 				const constraintNode: ConstraintNode | undefined =
 					this.constraintNodes.get(contextNode.name);
+
 				if (constraintNode) {
 					propertyNode.constraint = constraintNode;
 				}
@@ -581,8 +645,10 @@ export class DigitalTwinGraph {
 	 */
 	private buildReservedProperty(id: string, classNode: ClassNode): void {
 		const propertyNode: PropertyNode = { id, range: [classNode] };
+
 		const constraintNode: ConstraintNode | undefined =
 			this.constraintNodes.get(id);
+
 		if (constraintNode) {
 			propertyNode.constraint = constraintNode;
 		}
@@ -597,6 +663,7 @@ export class DigitalTwinGraph {
 		const classNode: ClassNode | undefined = this.classNodes.get(
 			this.getId(name),
 		);
+
 		if (classNode) {
 			classNode.isAbstract = true;
 		}
@@ -609,8 +676,10 @@ export class DigitalTwinGraph {
 		const propertyNode: PropertyNode | undefined = this.propertyNodes.get(
 			this.getId(DigitalTwinConstants.INTERFACE_SCHEMA_NODE),
 		);
+
 		if (propertyNode) {
 			propertyNode.label = DigitalTwinConstants.SCHEMA;
+
 			if (propertyNode.range) {
 				propertyNode.range.push(classNode);
 				propertyNode.constraint = this.constraintNodes.get(
@@ -627,10 +696,12 @@ export class DigitalTwinGraph {
 		let classNode: ClassNode | undefined = this.classNodes.get(
 			this.getId(DigitalTwinConstants.BASE_CLASS),
 		);
+
 		if (!classNode) {
 			return;
 		}
 		const queue: ClassNode[] = [];
+
 		while (classNode) {
 			if (classNode.children) {
 				for (const child of classNode.children) {
@@ -658,9 +729,11 @@ export class DigitalTwinGraph {
 		const interfaceNode: ClassNode | undefined = this.classNodes.get(
 			this.getId(DigitalTwinConstants.INTERFACE_NODE),
 		);
+
 		const capabilityModelNode: ClassNode | undefined = this.classNodes.get(
 			this.getId(DigitalTwinConstants.CAPABILITY_MODEL_NODE),
 		);
+
 		if (interfaceNode && capabilityModelNode) {
 			const entryNode: PropertyNode = {
 				id: DigitalTwinConstants.ENTRY_NODE,

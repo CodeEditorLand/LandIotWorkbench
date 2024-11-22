@@ -35,9 +35,11 @@ import { DeviceType } from "./Interfaces/Device";
 import { DeviceConfig, TemplateFileInfo } from "./Interfaces/ProjectTemplate";
 
 const importLazy = require("import-lazy");
+
 const forEach = importLazy(() =>
 	require("lodash.foreach"),
 )() as typeof import("lodash.foreach");
+
 const trimStart = importLazy(() => require("lodash.trimstart"))();
 
 interface SerialPortInfo {
@@ -81,6 +83,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 	private static _serialport: any;
 
 	private componentId: string;
+
 	get id(): string {
 		return this.componentId;
 	}
@@ -109,6 +112,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		);
 		this.channel = channel;
 		this.componentId = Guid.create().toString();
+
 		if (templateFiles) {
 			this.templateFiles = templateFiles;
 		}
@@ -120,7 +124,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 	get board(): Board {
 		const boardProvider = new BoardProvider(this.boardFolderPath);
+
 		const az3166 = boardProvider.find({ id: AZ3166Device._boardId });
+
 		if (!az3166) {
 			throw new SystemResourceNotFoundError(
 				"AZ3166 board",
@@ -133,10 +139,12 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 	get version(): string {
 		const packageRootPath = this.getArduinoPackagePath();
+
 		let version = "0.0.1";
 
 		if (fs.existsSync(packageRootPath)) {
 			const versions = fs.readdirSync(packageRootPath);
+
 			if (versions[0]) {
 				version = versions[0];
 			}
@@ -151,14 +159,17 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 	async preCompileAction(): Promise<boolean> {
 		await this.generatePlatformLocal();
+
 		return true;
 	}
 
 	async preUploadAction(): Promise<boolean> {
 		const isStlinkInstalled = await this.stlinkDriverInstalled();
+
 		if (!isStlinkInstalled) {
 			const message =
 				"The ST-LINK driver for DevKit is not installed. Install now?";
+
 			const result: vscode.MessageItem | undefined =
 				await vscode.window.showWarningMessage(
 					message,
@@ -166,11 +177,13 @@ export class AZ3166Device extends ArduinoDeviceBase {
 					DialogResponses.skipForNow,
 					DialogResponses.cancel,
 				);
+
 			if (result === DialogResponses.yes) {
 				// Open the download page
 				const installUri =
 					"http://www.st.com/en/development-tools/stsw-link009.html";
 				opn(installUri);
+
 				return true;
 			} else if (result !== DialogResponses.cancel) {
 				return false;
@@ -178,6 +191,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		}
 		// Enable logging on IoT Devkit
 		await this.generatePlatformLocal();
+
 		return true;
 	}
 
@@ -186,10 +200,13 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		const deviceSettingType = await this.selectDeviceSettingType();
 
 		let credentials = "";
+
 		switch (deviceSettingType) {
 			case ConfigDeviceOptions.CRC:
 				await this.generateCrc(this.channel);
+
 				return;
+
 			case ConfigDeviceOptions.ConnectionString:
 				// Get device connection string
 				credentials = await this.getDeviceConnectionString();
@@ -198,7 +215,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 					credentials,
 					ConfigDeviceOptions.ConnectionString,
 				);
+
 				return;
+
 			case ConfigDeviceOptions.DPS:
 				// Get DPS Credential
 				credentials = await this.getDPSCredentialsFromInput();
@@ -207,7 +226,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 					credentials,
 					ConfigDeviceOptions.DPS,
 				);
+
 				return;
+
 			case ConfigDeviceOptions.UDS:
 				// Get UDS string
 				credentials = await this.getUDSStringFromInput();
@@ -216,7 +237,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 					credentials,
 					ConfigDeviceOptions.UDS,
 				);
+
 				return;
+
 			default:
 				throw new TypeNotSupportedError(
 					"device setting type",
@@ -253,16 +276,23 @@ export class AZ3166Device extends ArduinoDeviceBase {
 			);
 		}
 		let deviceSettingTypeForLog;
+
 		switch (deviceSettingType) {
 			case ConfigDeviceOptions.ConnectionString:
 				deviceSettingTypeForLog = "device connection string";
+
 				break;
+
 			case ConfigDeviceOptions.DPS:
 				deviceSettingTypeForLog = "DPS credentials";
+
 				break;
+
 			case ConfigDeviceOptions.UDS:
 				deviceSettingTypeForLog = "Unique Device String (UDS)";
+
 				break;
+
 			default:
 				throw new TypeNotSupportedError(
 					"device setting type",
@@ -281,6 +311,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 	private async selectDeviceSettingType(): Promise<ConfigDeviceOptions> {
 		const configSelectionItems =
 			await this.getConfigDeviceSettingTypeOptions();
+
 		const configSelection = await vscode.window.showQuickPick(
 			configSelectionItems,
 			{
@@ -290,6 +321,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				placeHolder: "Select an option",
 			},
 		);
+
 		if (!configSelection) {
 			throw new OperationCanceledError(
 				"Config device settings option selection cancelled.",
@@ -300,6 +332,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 			ConfigDeviceOptions,
 			configSelection.label,
 		);
+
 		return deviceSettingsType;
 	}
 
@@ -324,6 +357,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 			devciceConfigFilePath,
 			"utf8",
 		);
+
 		const configSelectionItemsContent = JSON.parse(
 			configSelectionItemsFilePath as string,
 		);
@@ -349,11 +383,13 @@ export class AZ3166Device extends ArduinoDeviceBase {
 	private async getDeviceConnectionString(): Promise<string> {
 		// Get device connection string from workspace config
 		let deviceConnectionStringFromConfig: string | undefined;
+
 		const componentConfig =
 			await this.azureConfigFileHandler.getComponentByType(
 				ScaffoldType.Workspace,
 				ComponentType.IoTHubDevice,
 			);
+
 		if (componentConfig) {
 			deviceConnectionStringFromConfig =
 				componentConfig.componentInfo?.values
@@ -361,6 +397,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		}
 
 		let deviceConnectionString: string;
+
 		if (deviceConnectionStringFromConfig) {
 			// Select method to acquire device connection string
 			const deviceConnectionStringAcquisitionMethodSelection =
@@ -373,6 +410,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				DeviceConnectionStringAcquisitionMethods.Select
 			) {
 				deviceConnectionString = deviceConnectionStringFromConfig;
+
 				return deviceConnectionString;
 			}
 		}
@@ -392,6 +430,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 			this.getDeviceConnectionStringAcquisitionOptions(
 				deviceConnectionString,
 			);
+
 		const deviceConnectionStringAcquisitionSelection =
 			await vscode.window.showQuickPick(
 				deviceConnectionStringAcquisitionOptions,
@@ -412,6 +451,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 	): vscode.QuickPickItem[] {
 		let deviceConnectionStringAcquisitionOptions: vscode.QuickPickItem[] =
 			[];
+
 		const inputDeviceConnectionStringOption = {
 			label: DeviceConnectionStringAcquisitionMethods.Input,
 			description: "",
@@ -419,15 +459,19 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		};
 
 		let hostName = "";
+
 		let deviceId = "";
+
 		const hostnameMatches =
 			deviceConnectionString.match(/HostName=(.*?)(;|$)/);
+
 		if (hostnameMatches) {
 			hostName = hostnameMatches[0];
 		}
 
 		const deviceIDMatches =
 			deviceConnectionString.match(/DeviceId=(.*?)(;|$)/);
+
 		if (deviceIDMatches) {
 			deviceId = deviceIDMatches[0];
 		}
@@ -452,16 +496,20 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 	private async getInputDeviceConnectionString(): Promise<string> {
 		const option = this.getInputDeviceConnectionStringOptions();
+
 		const deviceConnectionString = await vscode.window.showInputBox(option);
+
 		if (!deviceConnectionString) {
 			const message =
 				"Need more information on how to get device connection string?";
+
 			const result: vscode.MessageItem | undefined =
 				await vscode.window.showWarningMessage(
 					message,
 					DialogResponses.yes,
 					DialogResponses.no,
 				);
+
 			if (result === DialogResponses.yes) {
 				opn(constants.informationPageUrl);
 			}
@@ -502,7 +550,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 	 */
 	private async getDPSCredentialsFromInput(): Promise<string> {
 		const option = this.getDPSConnectionStringOptions();
+
 		const dpsCredential = await vscode.window.showInputBox(option);
+
 		if (!dpsCredential) {
 			throw new OperationCanceledError(
 				"DPS credentials input cancelled.",
@@ -541,7 +591,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 	 */
 	private async getUDSStringFromInput(): Promise<string> {
 		const option = this.getUDSStringOptions();
+
 		const UDS = await vscode.window.showInputBox(option);
+
 		if (!UDS) {
 			throw new OperationCanceledError("UDS string input cancelled.");
 		}
@@ -552,7 +604,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 	private getUDSStringOptions(): vscode.InputBoxOptions {
 		function generateRandomHex(): string {
 			const chars = "0123456789abcdef".split("");
+
 			let hexNum = "";
+
 			for (let i = 0; i < 64; i++) {
 				hexNum += chars[Math.floor(Math.random() * 16)];
 			}
@@ -570,6 +624,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				return "";
 			},
 		};
+
 		return option;
 	}
 
@@ -595,6 +650,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 		// Set selected connection string to device
 		const platform = os.platform();
+
 		if (platform === OSPlatform.WIN32) {
 			return await this.flushDeviceConfig(configValue, option);
 		} else {
@@ -613,7 +669,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				reject: (value: Error) => void,
 			) => {
 				let comPort = "";
+
 				let command = "";
+
 				try {
 					// Choose COM port that AZ3166 is connected
 					comPort = await this.chooseCOM();
@@ -631,6 +689,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				let errorRejected = false;
 
 				let az3166: Board;
+
 				try {
 					az3166 = this.board;
 				} catch (error) {
@@ -648,9 +707,11 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 				const rejectIfError = (err: Error): boolean => {
 					if (errorRejected) return true;
+
 					if (err) {
 						errorRejected = true;
 						reject(err);
+
 						try {
 							port.close();
 						} catch (ignore) {
@@ -666,10 +727,13 @@ export class AZ3166Device extends ArduinoDeviceBase {
 						const data = `${command} "${configValue}"\r\n`;
 
 						let restDataLength = data.length;
+
 						while (restDataLength > 0) {
 							const start = data.length - restDataLength;
+
 							const length = Math.min(100, restDataLength);
 							restDataLength -= length;
+
 							const dataChunk = data.substr(start, length);
 							await this.sendDataViaSerialPort(port, dataChunk);
 							await delay(1000);
@@ -720,7 +784,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				reject: (value: Error) => void,
 			) => {
 				let comPort = "";
+
 				let command = "";
+
 				try {
 					// Choose COM port that AZ3166 is connected
 					comPort = await this.chooseCOM();
@@ -736,11 +802,15 @@ export class AZ3166Device extends ArduinoDeviceBase {
 					command = "set_dps_uds";
 				}
 				let configMode = false;
+
 				let errorRejected = false;
+
 				let commandExecuted = false;
+
 				let gotData = false;
 
 				let az3166: Board;
+
 				try {
 					az3166 = this.board;
 				} catch (error) {
@@ -758,9 +828,11 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 				const rejectIfError = (err: Error): boolean => {
 					if (errorRejected) return true;
+
 					if (err) {
 						errorRejected = true;
 						reject(err);
+
 						try {
 							port.close();
 						} catch (ignore) {
@@ -774,11 +846,13 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				const executeSetAzIoTHub = async (): Promise<void> => {
 					try {
 						const data = `${command} "${configValue}"\r\n`;
+
 						const maxDataLength = 256;
 						await this.sendDataViaSerialPort(
 							port,
 							data.slice(0, maxDataLength),
 						);
+
 						if (data.length > maxDataLength) {
 							await delay(1000);
 							await this.sendDataViaSerialPort(
@@ -814,9 +888,11 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 				port.on("data", (data: any) => {
 					gotData = true;
+
 					const output = data.toString().trim();
 
 					if (commandExecuted) return;
+
 					if (output.includes("set_")) {
 						commandExecuted = true;
 						configMode = true;
@@ -831,6 +907,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 						forEach(output.split("\n"), (line) => {
 							if (line) {
 								line = trimStart(line.trim(), "#").trim();
+
 								if (line && line.length) {
 									console.log("SerialOutput", line);
 								}
@@ -873,6 +950,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 	private async getComList(): Promise<SerialPortInfo[]> {
 		const lists = await AZ3166Device.serialport.list();
+
 		return lists;
 	}
 
@@ -885,6 +963,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				const comList = await this.getComList();
 
 				let az3166: Board;
+
 				try {
 					az3166 = this.board;
 				} catch (error) {
@@ -908,6 +987,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 				if (list && list.length) {
 					let comPort = list[0].path;
+
 					if (list.length > 1) {
 						// TODO: select com port from list when there are multiple AZ3166
 						// boards connected
@@ -963,6 +1043,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 	private async stlinkDriverInstalled(): Promise<boolean> {
 		const platform = os.platform();
+
 		if (platform === OSPlatform.WIN32) {
 			try {
 				// The STlink driver would write to the following registry.
@@ -971,6 +1052,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 					"\\SYSTEM\\ControlSet001\\Control\\Class\\{88bae032-5a81-49f0-bc3d-a4ff138216d6}",
 					"Class",
 				);
+
 				if (pathString) {
 					return true;
 				} else {
@@ -1005,6 +1087,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		if (!fs.existsSync(arduinoPackagePath)) {
 			const suggestedOperation =
 				'Please install it from https://www.arduino.cc/en/main/software and use "Arduino: Board Manager" to install your device packages. Restart VS Code to apply to changes.';
+
 			throw new ResourceNotFoundError(
 				`generate ${constants.platformLocalFileName} file`,
 				"Arduino IDE",
@@ -1013,6 +1096,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		}
 
 		const files = fs.readdirSync(arduinoPackagePath);
+
 		for (let i = files.length - 1; i >= 0; i--) {
 			if (files[i] === ".DS_Store") {
 				files.splice(i, 1);
@@ -1028,6 +1112,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		}
 
 		const directoryName = path.join(arduinoPackagePath, files[0]);
+
 		if (!fs.isDirectorySync(directoryName)) {
 			throw new DirectoryNotFoundError(
 				`generate ${constants.platformLocalFileName} file`,
@@ -1040,8 +1125,10 @@ export class AZ3166Device extends ArduinoDeviceBase {
 			directoryName,
 			constants.platformLocalFileName,
 		);
+
 		if (!fs.existsSync(fileName)) {
 			const enableTrace = 1;
+
 			const hashMacAddress = await getHashMacAsync();
 
 			// Create the file of platform.local.txt
@@ -1062,6 +1149,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 		// TODO: Currently, we do not support portable Arduino installation.
 		let arduinoPackagePath = "";
+
 		const homeDir = os.homedir();
 
 		if (platform === OSPlatform.WIN32) {

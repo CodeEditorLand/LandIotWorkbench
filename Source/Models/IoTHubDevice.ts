@@ -48,6 +48,7 @@ async function getProvisionIothubDeviceSelection(
 	let provisionIothubDeviceSelection: vscode.QuickPickItem[];
 
 	const deviceNumber = await getDeviceNumber(iotHubConnectionString);
+
 	if (deviceNumber > 0) {
 		provisionIothubDeviceSelection = [
 			{
@@ -79,6 +80,7 @@ export class IoTHubDevice implements Component, Provisionable {
 	private projectRootPath: string;
 	private componentId: string;
 	private azureConfigFileHandler: AzureConfigFileHandler;
+
 	get id(): string {
 		return this.componentId;
 	}
@@ -124,6 +126,7 @@ export class IoTHubDevice implements Component, Provisionable {
 				ScaffoldType.Workspace,
 				this.componentType,
 			);
+
 		if (componentConfig) {
 			this.componentId = componentConfig.id;
 			this.dependencies = componentConfig.dependencies;
@@ -136,12 +139,15 @@ export class IoTHubDevice implements Component, Provisionable {
 
 	async provision(): Promise<boolean> {
 		const scaffoldType = ScaffoldType.Workspace;
+
 		const iotHubId = this.dependencies[0].id;
+
 		const componentConfig =
 			await this.azureConfigFileHandler.getComponentById(
 				scaffoldType,
 				iotHubId,
 			);
+
 		if (!componentConfig) {
 			throw new AzureConfigNotFoundError(
 				`component of config id ${iotHubId}`,
@@ -154,6 +160,7 @@ export class IoTHubDevice implements Component, Provisionable {
 		}
 		const iotHubConnectionString =
 			componentConfig.componentInfo.values.iotHubConnectionString;
+
 		if (!iotHubConnectionString) {
 			throw new AzureConfigNotFoundError(
 				`iotHubConnectionString of config id ${iotHubId}`,
@@ -172,6 +179,7 @@ export class IoTHubDevice implements Component, Provisionable {
 		}
 
 		const toolkit = getExtension(ExtensionName.Toolkit);
+
 		if (!toolkit) {
 			throw new DependentExtensionNotFoundError(
 				"provision IoT Hub Device",
@@ -180,6 +188,7 @@ export class IoTHubDevice implements Component, Provisionable {
 		}
 
 		let device = null;
+
 		switch (selection.detail) {
 			case "select":
 				device = await toolkit.azureIoTExplorer.getDevice(
@@ -187,6 +196,7 @@ export class IoTHubDevice implements Component, Provisionable {
 					iotHubConnectionString,
 					this.channel,
 				);
+
 				if (!device) {
 					return false;
 				} else {
@@ -206,6 +216,7 @@ export class IoTHubDevice implements Component, Provisionable {
 					iotHubConnectionString,
 					this.channel,
 				);
+
 				if (!device) {
 					return false;
 				} else {
@@ -218,6 +229,7 @@ export class IoTHubDevice implements Component, Provisionable {
 					});
 				}
 				break;
+
 			default:
 				break;
 		}
@@ -233,6 +245,7 @@ export class IoTHubDevice implements Component, Provisionable {
 				type,
 				this.id,
 			);
+
 		if (iotHubComponentIndex > -1) {
 			if (!componentInfo) {
 				throw new ArgumentEmptyOrNullError(

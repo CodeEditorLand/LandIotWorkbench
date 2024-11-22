@@ -16,6 +16,7 @@ export class ColorizedChannel {
 		if (error) {
 			const message: string =
 				operation.charAt(0).toLowerCase() + operation.slice(1);
+
 			return `Fail to ${message}. Error: ${error.message}`;
 		} else {
 			return `${operation} successfully`;
@@ -31,6 +32,7 @@ export class ColorizedChannel {
 	}
 
 	private channel: vscode.OutputChannel;
+
 	constructor(name: string) {
 		this.channel = vscode.window.createOutputChannel(name);
 	}
@@ -83,6 +85,7 @@ export class ColorizedChannel {
 	 */
 	error(operation: string, component?: string, error?: Error): void {
 		const tag: string = ColorizedChannel.createTag(component);
+
 		const message: string = error
 			? ColorizedChannel.formatMessage(operation, error)
 			: operation;

@@ -7,8 +7,11 @@ export class OTA {
 		size: number;
 	} {
 		const data = fs.readFileSync(filePath);
+
 		const size = fs.statSync(filePath).size;
+
 		const crc = crc16xmodem(data).toString(16);
+
 		return { crc, size };
 	}
 }

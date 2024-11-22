@@ -8,6 +8,7 @@ import * as brokenLink from "broken-link";
 import * as validator from "validator";
 
 const exec = require("child_process").exec;
+
 const args = require("yargs").argv;
 
 /**
@@ -66,6 +67,7 @@ function checkLinksCore(file: string, links: Link[]): Promise<FileReport> {
 		const iterateLinks = links.map((link) => {
 			return new Promise(async (resolve) => {
 				let isBroken = false;
+
 				if (isHttpLink(link.address)) {
 					// Check external links
 					isBroken = await brokenLink(link.address, {
@@ -76,7 +78,9 @@ function checkLinksCore(file: string, links: Link[]): Promise<FileReport> {
 					// Check markdown relative urls
 					try {
 						const currentWorkingDirectory = path.dirname(file);
+
 						const splitPattern = path.sep + "#";
+
 						const fullPath = path
 							.resolve(currentWorkingDirectory, link.address)
 							.split(splitPattern)[0];
@@ -121,6 +125,7 @@ function getLinks(file: string): Promise<Link[]> {
 		});
 
 		const linksToReturn = new Array<Link>();
+
 		let lineNumber = 0;
 
 		// Parse each line to get links
@@ -128,10 +133,13 @@ function getLinks(file: string): Promise<Link[]> {
 			lineNumber++;
 			// Parse markdown url syntax to get links
 			const markdownUrlPattern = /\[[\s\S]*?\]\([\S]*?\)/g;
+
 			const links = line.match(markdownUrlPattern);
+
 			if (links) {
 				for (let i = 0; i < links.length; i++) {
 					const captureAddressPattern = /\[[\s\S]*?\]\(([\S]*?)\)/;
+
 					const address = links[i].match(captureAddressPattern)[1];
 					linksToReturn.push({
 						address: address,
@@ -162,6 +170,7 @@ async function checkLinks(file: string): Promise<string[]> {
 
 				// Print all links
 				console.log(`> All links no: ${fileReport.all.length}`);
+
 				if (fileReport.all.length > 0) {
 					for (let i = 0; i < fileReport.all.length; i++) {
 						console.log(fileReport.all[i]);
@@ -170,6 +179,7 @@ async function checkLinks(file: string): Promise<string[]> {
 
 				// Print error links
 				console.log(`> Error links no: ${fileReport.errors.length}`);
+
 				if (fileReport.errors.length > 0) {
 					for (let i = 0; i < fileReport.errors.length; i++) {
 						console.log(fileReport.errors[i]);
@@ -194,9 +204,11 @@ async function checkLinks(file: string): Promise<string[]> {
  */
 async function main(): Promise<void> {
 	const rootDir = args.rootDir;
+
 	const file = args.file;
 
 	let files = [];
+
 	let errorLinks: string[] = [];
 	// Get markdown files needed to validate
 	if (rootDir) {
@@ -218,6 +230,7 @@ async function main(): Promise<void> {
 	if (errorLinks.length > 0) {
 		console.log("\n####### Issues :( ");
 		console.log(`Error links in total: ${errorLinks.length}`);
+
 		for (let i = 0; i < errorLinks.length; i++) {
 			console.log(` ${i + 1}. ${errorLinks[i]}`);
 		}

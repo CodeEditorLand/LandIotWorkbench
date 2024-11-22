@@ -17,15 +17,18 @@ export class FileUtility {
 				return false;
 			}
 			const isDirectory = await sdk.FileSystem.isDirectory(dirPath);
+
 			return isDirectory;
 		} else {
 			return new Promise((resolve: (exist: boolean) => void) => {
 				fs.stat(dirPath, (error: Error | null, stats) => {
 					if (error) {
 						resolve(false);
+
 						return;
 					}
 					resolve(stats.isDirectory());
+
 					return;
 				});
 			});
@@ -38,19 +41,23 @@ export class FileUtility {
 	): Promise<boolean> {
 		if (type === ScaffoldType.Local) {
 			const directoryExists = await sdk.FileSystem.exists(filePath);
+
 			if (!directoryExists) {
 				return false;
 			}
 			const isFile = await sdk.FileSystem.isFile(filePath);
+
 			return isFile;
 		} else {
 			return new Promise((resolve: (exist: boolean) => void) => {
 				fs.stat(filePath, (error: Error | null, stats) => {
 					if (error) {
 						resolve(false);
+
 						return;
 					}
 					resolve(stats.isFile());
+
 					return;
 				});
 			});
@@ -65,9 +72,11 @@ export class FileUtility {
 				fs.mkdir(dirPath, (error) => {
 					if (error) {
 						reject(error);
+
 						return;
 					}
 					resolve();
+
 					return;
 				});
 			});
@@ -82,6 +91,7 @@ export class FileUtility {
 			return;
 		}
 		const dirname = path.dirname(dirPath);
+
 		if (path.normalize(dirname) === path.normalize(dirPath)) {
 			await FileUtility.mkdirRecursively(type, dirname);
 		} else if (await FileUtility.directoryExists(type, dirname)) {
@@ -105,9 +115,11 @@ export class FileUtility {
 				fs.writeFile(filePath, data, (err) => {
 					if (err) {
 						reject(err);
+
 						return;
 					}
 					resolve();
+
 					return;
 				});
 			});
@@ -127,9 +139,11 @@ export class FileUtility {
 		data: any,
 	): Promise<void> {
 		const indentationSpace = 4;
+
 		const jsonString = JSON.stringify(data, null, indentationSpace);
 
 		const fileDir = path.dirname(fileDestPath);
+
 		if (!(await FileUtility.directoryExists(type, fileDir))) {
 			await FileUtility.mkdirRecursively(type, fileDir);
 		}
@@ -149,9 +163,11 @@ export class FileUtility {
 					fs.readFile(filePath, encoding, (err, data) => {
 						if (err) {
 							reject(err);
+
 							return;
 						}
 						resolve(data);
+
 						return;
 					});
 				},
@@ -179,12 +195,15 @@ export class FileUtility {
 		algorithm = "md5",
 	): Promise<string> {
 		const hash = crypto.createHash(algorithm);
+
 		const input = fs.createReadStream(filename);
+
 		let hashvalue = "";
 
 		return new Promise((resolve: (value: string) => void, reject) => {
 			input.on("readable", () => {
 				const data = input.read();
+
 				if (data) {
 					hash.update(data);
 				}
@@ -192,6 +211,7 @@ export class FileUtility {
 			input.on("error", reject);
 			input.on("end", () => {
 				hashvalue = hash.digest("hex");
+
 				return resolve(hashvalue);
 			});
 		});

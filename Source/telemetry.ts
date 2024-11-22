@@ -42,15 +42,19 @@ export class TelemetryWorker {
 
 	private constructor(context: vscode.ExtensionContext) {
 		this._extensionContext = context;
+
 		const packageInfo = this.getPackageInfo(context);
+
 		if (!packageInfo) {
 			console.log("Unable to initialize telemetry");
+
 			return;
 		}
 		if (!packageInfo.aiKey) {
 			console.log(
 				"Unable to initialize telemetry, please make sure AIKey is set in package.json",
 			);
+
 			return;
 		}
 		this._reporter = new TelemetryReporter(
@@ -76,6 +80,7 @@ export class TelemetryWorker {
 		const userDomain: string = process.env.USERDNSDOMAIN
 			? process.env.USERDNSDOMAIN.toLowerCase()
 			: "";
+
 		return userDomain.endsWith("microsoft.com");
 	}
 
@@ -86,6 +91,7 @@ export class TelemetryWorker {
 		const context: TelemetryContext = { properties: {}, measurements: {} };
 		context.properties.result = TelemetryResult.Succeeded;
 		context.properties.isInternal = this._isInternal.toString();
+
 		if (this._extensionContext) {
 			context.properties.developEnvironment = RemoteExtension.isRemote(
 				this._extensionContext,
@@ -155,9 +161,11 @@ export class TelemetryWorker {
 	): // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	Promise<any> {
 		const telemetryWorker = TelemetryWorker.getInstance(context);
+
 		const telemetryContext = telemetryWorker.createContext();
 
 		const start: number = Date.now();
+
 		if (additionalProperties) {
 			for (const key of Object.keys(additionalProperties)) {
 				if (
@@ -181,7 +189,9 @@ export class TelemetryWorker {
 			);
 		} catch (error) {
 			telemetryContext.properties.errorMessage = error.message;
+
 			let isPopupErrorMsg = true;
+
 			if (error instanceof OperationCanceledError) {
 				telemetryContext.properties.result = TelemetryResult.Cancelled;
 				isPopupErrorMsg = false;
@@ -192,8 +202,10 @@ export class TelemetryWorker {
 		} finally {
 			const end: number = Date.now();
 			telemetryContext.measurements.duration = (end - start) / 1000;
+
 			try {
 				this.sendEvent(eventName, telemetryContext);
+
 				if (enableSurvey) {
 					NSAT.takeSurvey(context);
 				}
@@ -219,14 +231,17 @@ export class TelemetryWorker {
 		context: vscode.ExtensionContext,
 	): PackageInfo | undefined {
 		const extension = WorkbenchExtension.getExtension(context);
+
 		if (extension) {
 			const extensionPackage = extension.packageJSON;
+
 			if (extensionPackage) {
 				const packageInfo: PackageInfo = {
 					name: extensionPackage.name,
 					version: extensionPackage.version,
 					aiKey: extensionPackage.aiKey,
 				};
+
 				return packageInfo;
 			}
 		}

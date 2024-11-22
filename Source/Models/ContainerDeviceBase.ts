@@ -35,6 +35,7 @@ const constants = {
 
 export abstract class ContainerDeviceBase implements Device {
 	protected componentId: string;
+
 	get id(): string {
 		return this.componentId;
 	}
@@ -85,6 +86,7 @@ export abstract class ContainerDeviceBase implements Device {
 	async load(): Promise<void> {
 		// ScaffoldType is Workspace when loading a project
 		const scaffoldType = ScaffoldType.Workspace;
+
 		const operation = "load container device";
 		this.validateProjectFolder(operation, scaffoldType);
 	}
@@ -92,6 +94,7 @@ export abstract class ContainerDeviceBase implements Device {
 	async create(): Promise<void> {
 		// ScaffoldType is local when creating a project
 		const createTimeScaffoldType = ScaffoldType.Local;
+
 		const operation = "create container device";
 		this.validateProjectFolder(operation, createTimeScaffoldType);
 
@@ -131,7 +134,9 @@ export abstract class ContainerDeviceBase implements Device {
 			// Replace binary name in CMakeLists.txt to project name
 			if (fileInfo.fileName === DigitalTwinConstants.cmakeListsFileName) {
 				const pattern = /{project_name}/g;
+
 				const projectName = path.basename(projectPath);
+
 				if (fileInfo.fileContent) {
 					fileInfo.fileContent = fileInfo.fileContent.replace(
 						pattern,
@@ -151,11 +156,13 @@ export abstract class ContainerDeviceBase implements Device {
 	async compile(): Promise<boolean> {
 		// Check remote
 		const isRemote = RemoteExtension.isRemote(this.extensionContext);
+
 		if (!isRemote) {
 			await utils.askAndOpenInRemote(
 				OperationType.Compile,
 				this.telemetryContext,
 			);
+
 			return false;
 		}
 
@@ -168,6 +175,7 @@ export abstract class ContainerDeviceBase implements Device {
 			PlatformType.EmbeddedLinux,
 			constants.compileTaskName,
 		);
+
 		return true;
 	}
 
@@ -195,6 +203,7 @@ export abstract class ContainerDeviceBase implements Device {
 
 		// Select container
 		const containerSelection = await this.selectContainer(templateJson);
+
 		if (!containerSelection) {
 			throw new OperationCanceledError(`Container selection cancelled.`);
 		}
@@ -213,7 +222,9 @@ export abstract class ContainerDeviceBase implements Device {
 			// Replace binary name in tasks.json to project name
 			if (fileInfo.fileName === "tasks.json") {
 				const pattern = "${project_name}";
+
 				const projectName = path.basename(projectPath);
+
 				if (fileInfo.fileContent) {
 					fileInfo.fileContent = fileInfo.fileContent.replace(
 						pattern,

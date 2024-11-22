@@ -10,13 +10,16 @@ import { ExtensionName, ExtensionNameIdMap } from "./Interfaces/Api";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getExtension(name: ExtensionName): any {
 	const extensionId = ExtensionNameIdMap.get(name);
+
 	if (extensionId) {
 		const extension = vscode.extensions.getExtension(extensionId);
+
 		if (extension) {
 			switch (name) {
 				case ExtensionName.AzureAccount:
 				case ExtensionName.Toolkit:
 					return extension.exports ? extension.exports : undefined;
+
 				default:
 					return extension;
 			}
@@ -27,6 +30,7 @@ export function getExtension(name: ExtensionName): any {
 
 export async function checkAzureLogin(): Promise<boolean> {
 	const azureAccount = getExtension(ExtensionName.AzureAccount);
+
 	if (!azureAccount) {
 		throw new DependentExtensionNotFoundError(
 			"check Azure Login",
@@ -51,6 +55,7 @@ export async function checkExtensionAvailable(
 			"Yes",
 			"No",
 		);
+
 		if (choice === "Yes") {
 			vscode.commands.executeCommand(
 				VscodeCommands.VscodeOpen,

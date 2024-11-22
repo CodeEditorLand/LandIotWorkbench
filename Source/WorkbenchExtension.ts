@@ -20,10 +20,13 @@ export class WorkbenchExtension {
 	private static getExtensionId(context: vscode.ExtensionContext): string {
 		// Get extensionId from package.json
 		const packageJsonPath = context.asAbsolutePath("./package.json");
+
 		const packageJson = JSON.parse(
 			fs.readFileSync(packageJsonPath, "utf8"),
 		);
+
 		const extensionId = packageJson.publisher + "." + packageJson.name;
+
 		return extensionId;
 	}
 }

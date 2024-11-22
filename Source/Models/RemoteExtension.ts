@@ -10,6 +10,7 @@ import { ExtensionName } from "./Interfaces/Api";
 export class RemoteExtension {
 	static isRemote(context: vscode.ExtensionContext): boolean {
 		const extension = WorkbenchExtension.getExtension(context);
+
 		if (!extension) {
 			throw new OperationFailedError(
 				"check whether is remote",
@@ -32,6 +33,7 @@ export class RemoteExtension {
 
 	static async checkRemoteExtension(operation: string): Promise<void> {
 		const res = await RemoteExtension.isAvailable();
+
 		if (!res) {
 			throw new DependentExtensionNotFoundError(
 				operation,

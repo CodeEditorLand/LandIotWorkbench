@@ -12,6 +12,7 @@ export class ArduinoPackageManager {
 		const existedUrls = vscode.workspace
 			.getConfiguration()
 			.get<string[] | string>("arduino.additionalUrls");
+
 		if (!existedUrls || existedUrls.length === 0) {
 			await vscode.workspace
 				.getConfiguration()
@@ -22,6 +23,7 @@ export class ArduinoPackageManager {
 				);
 		} else {
 			let _existedUrls: string[];
+
 			if (typeof existedUrls === "string") {
 				_existedUrls = existedUrls.split(",").map((url) => url.trim());
 			} else {
@@ -33,6 +35,7 @@ export class ArduinoPackageManager {
 				}
 			}
 			_existedUrls.push(url);
+
 			if (typeof existedUrls === "string") {
 				await vscode.workspace
 					.getConfiguration()
@@ -61,7 +64,9 @@ export class ArduinoPackageManager {
 		const cachedBoard = ArduinoPackageManager.INSTALLED_BOARDS.find(
 			(_board) => {
 				const _installation = _board.installation as BoardInstallation;
+
 				const installation = board.installation as BoardInstallation;
+
 				return (
 					_installation.packageName === installation.packageName &&
 					_installation.architecture === installation.architecture

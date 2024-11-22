@@ -74,6 +74,7 @@ export class ModelRepositoryManager {
 			const url: string | undefined = Configuration.getProperty<string>(
 				Constants.PUBLIC_REPOSITORY_URL,
 			);
+
 			if (!url) {
 				throw new Error(Constants.PUBLIC_REPOSITORY_URL_NOT_FOUND_MSG);
 			}
@@ -86,6 +87,7 @@ export class ModelRepositoryManager {
 			const connectionString: string | null = await CredentialStore.get(
 				Constants.MODEL_REPOSITORY_CONNECTION_KEY,
 			);
+
 			if (!connectionString) {
 				throw new Error(Constants.CONNECTION_STRING_NOT_FOUND_MSG);
 			}
@@ -102,9 +104,11 @@ export class ModelRepositoryManager {
 		RepositoryInfo[]
 	> {
 		const repoInfos: RepositoryInfo[] = [];
+
 		const connectionString: string | null = await CredentialStore.get(
 			Constants.MODEL_REPOSITORY_CONNECTION_KEY,
 		);
+
 		if (connectionString) {
 			repoInfos.push(
 				ModelRepositoryManager.getCompanyRepositoryInfo(
@@ -113,6 +117,7 @@ export class ModelRepositoryManager {
 			);
 		}
 		repoInfos.push(await ModelRepositoryManager.createRepositoryInfo(true));
+
 		return repoInfos;
 	}
 
@@ -121,9 +126,11 @@ export class ModelRepositoryManager {
 	 */
 	private static async setupConnection(): Promise<void> {
 		let newConnection = false;
+
 		let connectionString: string | null = await CredentialStore.get(
 			Constants.MODEL_REPOSITORY_CONNECTION_KEY,
 		);
+
 		if (!connectionString) {
 			connectionString = await UI.inputConnectionString(
 				UIConstants.INPUT_REPOSITORY_CONNECTION_STRING_LABEL,
@@ -140,6 +147,7 @@ export class ModelRepositoryManager {
 			1,
 			null,
 		);
+
 		if (newConnection) {
 			await CredentialStore.set(
 				Constants.MODEL_REPOSITORY_CONNECTION_KEY,
@@ -157,6 +165,7 @@ export class ModelRepositoryManager {
 	): RepositoryInfo {
 		const connection: ModelRepositoryConnection =
 			ModelRepositoryConnection.parse(connectionString);
+
 		return {
 			hostname: Utility.enforceHttps(connection.hostName),
 			apiVersion: Constants.MODEL_REPOSITORY_API_VERSION,
@@ -177,6 +186,7 @@ export class ModelRepositoryManager {
 
 	private readonly express: VSCExpress;
 	private readonly component: string;
+
 	constructor(
 		context: vscode.ExtensionContext,
 		filePath: string,
@@ -194,10 +204,12 @@ export class ModelRepositoryManager {
 			{ label: RepositoryType.Public },
 			{ label: RepositoryType.Company },
 		];
+
 		const selected: vscode.QuickPickItem = await UI.showQuickPick(
 			UIConstants.SELECT_REPOSITORY_LABEL,
 			items,
 		);
+
 		const operation = `Connect to ${selected.label}`;
 		this.outputChannel.start(operation, this.component);
 
@@ -262,11 +274,13 @@ export class ModelRepositoryManager {
 		const files: string[] = await UI.selectModelFiles(
 			UIConstants.SELECT_MODELS_LABEL,
 		);
+
 		if (!files.length) {
 			return;
 		}
 		// check unsaved files and save
 		await UI.ensureFilesSaved(UIConstants.SAVE_FILE_CHANGE_LABEL, files);
+
 		try {
 			await ModelRepositoryManager.setupConnection();
 		} catch (error) {
@@ -287,6 +301,7 @@ export class ModelRepositoryManager {
 			await this.doSubmitLoopSilently(repoInfo, files, telemetryContext);
 		} catch (error) {
 			const operation = `Submit models to ${RepositoryType.Company}`;
+
 			throw new ProcessError(operation, error, this.component);
 		}
 	}
@@ -312,14 +327,17 @@ export class ModelRepositoryManager {
 
 		// only show output when keyword is defined
 		const showOutput: boolean = keyword ? true : false;
+
 		const operation = `Search ${type} by keyword "${keyword}" from ${
 			publicRepository ? RepositoryType.Public : RepositoryType.Company
 		}`;
+
 		if (showOutput) {
 			this.outputChannel.start(operation, this.component);
 		}
 
 		let result: SearchResult;
+
 		try {
 			const repoInfo: RepositoryInfo =
 				await ModelRepositoryManager.createRepositoryInfo(
@@ -366,6 +384,7 @@ export class ModelRepositoryManager {
 			await this.doDeleteLoopSilently(repoInfo, modelIds);
 		} catch (error) {
 			const operation = `Delete models from ${RepositoryType.Company}`;
+
 			throw new ProcessError(operation, error, this.component);
 		}
 	}
@@ -393,6 +412,7 @@ export class ModelRepositoryManager {
 			await this.doDownloadLoopSilently([repoInfo], modelIds, folder);
 		} catch (error) {
 			const operation = `Download models from ${publicRepository ? RepositoryType.Public : RepositoryType.Company}`;
+
 			throw new ProcessError(operation, error, this.component);
 		}
 	}
@@ -413,7 +433,9 @@ export class ModelRepositoryManager {
 		}
 		// get implemented interface of capability model
 		const content = await Utility.getJsonContent(capabilityModelFile);
+
 		const implementedInterface = content[DigitalTwinConstants.IMPLEMENTS];
+
 		if (!implementedInterface || !implementedInterface.length) {
 			throw new BadRequestError(
 				"no implemented interface found in capability model",
@@ -423,22 +445,30 @@ export class ModelRepositoryManager {
 		// get existing interface file in workspace
 		const repoInfos: RepositoryInfo[] =
 			await ModelRepositoryManager.getAvailableRepositoryInfo();
+
 		const fileInfos: ModelFileInfo[] = await UI.findModelFiles(
 			ModelType.Interface,
 		);
+
 		const exist = new Set<string>(fileInfos.map((f) => f.id));
 		// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 		let schema: any;
+
 		let found: boolean;
+
 		let message: string;
+
 		for (const item of implementedInterface) {
 			schema = item[DigitalTwinConstants.SCHEMA];
+
 			if (typeof schema !== "string" || exist.has(schema)) {
 				continue;
 			}
 			found = await this.doDownloadModel(repoInfos, schema, folder);
+
 			if (!found) {
 				message = `interface ${schema} not found`;
+
 				if (repoInfos.length === 1) {
 					message = `${message}. ${Constants.NEED_OPEN_COMPANY_REPOSITORY_MSG}`;
 				}
@@ -483,6 +513,7 @@ export class ModelRepositoryManager {
 		folder: string,
 	): Promise<boolean> {
 		let result: GetResult | undefined;
+
 		for (const repoInfo of repoInfos) {
 			try {
 				result = await ModelRepositoryClient.getModel(
@@ -490,6 +521,7 @@ export class ModelRepositoryManager {
 					modelId,
 					true,
 				);
+
 				break;
 			} catch (error) {
 				if (error.statusCode === Constants.NOT_FOUND_CODE) {
@@ -509,6 +541,7 @@ export class ModelRepositoryManager {
 				result.modelId,
 				result.content,
 			);
+
 			return true;
 		}
 		return false;
@@ -548,7 +581,9 @@ export class ModelRepositoryManager {
 		telemetryContext: TelemetryContext,
 	): Promise<void> {
 		const usageData = new Map<ModelType, string[]>();
+
 		const options: SubmitOptions = { overwrite: false };
+
 		for (const file of files) {
 			const operation = `Submit file ${file}`;
 			this.outputChannel.start(operation, this.component);
@@ -582,11 +617,15 @@ export class ModelRepositoryManager {
 		usageData: Map<ModelType, string[]>,
 	): Promise<void> {
 		const content = await Utility.getJsonContent(filePath);
+
 		const modelId: string = content[DigitalTwinConstants.ID];
+
 		const modelType: ModelType = DeviceModelManager.convertToModelType(
 			content[DigitalTwinConstants.TYPE],
 		);
+
 		let result: GetResult | undefined;
+
 		try {
 			result = await ModelRepositoryClient.getModel(
 				repoInfo,
@@ -603,6 +642,7 @@ export class ModelRepositoryManager {
 		if (result) {
 			if (!option.overwrite) {
 				const message = `Model ${modelId} already exist, ${UIConstants.ASK_TO_OVERWRITE_MSG}`;
+
 				const choice: string | undefined =
 					await vscode.window.showWarningMessage(
 						message,
@@ -610,8 +650,10 @@ export class ModelRepositoryManager {
 						ChoiceType.Yes,
 						ChoiceType.No,
 					);
+
 				if (!choice || choice === ChoiceType.No) {
 					this.outputChannel.warn(`Skip overwrite model ${modelId}`);
+
 					return;
 				} else if (choice === ChoiceType.All) {
 					option.overwrite = true;
@@ -622,6 +664,7 @@ export class ModelRepositoryManager {
 
 		// record submitted model id
 		let modelIds: string[] | undefined = usageData.get(modelType);
+
 		if (!modelIds) {
 			modelIds = [];
 			usageData.set(modelType, modelIds);
@@ -641,19 +684,26 @@ export class ModelRepositoryManager {
 		totalCount: number,
 	): void {
 		let succeedCount = 0;
+
 		let hashId: string;
+
 		for (const [key, value] of usageData) {
 			succeedCount += value.length;
 			hashId = value
 				.map((id) => Utility.hash(id))
 				.join(Constants.DEFAULT_SEPARATOR);
+
 			switch (key) {
 				case ModelType.Interface:
 					telemetryContext.properties.interfaceId = hashId;
+
 					break;
+
 				case ModelType.CapabilityModel:
 					telemetryContext.properties.capabilityModelId = hashId;
+
 					break;
+
 				default:
 			}
 		}

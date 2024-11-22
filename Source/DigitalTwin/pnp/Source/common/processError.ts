@@ -14,6 +14,7 @@ export class ProcessError extends Error {
 	) {
 		super(ColorizedChannel.formatMessage(operation, error));
 		this.name = "ProcessError";
+
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, ProcessError);
 		}

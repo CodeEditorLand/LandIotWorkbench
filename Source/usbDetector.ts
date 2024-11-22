@@ -28,6 +28,7 @@ export class UsbDetector {
 		private channel: vscode.OutputChannel,
 	) {
 		const enableUSBDetection = shouldShowLandingPage(context);
+
 		if (os.platform() === OSPlatform.LINUX || !enableUSBDetection) {
 			return;
 		} else {
@@ -44,7 +45,9 @@ export class UsbDetector {
 					FileNames.templatesFolderName,
 				),
 			);
+
 			const boardProvider = new BoardProvider(boardFolderPath);
+
 			const board = boardProvider.find({
 				vendorId: device.vendorId,
 				productId: device.productId,
@@ -102,6 +105,7 @@ export class UsbDetector {
 
 	async startListening(context: vscode.ExtensionContext): Promise<void> {
 		const enableUSBDetection = shouldShowLandingPage(context);
+
 		if (os.platform() === OSPlatform.LINUX || !enableUSBDetection) {
 			return;
 		}

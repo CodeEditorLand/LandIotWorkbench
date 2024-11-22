@@ -68,6 +68,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 			this.projectFolder,
 			FileNames.cmakeFileName,
 		);
+
 		if (
 			!(await FileUtility.fileExists(
 				ScaffoldType.Workspace,
@@ -80,6 +81,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
     | sed -e 's/^add_executable(//' | awk '{$1=$1};1' | cut -d ' ' -f1 | tr -d '\n'`;
 
 		const binaryName = await executeCommand(getBinaryFileNameCmd);
+
 		return binaryName;
 	}
 
@@ -99,25 +101,30 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 
 	async upload(): Promise<boolean> {
 		const isRemote = RemoteExtension.isRemote(this.extensionContext);
+
 		if (!isRemote) {
 			await askAndOpenInRemote(
 				OperationType.Upload,
 				this.telemetryContext,
 			);
+
 			return false;
 		}
 
 		try {
 			const binaryName = await this.getBinaryFileName();
+
 			if (!binaryName) {
 				const message = `No executable file specified in ${FileNames.cmakeFileName}. \
         Nothing to upload to target machine.`;
 				vscode.window.showWarningMessage(message);
 				channelShowAndAppendLine(this.channel, message);
+
 				return false;
 			}
 
 			const binaryFilePath = path.join(this.outputPath, binaryName);
+
 			if (
 				!(await FileUtility.fileExists(
 					ScaffoldType.Workspace,
@@ -128,6 +135,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
         Please compile device code first.`;
 				vscode.window.showWarningMessage(message);
 				channelShowAndAppendLine(this.channel, message);
+
 				return false;
 			}
 
@@ -192,6 +200,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 
 	private async autoDiscoverDeviceIp(): Promise<vscode.QuickPickItem[]> {
 		const sshDevicePickItems: vscode.QuickPickItem[] = [];
+
 		const deviceInfos: DeviceInfo[] = await sdk.SSH.discover();
 		deviceInfos.forEach((deviceInfo) => {
 			sshDevicePickItems.push({
@@ -229,6 +238,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 				detail: "Setup device SSH configuration manually",
 			},
 		];
+
 		const sshDiscoverOrInputChoice = await vscode.window.showQuickPick(
 			sshDiscoverOrInputItems,
 			{
@@ -238,6 +248,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 				placeHolder: "Select an option",
 			},
 		);
+
 		if (!sshDiscoverOrInputChoice) {
 			throw new OperationCanceledError(
 				"SSH configuration type selection cancelled.",
@@ -248,6 +259,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 
 		if (sshDiscoverOrInputChoice.label === "$(search) Auto discover") {
 			let selectDeviceChoice: vscode.QuickPickItem | undefined;
+
 			do {
 				const selectDeviceItems = this.autoDiscoverDeviceIp();
 				selectDeviceChoice = await vscode.window.showQuickPick(
@@ -280,6 +292,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 				ignoreFocusOut: true,
 			};
 			raspiHost = await vscode.window.showInputBox(raspiHostOption);
+
 			if (!raspiHost) {
 				throw new OperationCanceledError("Hostname input cancelled.");
 			}
@@ -292,8 +305,10 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 			prompt: `Please input SSH port here.`,
 			ignoreFocusOut: true,
 		};
+
 		const raspiPortString =
 			await vscode.window.showInputBox(raspiPortOption);
+
 		if (!raspiPortString) {
 			throw new OperationCanceledError("Port input cancelled.");
 		}
@@ -308,7 +323,9 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 			prompt: `Please input user name here.`,
 			ignoreFocusOut: true,
 		};
+
 		let raspiUser = await vscode.window.showInputBox(raspiUserOption);
+
 		if (!raspiUser) {
 			throw new OperationCanceledError("User name input cancelled.");
 		}
@@ -320,8 +337,10 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 			prompt: `Please input password here.`,
 			ignoreFocusOut: true,
 		};
+
 		let raspiPassword =
 			await vscode.window.showInputBox(raspiPasswordOption);
+
 		if (raspiPassword === undefined) {
 			throw new OperationCanceledError("Password input cancelled.");
 		}
@@ -333,7 +352,9 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 			prompt: `Please input project destination path here.`,
 			ignoreFocusOut: true,
 		};
+
 		let raspiPath = await vscode.window.showInputBox(raspiPathOption);
+
 		if (!raspiPath) {
 			throw new OperationCanceledError(
 				"Project destination path input cancelled.",

@@ -33,6 +33,7 @@ export interface ARMParameters {
 
 export interface ARMParameterTemplateValue {
 	type: string;
+
 	defaultValue?: string | number | boolean | {} | Array<{}> | null;
 	allowedValues?: Array<string | number | boolean | null>;
 	minValue?: number;
@@ -74,6 +75,7 @@ export class AzureUtility {
 		vscode.QuickPickItem[]
 	> {
 		const subscriptionList: vscode.QuickPickItem[] = [];
+
 		if (!AzureUtility._azureAccountExtension) {
 			throw new DependentExtensionNotFoundError(
 				"get subscription list",
@@ -112,9 +114,11 @@ export class AzureUtility {
 
 		const subscriptions: AzureResourceFilter[] =
 			AzureUtility._azureAccountExtension.filters;
+
 		const subscription = subscriptions.find(
 			(sub) => sub.subscription.subscriptionId === subscriptionId,
 		);
+
 		if (subscription) {
 			return subscription.session;
 		}
@@ -144,13 +148,16 @@ export class AzureUtility {
 		}
 
 		const session = await AzureUtility._getSession();
+
 		if (session) {
 			const credential = session.credentials;
+
 			const client = new ResourceManagementClient(
 				credential,
 				AzureUtility._subscriptionId,
 				session.environment.resourceManagerEndpointUrl,
 			);
+
 			return client;
 		}
 		return undefined;
@@ -161,13 +168,16 @@ export class AzureUtility {
 	): ResourceManagementClient | undefined {
 		const session =
 			AzureUtility._getSessionBySubscriptionId(substriptionId);
+
 		if (session) {
 			const credential = session.credentials;
+
 			const client = new ResourceManagementClient(
 				credential,
 				substriptionId,
 				session.environment.resourceManagerEndpointUrl,
 			);
+
 			return client;
 		}
 		return undefined;
@@ -177,12 +187,15 @@ export class AzureUtility {
 		SubscriptionClient | undefined
 	> {
 		const session = await AzureUtility._getSession();
+
 		if (session) {
 			const credential = session.credentials;
+
 			const client = new SubscriptionClient(
 				credential,
 				session.environment.resourceManagerEndpointUrl,
 			);
+
 			return client;
 		}
 		return undefined;
@@ -198,6 +211,7 @@ export class AzureUtility {
 		}
 
 		const client = await AzureUtility._getSubscriptionClient();
+
 		if (!client) {
 			return undefined;
 		}
@@ -205,11 +219,13 @@ export class AzureUtility {
 		const locations = await client.subscriptions.listLocations(
 			AzureUtility._subscriptionId,
 		);
+
 		return locations;
 	}
 
 	private static async _createResouceGroup(): Promise<string | undefined> {
 		const client = await AzureUtility._getResourceClient();
+
 		if (!client) {
 			return undefined;
 		}
@@ -223,6 +239,7 @@ export class AzureUtility {
 				}
 
 				const exist = await client.resourceGroups.checkExistence(name);
+
 				if (exist) {
 					return "Azure name is unavailable";
 				}
@@ -236,10 +253,12 @@ export class AzureUtility {
 		}
 
 		const locations = await AzureUtility._getLocations();
+
 		if (!locations) {
 			return undefined;
 		}
 		const locationList: vscode.QuickPickItem[] = [];
+
 		for (const location of locations) {
 			locationList.push({
 				label: location.displayName as string,
@@ -254,6 +273,7 @@ export class AzureUtility {
 				ignoreFocusOut: true,
 			},
 		);
+
 		if (!resourceGroupLocation || !resourceGroupLocation.description) {
 			return undefined;
 		}
@@ -273,16 +293,23 @@ export class AzureUtility {
 		parameter: ARMParameterTemplateValue,
 	): string {
 		let value: string | number | boolean | null = null;
+
 		switch (parameter.type.toLocaleLowerCase()) {
 			case "string":
 				value = _value;
+
 				break;
+
 			case "int":
 				value = Number(_value);
+
 				break;
+
 			case "bool":
 				value = _value.toLocaleLowerCase() === "true";
+
 				break;
+
 			default:
 				break;
 		}
@@ -332,9 +359,11 @@ export class AzureUtility {
 
 	private static _getKeyDisplayName(key: string): string {
 		key = key.replace(/^\$*/, "");
+
 		const keyDisplayName = key
 			.replace(/([A-Z][^A-Z])/g, " $1")
 			.replace(/([a-z])([A-Z])/g, "$1 $2");
+
 		return (
 			keyDisplayName.substr(0, 1).toUpperCase() + keyDisplayName.substr(1)
 		);
@@ -345,18 +374,23 @@ export class AzureUtility {
 		parameters?: ARMParameters,
 	): Promise<ARMParameters | undefined> {
 		parameters = parameters || ({} as ARMParameters);
+
 		for (const key of Object.keys(parameterTemplate)) {
 			if (Object.prototype.hasOwnProperty.call(parameters, key)) {
 				continue;
 			}
 
 			const keyDisplayName = AzureUtility._getKeyDisplayName(key);
+
 			const parameter = parameterTemplate[key];
+
 			let value: string | number | boolean | null = null;
+
 			let inputValue = "";
 
 			if (parameter.allowedValues) {
 				const values: vscode.QuickPickItem[] = [];
+
 				for (const value of parameter.allowedValues) {
 					if (value !== null) {
 						values.push({
@@ -370,6 +404,7 @@ export class AzureUtility {
 					placeHolder: `Select value of ${keyDisplayName}`,
 					ignoreFocusOut: true,
 				});
+
 				if (!_value) {
 					return undefined;
 				}
@@ -384,12 +419,14 @@ export class AzureUtility {
 					inputValue = "";
 				} else {
 					const _key = key.substr(2);
+
 					const filePath = path.join(
 						vscode.workspace.workspaceFolders[0].uri.fsPath,
 						"..",
 						_key,
 					);
 					AzureUtility._context.asAbsolutePath(_key);
+
 					if (fs.existsSync(filePath)) {
 						inputValue = fs.readFileSync(filePath, "utf8");
 					} else {
@@ -401,14 +438,17 @@ export class AzureUtility {
 				const _key = key.substr(1);
 
 				let iothubConnectionString: string | undefined;
+
 				const azureConfigFileHandler = new AzureConfigFileHandler(
 					this._projectFolder,
 				);
+
 				const componentConfig =
 					await azureConfigFileHandler.getComponentByType(
 						ScaffoldType.Workspace,
 						ComponentType.IoTHub,
 					);
+
 				if (componentConfig) {
 					iothubConnectionString =
 						componentConfig.componentInfo?.values
@@ -424,6 +464,7 @@ export class AzureUtility {
 								iothubConnectionString.match(
 									/HostName=(.*?)\./,
 								);
+
 							if (!iotHubNameMatches) {
 								inputValue = "";
 							} else {
@@ -431,6 +472,7 @@ export class AzureUtility {
 							}
 						}
 						break;
+
 					case "iotHubKeyName":
 						if (!iothubConnectionString) {
 							inputValue = "";
@@ -439,6 +481,7 @@ export class AzureUtility {
 								iothubConnectionString.match(
 									/SharedAccessKeyName=(.*?)(;|$)/,
 								);
+
 							if (!iotHubKeyNameMatches) {
 								inputValue = "";
 							} else {
@@ -446,6 +489,7 @@ export class AzureUtility {
 							}
 						}
 						break;
+
 					case "iotHubKey":
 						if (!iothubConnectionString) {
 							inputValue = "";
@@ -454,6 +498,7 @@ export class AzureUtility {
 								iothubConnectionString.match(
 									/SharedAccessKey=(.*?)(;|$)/,
 								);
+
 							if (!iotHubKeyMatches) {
 								inputValue = "";
 							} else {
@@ -461,11 +506,15 @@ export class AzureUtility {
 							}
 						}
 						break;
+
 					case "subscription":
 						inputValue = AzureUtility._subscriptionId || "";
+
 						break;
+
 					default: {
 						const _value = ConfigHandler.get<string>(_key);
+
 						if (!_value) {
 							inputValue = "";
 						} else {
@@ -498,13 +547,19 @@ export class AzureUtility {
 			switch (parameter.type.toLocaleLowerCase()) {
 				case "string":
 					value = inputValue;
+
 					break;
+
 				case "int":
 					value = Number(inputValue);
+
 					break;
+
 				case "bool":
 					value = inputValue.toLocaleLowerCase() === "true";
+
 					break;
+
 				default:
 					break;
 			}
@@ -527,6 +582,7 @@ export class AzureUtility {
 				ignoreFocusOut: true,
 			},
 		);
+
 		if (!subscription || !subscription.description) {
 			return undefined;
 		}
@@ -534,6 +590,7 @@ export class AzureUtility {
 		const telemetryWorker = TelemetryWorker.getInstance(
 			AzureUtility._context,
 		);
+
 		const telemetryContext = telemetryWorker.createContext();
 		telemetryContext.properties.subscription = subscription.description;
 
@@ -583,6 +640,7 @@ export class AzureUtility {
 
 		if (!client) {
 			AzureUtility._resourceGroup = undefined;
+
 			return undefined;
 		}
 
@@ -596,15 +654,18 @@ export class AzureUtility {
 
 		if (!choice) {
 			AzureUtility._resourceGroup = undefined;
+
 			return undefined;
 		}
 
 		if (choice.description === "") {
 			const resourceGroup = await AzureUtility._createResouceGroup();
 			AzureUtility._resourceGroup = resourceGroup;
+
 			return resourceGroup;
 		} else {
 			AzureUtility._resourceGroup = choice.label;
+
 			return choice.label;
 		}
 	}
@@ -614,6 +675,7 @@ export class AzureUtility {
 		parameters?: ARMParameters,
 	): Promise<ResourceModels.DeploymentExtended | undefined> {
 		const client = await AzureUtility._getResourceClient();
+
 		if (!client) {
 			return undefined;
 		}
@@ -626,11 +688,13 @@ export class AzureUtility {
 			template.parameters,
 			parameters,
 		);
+
 		if (!parameters) {
 			return undefined;
 		}
 
 		let deployPending: NodeJS.Timer | null = null;
+
 		if (AzureUtility._channel) {
 			deployPending = setInterval(() => {
 				if (AzureUtility._channel) {
@@ -640,6 +704,7 @@ export class AzureUtility {
 		}
 
 		const mode = "Incremental";
+
 		const deploymentParameters: ResourceModels.Deployment = {
 			properties: { parameters, template, mode },
 		};
@@ -683,6 +748,7 @@ export class AzureUtility {
 		const client = AzureUtility._getSubscriptionClientBySubscriptionId(
 			AzureUtility._subscriptionId,
 		);
+
 		if (!client) {
 			return undefined;
 		}
@@ -697,15 +763,18 @@ export class AzureUtility {
 		body: any = null,
 	): Promise<unknown> {
 		const session = await AzureUtility._getSession();
+
 		if (!session) {
 			return undefined;
 		}
 
 		const credential = session.credentials;
+
 		const httpRequest = new WebResource();
 		httpRequest.method = method;
 		httpRequest.url = "https://management.azure.com" + resource;
 		httpRequest.body = body;
+
 		if (method === "GET" || method === "DELETE") {
 			delete httpRequest.body;
 		}
@@ -719,6 +788,7 @@ export class AzureUtility {
 			credential.signRequest(httpRequest, async (err) => {
 				if (!err) {
 					const res = await request(httpRequestOption);
+
 					return resolve(res);
 				} else {
 					throw err;

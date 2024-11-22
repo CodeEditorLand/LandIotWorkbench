@@ -32,6 +32,7 @@ import { Provisionable } from "./Interfaces/Provisionable";
 import WebSiteManagementClient = require("azure-arm-website");
 
 const importLazy = require("import-lazy");
+
 const azureUtilityModule = importLazy(() => require("./AzureUtility"))();
 
 export class AzureFunctions implements Component, Provisionable, Deployable {
@@ -47,6 +48,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 	private projectRootPath: string;
 	private azureConfigFileHandler: AzureConfigFileHandler;
 	private componentId: string;
+
 	get id(): string {
 		return this.componentId;
 	}
@@ -70,8 +72,10 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 
 		const subscriptions: AzureResourceFilter[] =
 			this.azureAccountExtension.filters;
+
 		for (let i = 0; i < subscriptions.length; i++) {
 			const subscription: AzureResourceFilter = subscriptions[i];
+
 			if (subscription.subscription.subscriptionId === subscriptionId) {
 				return subscription.session.credentials;
 			}
@@ -98,6 +102,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 		this.azureConfigFileHandler = new AzureConfigFileHandler(
 			this.projectRootPath,
 		);
+
 		if (dependencyComponents && dependencyComponents.length > 0) {
 			dependencyComponents.forEach((dependency) =>
 				this.dependencies.push({
@@ -121,6 +126,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 	async checkPrerequisites(operation: string): Promise<void> {
 		const isFunctionsExtensionAvailable =
 			await AzureFunctions.isAvailable();
+
 		if (!isFunctionsExtensionAvailable) {
 			throw new DependentExtensionNotFoundError(
 				operation,
@@ -135,9 +141,11 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				ScaffoldType.Workspace,
 				this.functionFolder,
 			);
+
 		if (componentConfig) {
 			this.componentId = componentConfig.id;
 			this.dependencies = componentConfig.dependencies;
+
 			if (componentConfig.componentInfo) {
 				this.functionLanguage =
 					componentConfig.componentInfo.values.functionLanguage;
@@ -189,6 +197,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 		const templateName = utils.getScriptTemplateNameFromLanguage(
 			this.functionLanguage,
 		);
+
 		if (!templateName) {
 			throw new OperationCanceledError(
 				"Unable to get the template for Azure Functions.Creating project for Azure Functions cancelled.",
@@ -235,11 +244,13 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 
 	async provision(): Promise<boolean> {
 		const subscriptionId = azureUtilityModule.AzureUtility.subscriptionId;
+
 		if (!subscriptionId) {
 			return false;
 		}
 
 		let resourceGroup = azureUtilityModule.AzureUtility.resourceGroup;
+
 		if (!resourceGroup) {
 			return false;
 		}
@@ -250,6 +261,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				subscriptionId,
 				resourceGroup,
 			);
+
 		if (!functionAppId) {
 			throw new OperationFailedError(
 				"create function application",
@@ -259,12 +271,15 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 		}
 
 		const scaffoldType = ScaffoldType.Workspace;
+
 		const iotHubId = this.dependencies[0].id;
+
 		const componentConfig =
 			await this.azureConfigFileHandler.getComponentById(
 				scaffoldType,
 				iotHubId,
 			);
+
 		if (!componentConfig) {
 			throw new AzureConfigNotFoundError(
 				`component of config id ${iotHubId}`,
@@ -277,6 +292,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 		}
 		const iotHubConnectionString =
 			componentConfig.componentInfo.values.iotHubConnectionString;
+
 		if (!iotHubConnectionString) {
 			throw new AzureConfigNotFoundError(
 				`iothubConnectionString of config id ${iotHubId}`,
@@ -284,6 +300,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 		}
 		const eventHubConnectionString =
 			componentConfig.componentInfo.values.eventHubConnectionString;
+
 		const eventHubConnectionPath =
 			componentConfig.componentInfo.values.eventHubConnectionPath;
 
@@ -300,6 +317,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 
 		const credential =
 			await this.getCredentialFromSubscriptionId(subscriptionId);
+
 		if (!credential) {
 			throw new OperationFailedError(
 				"get credential from subscription id",
@@ -311,6 +329,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 		const resourceGroupMatches = functionAppId.match(
 			/\/resourceGroups\/([^\/]*)/,
 		);
+
 		if (!resourceGroupMatches || resourceGroupMatches.length < 2) {
 			throw new OperationFailedError(
 				`parse resource group from function app ID ${functionAppId}`,
@@ -321,6 +340,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 		resourceGroup = resourceGroupMatches[1];
 
 		const siteNameMatches = functionAppId.match(/\/sites\/([^\/]*)/);
+
 		if (!siteNameMatches || siteNameMatches.length < 2) {
 			throw new OperationFailedError(
 				`parse function app name from function app ID ${functionAppId}`,
@@ -332,6 +352,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 
 		const client = new WebSiteManagementClient(credential, subscriptionId);
 		console.log(resourceGroup, siteName);
+
 		const appSettings: StringDictionary =
 			await client.webApps.listApplicationSettings(
 				resourceGroup,
@@ -379,6 +400,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 
 	async deploy(): Promise<boolean> {
 		let deployPending: NodeJS.Timer | null = null;
+
 		if (this.channel) {
 			utils.channelShowAndAppendLine(
 				this.channel,
@@ -391,11 +413,13 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 
 		try {
 			const azureFunctionsPath = this.azureFunctionsPath;
+
 			const componentConfig =
 				await this.azureConfigFileHandler.getComponentById(
 					ScaffoldType.Workspace,
 					this.id,
 				);
+
 			if (!componentConfig) {
 				throw new AzureConfigNotFoundError(
 					`component of config id ${this.id}`,
@@ -408,6 +432,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 			}
 			const functionAppId =
 				componentConfig.componentInfo.values.functionAppId;
+
 			if (
 				this.functionLanguage !==
 				(AzureFunctionsLanguage.CSharpLibrary as string)
@@ -448,6 +473,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				type,
 				this.id,
 			);
+
 		if (componentIndex > -1) {
 			if (!componentInfo) {
 				throw new ArgumentEmptyOrNullError(

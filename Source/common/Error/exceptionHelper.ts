@@ -32,6 +32,7 @@ export class ExceptionHelper {
 		popupValue: string | boolean,
 	): void {
 		let _error: Error;
+
 		let _message: string;
 
 		if (typeof errorValue === "string") {
@@ -50,6 +51,7 @@ export class ExceptionHelper {
 
 		if (channel) {
 			let errorMessage: string;
+
 			if (_error.message) {
 				errorMessage = _error.message;
 				// eslint-disable-next-line  @typescript-eslint/no-explicit-any

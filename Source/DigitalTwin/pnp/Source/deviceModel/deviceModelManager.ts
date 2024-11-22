@@ -48,6 +48,7 @@ export class DeviceModelManager {
 		const fileType: string = type
 			.replace(/\s+/g, Constants.EMPTY_STRING)
 			.toLowerCase();
+
 		return `${name}.${fileType}.json`;
 	}
 
@@ -63,6 +64,7 @@ export class DeviceModelManager {
 	}
 
 	private readonly component: string;
+
 	constructor(
 		private readonly context: vscode.ExtensionContext,
 		private readonly outputChannel: ColorizedChannel,
@@ -78,15 +80,18 @@ export class DeviceModelManager {
 		const folder: string = await UI.selectRootFolder(
 			UIConstants.SELECT_ROOT_FOLDER_LABEL,
 		);
+
 		const name: string = await UI.inputModelName(
 			UIConstants.INPUT_MODEL_NAME_LABEL,
 			type,
 			folder,
 		);
+
 		const operation = `Create ${type} ${name} in folder ${folder}`;
 		this.outputChannel.start(operation, this.component);
 
 		let filePath: string;
+
 		try {
 			filePath = await this.doCreateModel(type, folder, name);
 		} catch (error) {
@@ -113,10 +118,12 @@ export class DeviceModelManager {
 		name: string,
 	): Promise<string> {
 		const modelId: string = DeviceModelManager.generateModelId(name);
+
 		const filePath: string = path.join(
 			folder,
 			DeviceModelManager.generateModelFileName(name, type),
 		);
+
 		const templatePath: string = this.context.asAbsolutePath(
 			path.join(
 				Constants.RESOURCE_FOLDER,
@@ -124,6 +131,7 @@ export class DeviceModelManager {
 				DeviceModelManager.getTemplateFileName(type),
 			),
 		);
+
 		const replacement = new Map<string, string>();
 		replacement.set(Constants.DIGITAL_TWIN_ID_PLACEHOLDER, modelId);
 		await Utility.createFileFromTemplate(
@@ -131,6 +139,7 @@ export class DeviceModelManager {
 			filePath,
 			replacement,
 		);
+
 		return filePath;
 	}
 }

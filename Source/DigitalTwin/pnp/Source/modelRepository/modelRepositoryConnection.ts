@@ -18,17 +18,22 @@ export class ModelRepositoryConnection {
 			throw new Error(`Connection string ${Constants.NOT_EMPTY_MSG}`);
 		}
 		const map: { [key: string]: string } = {};
+
 		const properties: string[] = connectionString.split(";");
+
 		if (properties.length !== ModelRepositoryConnection.PROPERTY_COUNT) {
 			throw new Error(Constants.CONNECTION_STRING_INVALID_FORMAT_MSG);
 		}
 		for (const property of properties) {
 			const index: number = property.indexOf("=");
+
 			if (index <= 0) {
 				throw new Error(Constants.CONNECTION_STRING_INVALID_FORMAT_MSG);
 			}
 			const name: string = property.slice(0, index);
+
 			const value: string = property.slice(index + 1);
+
 			if (!name || !value) {
 				throw new Error(Constants.CONNECTION_STRING_INVALID_FORMAT_MSG);
 			}
@@ -42,6 +47,7 @@ export class ModelRepositoryConnection {
 			map[ModelRepositoryConnection.SHARED_ACCESS_KEY_PROPERTY],
 		);
 		connection.validate();
+
 		return connection;
 	}
 
@@ -76,6 +82,7 @@ export class ModelRepositoryConnection {
 	 */
 	generateAccessToken(): string {
 		const endpoint: string = encodeURIComponent(this.hostName);
+
 		const payload: string = [
 			encodeURIComponent(this.repositoryId),
 			endpoint,
@@ -83,16 +90,20 @@ export class ModelRepositoryConnection {
 		]
 			.join("\n")
 			.toLowerCase();
+
 		const signature: Buffer = Buffer.from(payload, Constants.UTF8);
+
 		const secret: Buffer = Buffer.from(
 			this.sharedAccessKey,
 			Constants.BASE64,
 		);
+
 		const hash: string = encodeURIComponent(
 			createHmac(Constants.SHA256, secret)
 				.update(signature)
 				.digest(Constants.BASE64),
 		);
+
 		return (
 			"SharedAccessSignature " +
 			`sr=${endpoint}&sig=${hash}&se=${this.expiry}&skn=${this.sharedAccessKeyName}&rid=${this.repositoryId}`

@@ -22,6 +22,7 @@ import * as utils from "./utils";
 type OptionsWithUri = import("request-promise").OptionsWithUri;
 
 const importLazy = require("import-lazy");
+
 const request = importLazy(() => require("request-promise"))();
 
 export class ExampleExplorer {
@@ -33,11 +34,15 @@ export class ExampleExplorer {
 
 	private async moveTempFiles(fsPath: string): Promise<boolean> {
 		const tempPath = path.join(fsPath, ".temp");
+
 		const tempPathList = fs.listSync(tempPath);
+
 		let examplePath: string | undefined = undefined;
+
 		for (let i = 0; i < tempPathList.length; i++) {
 			if (!/\.zip$/.test(tempPathList[i])) {
 				examplePath = tempPathList[i];
+
 				break;
 			}
 		}
@@ -57,6 +62,7 @@ export class ExampleExplorer {
 		});
 
 		fs.removeSync(tempPath);
+
 		return true;
 	}
 
@@ -76,25 +82,31 @@ export class ExampleExplorer {
 		};
 
 		const zipData = (await request(options).promise()) as string;
+
 		const tempPath = path.join(fsPath, ".temp");
 		fs.writeFileSync(path.join(tempPath, "example.zip"), zipData);
+
 		const zip = new AdmZip(path.join(tempPath, "example.zip"));
+
 		try {
 			zip.extractAllTo(tempPath, true);
 			clearInterval(loading);
 			utils.channelShowAndAppendLine(channel, "");
 			utils.channelShowAndAppendLine(channel, "Example loaded.");
 			await this.moveTempFiles(fsPath);
+
 			return true;
 		} catch (error) {
 			clearInterval(loading);
 			utils.channelShowAndAppendLine(channel, "");
+
 			throw error;
 		}
 	}
 
 	private async generateExampleFolder(exampleName: string): Promise<string> {
 		const settings = await IoTWorkbenchSettings.getInstance();
+
 		const workbench = settings.getWorkbenchPath();
 
 		if (!utils.directoryExistsSync(workbench)) {
@@ -102,14 +114,17 @@ export class ExampleExplorer {
 		}
 
 		const name = path.join(workbench, "examples", exampleName);
+
 		if (!utils.fileExistsSync(name) && !utils.directoryExistsSync(name)) {
 			utils.mkdirRecursivelySync(name);
+
 			return name;
 		}
 
 		const workspaceFiles = fs.listSync(name, [
 			FileNames.workspaceExtensionName,
 		]);
+
 		if (workspaceFiles && workspaceFiles.length > 0) {
 			const workspaceFile = workspaceFiles[0]; // just pick the first one
 			if (fs.existsSync(workspaceFile)) {
@@ -152,6 +167,7 @@ export class ExampleExplorer {
 					return;
 				}
 				const name = path.join(workbench, "examples", exampleName);
+
 				if (
 					!utils.fileExistsSync(name) &&
 					!utils.directoryExistsSync(name)
@@ -166,6 +182,7 @@ export class ExampleExplorer {
 					return;
 				} else {
 					const items = fs.listSync(name);
+
 					if (items.length === 0) {
 						return;
 					}
@@ -179,6 +196,7 @@ export class ExampleExplorer {
 		}
 
 		const customizedPath = path.join(workbench, "examples", customizedName);
+
 		if (
 			!utils.fileExistsSync(customizedPath) &&
 			!utils.directoryExistsSync(customizedPath)
@@ -201,8 +219,11 @@ export class ExampleExplorer {
 				FileNames.templatesFolderName,
 			),
 		);
+
 		const boardProvider = new BoardProvider(boardFolderPath);
+
 		const boardItemList: BoardQuickPickItem[] = [];
+
 		const boards = boardProvider.list.filter((board) => board.exampleUrl);
 		boards.forEach((board: Board) => {
 			boardItemList.push({
@@ -237,15 +258,18 @@ export class ExampleExplorer {
 			throw new OperationCanceledError("Board selection cancelled.");
 		} else if (boardSelection.id === "no_device") {
 			await utils.takeNoDeviceSurvey(telemetryContext, context);
+
 			return;
 		} else {
 			telemetryContext.properties.board = boardSelection.label;
+
 			const board = boardProvider.find({ id: boardSelection.id });
 
 			if (board) {
 				// To avoid block example gallery, use async to install board here
 				// await ArduinoPackageManager.installBoard(board);
 				ArduinoPackageManager.installBoard(board);
+
 				const exampleUrl =
 					"example.html?board=" +
 					board.id +
@@ -317,17 +341,20 @@ export class ExampleExplorer {
 				FileNames.boardListFileName,
 			),
 		);
+
 		const boardsJson: { boards: Board[] } = JSON.parse(
 			fs.readFileSync(boardList, "utf8"),
 		);
 
 		telemetryContext.properties.Example = this._exampleName;
+
 		const board = boardsJson.boards.find(
 			(board) => board.id === this._boardId,
 		);
 		telemetryContext.properties.board = board ? board.name : "";
 
 		const url = this._exampleUrl;
+
 		const fsPath = await this.generateExampleFolder(this._exampleName);
 
 		if (!fsPath) {
@@ -335,12 +362,14 @@ export class ExampleExplorer {
 		}
 
 		const items = fs.listSync(fsPath, [FileNames.workspaceExtensionName]);
+
 		if (items.length !== 0) {
 			await vscode.commands.executeCommand(
 				IoTCubeCommands.OpenLocally,
 				items[0],
 				true,
 			);
+
 			return true;
 		}
 
@@ -354,12 +383,14 @@ export class ExampleExplorer {
 		const workspaceFiles = fs.listSync(fsPath, [
 			FileNames.workspaceExtensionName,
 		]);
+
 		if (workspaceFiles && workspaceFiles.length > 0) {
 			await vscode.commands.executeCommand(
 				IoTCubeCommands.OpenLocally,
 				workspaceFiles[0],
 				true,
 			);
+
 			return true;
 		} else {
 			// TODO: Add buttom to submit issue to iot-workbench repo.

@@ -34,9 +34,11 @@ export class IoTWorkbenchSettings {
 
 	static async getDefaultWorkbenchPath(): Promise<string> {
 		const platform = await getPlatform();
+
 		const homeDir = await getHomeDir();
 
 		let workbenchPath = "";
+
 		if (platform === OSPlatform.WIN32) {
 			workbenchPath = path.join(
 				homeDir,
@@ -68,6 +70,7 @@ export class IoTWorkbenchSettings {
 		const selection = await this.selectWorkbenchPath();
 
 		let userWorkbenchPath;
+
 		if (selection.data === "$") {
 			userWorkbenchPath = await this.selectFolder();
 		} else {
@@ -88,6 +91,7 @@ export class IoTWorkbenchSettings {
 
 	private async selectWorkbenchPath(): Promise<PickWithData<string>> {
 		const userWorkbenchPath = this.getWorkbenchPath();
+
 		const workbenchPicks: Array<PickWithData<string>> = [
 			{
 				label: userWorkbenchPath,
@@ -125,6 +129,7 @@ export class IoTWorkbenchSettings {
 		};
 
 		const folderUri = await vscode.window.showOpenDialog(options);
+
 		if (!folderUri || folderUri.length === 0) {
 			throw new OperationCanceledError("Folder selection cancelled.");
 		}

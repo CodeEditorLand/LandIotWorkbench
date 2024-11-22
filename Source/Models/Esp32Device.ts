@@ -31,6 +31,7 @@ export class Esp32Device extends ArduinoDeviceBase {
 	private static _boardId = "esp32";
 
 	private componentId: string;
+
 	get id(): string {
 		return this.componentId;
 	}
@@ -41,7 +42,9 @@ export class Esp32Device extends ArduinoDeviceBase {
 
 	get board(): Board {
 		const boardProvider = new BoardProvider(this.boardFolderPath);
+
 		const esp32 = boardProvider.find({ id: Esp32Device._boardId });
+
 		if (!esp32) {
 			throw new SystemResourceNotFoundError(
 				"Esp32 Device board",
@@ -54,11 +57,14 @@ export class Esp32Device extends ArduinoDeviceBase {
 
 	get version(): string {
 		const platform = os.platform();
+
 		let packageRootPath = "";
+
 		let version = "0.0.1";
 
 		if (platform === OSPlatform.WIN32) {
 			const homeDir = os.homedir();
+
 			const localAppData: string = path.join(homeDir, "AppData", "Local");
 			packageRootPath = path.join(
 				localAppData,
@@ -75,6 +81,7 @@ export class Esp32Device extends ArduinoDeviceBase {
 
 		if (fs.existsSync(packageRootPath)) {
 			const versions = fs.readdirSync(packageRootPath);
+
 			if (versions[0]) {
 				version = versions[0];
 			}
@@ -97,6 +104,7 @@ export class Esp32Device extends ArduinoDeviceBase {
 		super(context, devicePath, channel, telemetryContext, DeviceType.Esp32);
 		this.channel = channel;
 		this.componentId = Guid.create().toString();
+
 		if (templateFiles) {
 			this.templateFiles = templateFiles;
 		}
@@ -144,11 +152,13 @@ export class Esp32Device extends ArduinoDeviceBase {
 		} else if (configSelection.detail === "Copy") {
 			// Get IoT Hub device connection string from config
 			let deviceConnectionString: string | undefined;
+
 			const componentConfig =
 				await this.azureConfigFileHandler.getComponentByType(
 					ScaffoldType.Workspace,
 					ComponentType.IoTHubDevice,
 				);
+
 			if (componentConfig) {
 				deviceConnectionString =
 					componentConfig.componentInfo?.values
@@ -161,6 +171,7 @@ export class Esp32Device extends ArduinoDeviceBase {
 				);
 			}
 			clipboardy.writeSync(deviceConnectionString);
+
 			return;
 		} else {
 			throw new TypeNotSupportedError(

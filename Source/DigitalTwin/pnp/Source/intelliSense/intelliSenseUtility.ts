@@ -110,6 +110,7 @@ export class IntelliSenseUtility {
 				const index: number = classNode.id.lastIndexOf(
 					DigitalTwinConstants.SCHEMA_SEPARATOR,
 				);
+
 				return index === -1
 					? classNode.id
 					: classNode.id.slice(index + 1);
@@ -124,15 +125,19 @@ export class IntelliSenseUtility {
 	static parseDigitalTwinModel(text: string): ModelContent | undefined {
 		// skip checking errors in order to do IntelliSense at best effort
 		const jsonNode: parser.Node = parser.parseTree(text);
+
 		const contextPath: string[] = [DigitalTwinConstants.CONTEXT];
+
 		const contextNode: parser.Node | undefined = parser.findNodeAtLocation(
 			jsonNode,
 			contextPath,
 		);
+
 		if (!contextNode) {
 			return undefined;
 		}
 		const version = IntelliSenseUtility.getDigitalTwinVersion(contextNode);
+
 		if (!version) {
 			return undefined;
 		}
@@ -159,6 +164,7 @@ export class IntelliSenseUtility {
 				const version: number = IntelliSenseUtility.graph.getVersion(
 					child.value as string,
 				);
+
 				if (version) {
 					return version;
 				}
@@ -235,6 +241,7 @@ export class IntelliSenseUtility {
 	 */
 	static getEnums(propertyNode: PropertyNode, version: number): string[] {
 		const enums: string[] = [];
+
 		for (const classNode of IntelliSenseUtility.getRangeOfPropertyByVersion(
 			propertyNode,
 			version,
@@ -267,6 +274,7 @@ export class IntelliSenseUtility {
 		version: number,
 	): ClassNode[] {
 		const classes: ClassNode[] = [];
+
 		for (const classNode of IntelliSenseUtility.getRangeOfPropertyByVersion(
 			propertyNode,
 			version,
@@ -366,6 +374,7 @@ export class IntelliSenseUtility {
 	 */
 	static resolvePropertyName(propertyPair: PropertyPair): string {
 		let propertyName: string = propertyPair.name.value as string;
+
 		if (propertyName !== DigitalTwinConstants.SCHEMA) {
 			return propertyName;
 		}
@@ -374,8 +383,10 @@ export class IntelliSenseUtility {
 		if (node.parent && node.parent.parent) {
 			const outPropertyPair: PropertyPair | undefined =
 				IntelliSenseUtility.getOuterPropertyPair(node.parent.parent);
+
 			if (outPropertyPair) {
 				const name: string = outPropertyPair.name.value as string;
+
 				if (name === DigitalTwinConstants.IMPLEMENTS) {
 					propertyName = DigitalTwinConstants.INTERFACE_SCHEMA;
 				}
@@ -393,6 +404,7 @@ export class IntelliSenseUtility {
 			return undefined;
 		}
 		let outerProperty: parser.Node | undefined = node.parent;
+
 		if (outerProperty && outerProperty.type === JsonNodeType.Array) {
 			outerProperty = outerProperty.parent;
 		}

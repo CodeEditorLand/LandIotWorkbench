@@ -13,6 +13,7 @@ export interface Board {
 	name: string;
 	id: string;
 	detailInfo: string;
+
 	defaultBaudRate?: number;
 	vendorId?: string;
 	productId?: string;

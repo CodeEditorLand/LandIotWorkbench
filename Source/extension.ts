@@ -47,7 +47,9 @@ import { constructAndLoadIoTProject } from "./utils";
 import { WorkbenchExtension } from "./WorkbenchExtension";
 
 const importLazy = require("import-lazy");
+
 const exampleExplorerModule = importLazy(() => require("./exampleExplorer"))();
+
 const request = importLazy(() => require("request-promise"))();
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
@@ -55,6 +57,7 @@ let telemetryWorker: any = undefined;
 
 function printHello(context: vscode.ExtensionContext): void {
 	const extension = WorkbenchExtension.getExtension(context);
+
 	if (!extension) {
 		return;
 	}
@@ -134,11 +137,15 @@ function initIntelliSense(
 	);
 	// register diagnostic
 	let pendingDiagnostic: NodeJS.Timer;
+
 	const diagnosticCollection: vscode.DiagnosticCollection =
 		vscode.languages.createDiagnosticCollection(Constants.CHANNEL_NAME);
+
 	const diagnosticProvider = new DigitalTwinDiagnosticProvider();
+
 	const activeTextEditor: vscode.TextEditor | undefined =
 		vscode.window.activeTextEditor;
+
 	if (
 		activeTextEditor &&
 		IntelliSenseUtility.isJsonFile(activeTextEditor.document)
@@ -196,6 +203,7 @@ function initIntelliSense(
 					IntelliSenseUtility.parseDigitalTwinModel(
 						document.getText(),
 					);
+
 				if (modelContent) {
 					const telemetryContext: TelemetryContext =
 						telemetryWorker.createContext();
@@ -228,14 +236,17 @@ function initDigitalTwinCommand(
 			// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 			async (...args: any[]) => {
 				const start: number = Date.now();
+
 				const telemetryContext: TelemetryContext =
 					telemetryWorker.createContext();
 				args.push(telemetryContext);
+
 				try {
 					return await callback(...args);
 				} catch (error) {
 					telemetryContext.properties.errorType = error.name;
 					telemetryContext.properties.errorMessage = error.message;
+
 					if (error instanceof UserCancelledError) {
 						telemetryContext.properties.result =
 							TelemetryResult.Cancelled;
@@ -244,6 +255,7 @@ function initDigitalTwinCommand(
 						telemetryContext.properties.result =
 							TelemetryResult.Failed;
 						UI.showNotification(MessageType.Error, error.message);
+
 						if (error instanceof ProcessError) {
 							const message = `${error.message}\n${error.stack}`;
 							outputChannel.error(message, error.component);
@@ -256,6 +268,7 @@ function initDigitalTwinCommand(
 						(Date.now() - start) / 1000;
 					telemetryWorker.sendEvent(command, telemetryContext);
 					outputChannel.show();
+
 					if (enableSurvey) {
 						NSAT.takeSurvey(context);
 					}
@@ -272,10 +285,12 @@ function initDigitalTwin(
 ): void {
 	const colorizedChannel = new ColorizedChannel(Constants.CHANNEL_NAME);
 	context.subscriptions.push(colorizedChannel);
+
 	const deviceModelManager = new DeviceModelManager(
 		context,
 		colorizedChannel,
 	);
+
 	const modelRepositoryManager = new ModelRepositoryManager(
 		context,
 		Constants.WEB_VIEW_PATH,
@@ -433,6 +448,7 @@ export async function activate(
 	printHello(context);
 
 	const channelName = "Azure IoT Device Workbench";
+
 	const outputChannel: vscode.OutputChannel =
 		vscode.window.createOutputChannel(channelName);
 	telemetryWorker = TelemetryWorker.getInstance(context);
@@ -449,7 +465,9 @@ export async function activate(
 	);
 
 	const deviceOperator = new DeviceOperator();
+
 	const azureOperator = new AzureOperator();
+
 	const exampleExplorer = new exampleExplorerModule.ExampleExplorer();
 
 	initCommandWithTelemetry(
@@ -465,6 +483,7 @@ export async function activate(
 			telemetryContext: TelemetryContext,
 		): Promise<void> => {
 			const projectInitializer = new ProjectInitializer();
+
 			return projectInitializer.InitializeProject(
 				context,
 				outputChannel,
@@ -486,6 +505,7 @@ export async function activate(
 			telemetryContext: TelemetryContext,
 		): Promise<void> => {
 			const projectEnvConfiger = new ProjectEnvironmentConfiger();
+
 			return projectEnvConfiger.configureCmakeProjectEnvironment(
 				context,
 				outputChannel,
@@ -661,6 +681,7 @@ export async function activate(
 			telemetryContext: TelemetryContext,
 		): Promise<void> => {
 			const codeGenerator = new CodeGeneratorCore();
+
 			return codeGenerator.generateDeviceCodeStub(
 				context,
 				outputChannel,
@@ -686,7 +707,9 @@ export async function activate(
 						FileNames.templatesFolderName,
 					),
 				);
+
 				const boardProvider = new BoardProvider(boardListFolderPath);
+
 				const board = boardProvider.find({ id: boardId });
 
 				if (board && board.helpUrl) {
@@ -694,6 +717,7 @@ export async function activate(
 						VscodeCommands.VscodeOpen,
 						vscode.Uri.parse(board.helpUrl),
 					);
+
 					return;
 				}
 			}
@@ -703,6 +727,7 @@ export async function activate(
 				VscodeCommands.VscodeOpen,
 				vscode.Uri.parse(workbenchHelpUrl),
 			);
+
 			return;
 		},
 	);
@@ -719,8 +744,10 @@ export async function activate(
 				"set default project path",
 				context,
 			);
+
 			const settings = await IoTWorkbenchSettings.getInstance();
 			await settings.setWorkbenchPath();
+
 			return;
 		},
 	);
@@ -734,6 +761,7 @@ export async function activate(
 
 	initCommand(context, WorkbenchCommands.HttpRequest, async (uri: string) => {
 		const res = await request(uri);
+
 		return res;
 	});
 

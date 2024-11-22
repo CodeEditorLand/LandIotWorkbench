@@ -21,9 +21,11 @@ import * as utils from "./utils";
 import { configExternalCMakeProjectToIoTContainerProject } from "./utils";
 
 const importLazy = require("import-lazy");
+
 const ioTWorkspaceProjectModule = importLazy(() =>
 	require("./Models/IoTWorkspaceProject"),
 )();
+
 const ioTContainerizedProjectModule = importLazy(() =>
 	require("./Models/IoTContainerizedProject"),
 )();
@@ -43,6 +45,7 @@ export class ProjectEnvironmentConfiger {
 		const scaffoldType = ScaffoldType.Local;
 
 		const projectRootPath = utils.getProjectDeviceRootPath();
+
 		if (!projectRootPath) {
 			throw new WorkspaceNotOpenError("configure project environment");
 		}
@@ -80,6 +83,7 @@ export class ProjectEnvironmentConfiger {
 		scaffoldType: ScaffoldType,
 	): Promise<void> {
 		let project;
+
 		if (platform === PlatformType.Arduino) {
 			// Verify it is an iot workbench Arduino project
 			const projectHostType =
@@ -87,9 +91,11 @@ export class ProjectEnvironmentConfiger {
 					scaffoldType,
 					projectFileRootPath,
 				);
+
 			if (projectHostType !== ProjectHostType.Workspace) {
 				const message = `This is not an iot workbench Arduino project. You cannot configure it as Arduino platform.`;
 				vscode.window.showWarningMessage(message);
+
 				throw new OperationCanceledError(message);
 			}
 
@@ -100,6 +106,7 @@ export class ProjectEnvironmentConfiger {
 				telemetryContext,
 				projectRootPath,
 			);
+
 			if (!project) {
 				// Ensure the project is correctly open.
 				await utils.properlyOpenIoTWorkspaceProject(telemetryContext);

@@ -33,7 +33,9 @@ export class Utility {
 			templatePath,
 			Constants.UTF8,
 		);
+
 		const content: string = Utility.replaceAll(template, replacement);
+
 		const jsonContent = JSON.parse(content);
 		await fs.writeJson(filePath, jsonContent, {
 			spaces: Constants.JSON_SPACE,
@@ -48,9 +50,12 @@ export class Utility {
 	 */
 	static replaceAll(str: string, replacement: Map<string, string>): string {
 		const keys = Array.from(replacement.keys());
+
 		const pattern = new RegExp(keys.join("|"), "g");
+
 		return str.replace(pattern, (matched) => {
 			const value: string | undefined = replacement.get(matched);
+
 			return value || matched;
 		});
 	}
@@ -76,6 +81,7 @@ export class Utility {
 			name,
 			type,
 		);
+
 		if (await fs.pathExists(path.join(folder, filename))) {
 			return `${type} ${name} already exists in folder ${folder}`;
 		}
@@ -125,16 +131,20 @@ export class Utility {
 		const type: ModelType = DeviceModelManager.convertToModelType(
 			content[DigitalTwinConstants.TYPE],
 		);
+
 		if (!type) {
 			throw new PnPModelTypeInvalidError("create model file", type);
 		}
 		const replacement = new Map<string, string>();
 		replacement.set(":", "_");
+
 		const modelName: string = Utility.replaceAll(modelId, replacement);
+
 		let candidate: string = DeviceModelManager.generateModelFileName(
 			modelName,
 			type,
 		);
+
 		let counter = 0;
 		/*eslint no-constant-condition: ["error", { "checkLoops": false }]*/
 		while (true) {
@@ -161,11 +171,15 @@ export class Utility {
 		filePath: string,
 	): Promise<ModelFileInfo | undefined> {
 		const content = await Utility.getJsonContent(filePath);
+
 		const modelId: string = content[DigitalTwinConstants.ID];
+
 		const context: string = content[DigitalTwinConstants.CONTEXT];
+
 		const modelType: ModelType = DeviceModelManager.convertToModelType(
 			content[DigitalTwinConstants.TYPE],
 		);
+
 		if (modelId && context && modelType) {
 			return {
 				id: modelId,

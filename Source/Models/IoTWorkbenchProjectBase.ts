@@ -25,6 +25,7 @@ import { Provisionable } from "./Interfaces/Provisionable";
 import { Uploadable } from "./Interfaces/Uploadable";
 
 const importLazy = require("import-lazy");
+
 const azureUtilityModule = importLazy(() => require("./AzureUtility"))();
 
 export enum OpenScenario {
@@ -58,6 +59,7 @@ export abstract class IoTWorkbenchProjectBase {
 			projectFileRootPath,
 			FileNames.iotWorkbenchProjectFileName,
 		);
+
 		if (
 			!(await FileUtility.fileExists(
 				scaffoldType,
@@ -73,8 +75,10 @@ export abstract class IoTWorkbenchProjectBase {
 				"utf8",
 			)) as string
 		).trim();
+
 		if (iotWorkbenchProjectFileString) {
 			const projectConfig = JSON.parse(iotWorkbenchProjectFileString);
+
 			if (
 				projectConfig &&
 				projectConfig[`${ConfigKey.projectHostType}`] !== undefined
@@ -84,6 +88,7 @@ export abstract class IoTWorkbenchProjectBase {
 						ProjectHostType,
 						projectConfig[`${ConfigKey.projectHostType}`],
 					);
+
 				return projectHostType;
 			}
 		}
@@ -93,6 +98,7 @@ export abstract class IoTWorkbenchProjectBase {
 			projectFileRootPath,
 			FileNames.devcontainerFolderName,
 		);
+
 		if (
 			await FileUtility.directoryExists(
 				scaffoldType,
@@ -150,6 +156,7 @@ export abstract class IoTWorkbenchProjectBase {
 				await item.checkPrerequisites("compile device code");
 
 				const res = await item.compile();
+
 				if (!res) {
 					vscode.window.showErrorMessage(
 						"Unable to compile the device code, please check output window for detail.",
@@ -164,7 +171,9 @@ export abstract class IoTWorkbenchProjectBase {
 		for (const item of this.componentList) {
 			if (this.canUpload(item)) {
 				await item.checkPrerequisites("upload device code");
+
 				const res = await item.upload();
+
 				if (!res) {
 					vscode.window.showErrorMessage(
 						"Unable to upload the sketch, please check output window for detail.",
@@ -177,6 +186,7 @@ export abstract class IoTWorkbenchProjectBase {
 
 	async provision(): Promise<boolean> {
 		const provisionItemList: string[] = [];
+
 		for (const item of this.componentList) {
 			if (this.canProvision(item)) {
 				await item.checkPrerequisites("provision");
@@ -189,12 +199,15 @@ export abstract class IoTWorkbenchProjectBase {
 			vscode.window.showInformationMessage(
 				"Congratulations! There is no Azure service to provision in this project.",
 			);
+
 			return false;
 		}
 
 		// Ensure azure login before component provision
 		let subscriptionId: string | undefined = "";
+
 		let resourceGroup: string | undefined = "";
+
 		if (provisionItemList.length > 0) {
 			await checkAzureLogin();
 			azureUtilityModule.AzureUtility.init(
@@ -205,6 +218,7 @@ export abstract class IoTWorkbenchProjectBase {
 			resourceGroup =
 				await azureUtilityModule.AzureUtility.getResourceGroup();
 			subscriptionId = azureUtilityModule.AzureUtility.subscriptionId;
+
 			if (!resourceGroup || !subscriptionId) {
 				return false;
 			}
@@ -214,6 +228,7 @@ export abstract class IoTWorkbenchProjectBase {
 
 		for (const item of this.componentList) {
 			const _provisionItemList: string[] = [];
+
 			if (this.canProvision(item)) {
 				for (let i = 0; i < provisionItemList.length; i++) {
 					if (provisionItemList[i] === item.name) {
@@ -240,6 +255,7 @@ export abstract class IoTWorkbenchProjectBase {
 				}
 
 				const res = await item.provision();
+
 				if (!res) {
 					throw new OperationCanceledError("Provision cancelled.");
 				}
@@ -252,6 +268,7 @@ export abstract class IoTWorkbenchProjectBase {
 		let azureLoggedIn = false;
 
 		const deployItemList: string[] = [];
+
 		for (const item of this.componentList) {
 			if (this.canDeploy(item)) {
 				await item.checkPrerequisites("deploy device code");
@@ -263,6 +280,7 @@ export abstract class IoTWorkbenchProjectBase {
 			await vscode.window.showInformationMessage(
 				"Congratulations! The project does not contain any Azure components to be deployed.",
 			);
+
 			return;
 		}
 
@@ -272,6 +290,7 @@ export abstract class IoTWorkbenchProjectBase {
 
 		for (const item of this.componentList) {
 			const _deployItemList: string[] = [];
+
 			if (this.canDeploy(item)) {
 				for (let i = 0; i < deployItemList.length; i++) {
 					if (deployItemList[i] === item.name) {
@@ -299,6 +318,7 @@ export abstract class IoTWorkbenchProjectBase {
 				}
 
 				const res = await item.deploy();
+
 				if (!res) {
 					throw new OperationFailedError(
 						"deploy iot workbench project",
@@ -352,6 +372,7 @@ export abstract class IoTWorkbenchProjectBase {
 	 */
 	sendLoadEventTelemetry(context: vscode.ExtensionContext): void {
 		const telemetryWorker = TelemetryWorker.getInstance(context);
+
 		try {
 			telemetryWorker.sendEvent(
 				EventNames.projectLoadEvent,

@@ -39,6 +39,7 @@ export class DigitalTwinUtility {
 			throw new DigitalTwinNotInitializedError("select capability model");
 		}
 		let result = "";
+
 		try {
 			result =
 				await DigitalTwinUtility.extensionInstance.selectCapabilityModel();
@@ -55,6 +56,7 @@ export class DigitalTwinUtility {
 			DigitalTwinUtility.channel,
 			`${DigitalTwinConstants.dtPrefix} Selected device capability model file: ${result}`,
 		);
+
 		return result;
 	}
 
@@ -83,6 +85,7 @@ export class DigitalTwinUtility {
 				DigitalTwinUtility.channel,
 				`${DigitalTwinConstants.dtPrefix} ${error.message}`,
 			);
+
 			return false;
 		}
 		return true;

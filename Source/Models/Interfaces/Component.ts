@@ -14,5 +14,6 @@ export interface Component {
 	load(): Promise<void>;
 	create(): Promise<void>;
 	checkPrerequisites(operation: string): Promise<void>;
+
 	getComponentType(): ComponentType;
 }

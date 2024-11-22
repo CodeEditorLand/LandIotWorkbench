@@ -27,9 +27,11 @@ import { TelemetryContext } from "./telemetry";
 import * as utils from "./utils";
 
 const importLazy = require("import-lazy");
+
 const ioTWorkspaceProjectModule = importLazy(() =>
 	require("./Models/IoTWorkspaceProject"),
 )();
+
 const ioTContainerizedProjectModule = importLazy(() =>
 	require("./Models/IoTContainerizedProject"),
 )();
@@ -77,6 +79,7 @@ export class ProjectInitializer {
 					telemetryContext,
 					scaffoldType,
 				);
+
 				if (!projectPath) {
 					throw new OperationCanceledError(
 						`Project initialization cancelled: Project name input cancelled.`,
@@ -88,6 +91,7 @@ export class ProjectInitializer {
 					scaffoldType,
 					context,
 				);
+
 				if (!platformSelection) {
 					throw new OperationCanceledError(
 						`Project initialization cancelled: Platform selection cancelled.`,
@@ -102,7 +106,9 @@ export class ProjectInitializer {
 					context,
 					scaffoldType,
 				);
+
 				let templateName: string | undefined;
+
 				if (platformSelection.label === PlatformType.Arduino) {
 					const templateSelection = await this.selectTemplate(
 						templateJson,
@@ -116,6 +122,7 @@ export class ProjectInitializer {
 					} else {
 						telemetryContext.properties.template =
 							templateSelection.label;
+
 						if (
 							templateSelection.label ===
 							constants.noDeviceMessage
@@ -124,6 +131,7 @@ export class ProjectInitializer {
 								telemetryContext,
 								context,
 							);
+
 							return;
 						}
 					}
@@ -142,6 +150,7 @@ export class ProjectInitializer {
 						);
 					},
 				);
+
 				if (!template) {
 					throw new ResourceNotFoundError(
 						"initialize iot project",
@@ -164,14 +173,17 @@ export class ProjectInitializer {
 						FileNames.templatesFolderName,
 					),
 				);
+
 				const templateFolder = path.join(
 					resourceRootPath,
 					template.path,
 				);
+
 				const templateFilesInfo =
 					await utils.getTemplateFilesInfo(templateFolder);
 
 				let project;
+
 				if (template.platform === PlatformType.EmbeddedLinux) {
 					project =
 						new ioTContainerizedProjectModule.IoTContainerizedProject(
@@ -245,9 +257,11 @@ export class ProjectInitializer {
 	): Promise<string | undefined> {
 		// Get default workbench path.
 		const settings = await IoTWorkbenchSettings.getInstance();
+
 		const workbench = settings.getWorkbenchPath();
 
 		const projectRootPath = path.join(workbench, "projects");
+
 		if (
 			!(await FileUtility.directoryExists(scaffoldType, projectRootPath))
 		) {
@@ -255,15 +269,19 @@ export class ProjectInitializer {
 		}
 
 		let counter = 0;
+
 		const name = constants.defaultProjectName;
+
 		let candidateName = name;
 		/*eslint no-constant-condition: ["error", { "checkLoops": false }]*/
 		while (true) {
 			const projectPath = path.join(projectRootPath, candidateName);
+
 			const isValid = await this.isProjectPathValid(
 				scaffoldType,
 				projectPath,
 			);
+
 			if (isValid) {
 				break;
 			}
@@ -286,10 +304,12 @@ export class ProjectInitializer {
 				}
 
 				const projectPath = path.join(projectRootPath, projectName);
+
 				const isProjectNameValid = await this.isProjectPathValid(
 					scaffoldType,
 					projectPath,
 				);
+
 				if (isProjectNameValid) {
 					return;
 				} else {
@@ -297,6 +317,7 @@ export class ProjectInitializer {
 				}
 			},
 		});
+
 		if (projectName) {
 			const projectNameMd5 = utils.getHashFromString(projectName);
 			telemetryContext.properties.projectName = projectNameMd5;
@@ -319,10 +340,12 @@ export class ProjectInitializer {
 			scaffoldType,
 			projectPath,
 		);
+
 		const projectDirectoryExists = await FileUtility.directoryExists(
 			scaffoldType,
 			projectPath,
 		);
+
 		return !projectPathExists && !projectDirectoryExists;
 	}
 }

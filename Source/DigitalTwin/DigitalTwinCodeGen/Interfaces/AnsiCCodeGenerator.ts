@@ -54,6 +54,7 @@ export class AnsiCCodeGenerator implements CodeGenerator {
 			vscode.window.showErrorMessage(
 				"Unable to generate code, please check output window for detail.",
 			);
+
 			return false;
 		}
 	}
@@ -63,22 +64,32 @@ export class AnsiCCodeGenerator implements CodeGenerator {
 	): Promise<boolean> {
 		// Invoke DigitalTwinCodeGen toolset to generate the code
 		const projectTypeValue = codegenInfo.codeGenProjectType.toString();
+
 		const connectionTypeValue = codegenInfo.deviceConnectionType.toString();
+
 		const sdkReferenceTypeValue =
 			codegenInfo.deviceSdkReferenceType.toString();
+
 		const dcmFilePath = codegenInfo.capabilityModelFilePath;
+
 		const interfaceDir = codegenInfo.interfaceDirecoty;
+
 		const outputDir = codegenInfo.outputDirectory;
+
 		const projectName = codegenInfo.projectName;
 
 		// Get platform-specific CodeGen CLI name.
 		const platform = os.platform();
+
 		const homeDir = os.homedir();
+
 		const cmdPath = path.join(
 			homeDir,
 			DigitalTwinConstants.codeGenCliFolder,
 		);
+
 		let codeGenCommand = "";
+
 		if (platform === OSPlatform.WIN32) {
 			codeGenCommand = `${DigitalTwinConstants.codeGenCliApp}.exe`;
 		} else {
@@ -95,10 +106,12 @@ export class AnsiCCodeGenerator implements CodeGenerator {
 			await utils.runCommand(command, [], cmdPath, this.channel);
 			message = `${DigitalTwinConstants.dtPrefix} generate PnP device code completed.`;
 			utils.channelShowAndAppendLine(this.channel, message);
+
 			return true;
 		} catch {
 			message = `${DigitalTwinConstants.dtPrefix} generate PnP device code failed.`;
 			utils.channelShowAndAppendLine(this.channel, message);
+
 			return false;
 		}
 	}

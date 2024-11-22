@@ -28,6 +28,7 @@ import {
 import { RemoteExtension } from "./RemoteExtension";
 
 const importLazy = require("import-lazy");
+
 const raspberryPiDeviceModule = importLazy(() =>
 	require("./RaspberryPiDevice"),
 )();
@@ -41,6 +42,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 	) {
 		super(context, channel, telemetryContext);
 		this.projectHostType = ProjectHostType.Container;
+
 		if (!rootFolderPath) {
 			throw new ArgumentEmptyOrNullError(
 				"root folder path",
@@ -77,7 +79,9 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 			scaffoldType,
 			this.iotWorkbenchProjectFilePath,
 		);
+
 		const boardId = projectConfigJson[`${ConfigKey.boardId}`];
+
 		if (!boardId) {
 			throw new ProjectConfigNotFoundError(
 				`${ConfigKey.boardId}`,
@@ -163,6 +167,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 			}
 		} catch (error) {
 			fs.removeSync(this.projectRootPath);
+
 			throw error;
 		}
 
@@ -198,6 +203,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 				const telemetryWorker = TelemetryWorker.getInstance(
 					this.extensionContext,
 				);
+
 				const eventNames =
 					openScenario === OpenScenario.createNewProject
 						? EventNames.createNewProjectEvent
@@ -258,6 +264,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 		);
 
 		let device: Component;
+
 		if (boardId === raspberryPiDeviceModule.RaspberryPiDevice.boardId) {
 			device = new raspberryPiDeviceModule.RaspberryPiDevice(
 				this.extensionContext,

@@ -2,5 +2,6 @@
 
 declare module "getmac" {
 	function getMac(opts: (err: Error, macAddress: string) => void): void;
+
 	function isMac(macAddress: string): boolean;
 }

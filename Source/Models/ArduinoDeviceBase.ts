@@ -99,6 +99,7 @@ export abstract class ArduinoDeviceBase implements Device {
 
 	async checkPrerequisites(operation: string): Promise<void> {
 		const res = await ArduinoDeviceBase.isAvailable();
+
 		if (!res) {
 			throw new DependentExtensionNotFoundError(
 				operation,
@@ -109,6 +110,7 @@ export abstract class ArduinoDeviceBase implements Device {
 
 	async compile(): Promise<boolean> {
 		const result = await this.preCompileAction();
+
 		if (!result) {
 			return false;
 		}
@@ -122,11 +124,13 @@ export abstract class ArduinoDeviceBase implements Device {
 			PlatformType.Arduino,
 			constants.compileTaskName,
 		);
+
 		return true;
 	}
 
 	async upload(): Promise<boolean> {
 		const result = await this.preUploadAction();
+
 		if (!result) {
 			return false;
 		}
@@ -139,6 +143,7 @@ export abstract class ArduinoDeviceBase implements Device {
 			PlatformType.Arduino,
 			constants.uploadTaskName,
 		);
+
 		return true;
 	}
 
@@ -146,6 +151,7 @@ export abstract class ArduinoDeviceBase implements Device {
 
 	async load(): Promise<void> {
 		const loadTimeScaffoldType = ScaffoldType.Workspace;
+
 		if (
 			!(await FileUtility.directoryExists(
 				loadTimeScaffoldType,
@@ -167,6 +173,7 @@ export abstract class ArduinoDeviceBase implements Device {
 	async createCore(): Promise<void> {
 		// Generate template files
 		const createTimeScaffoldType = ScaffoldType.Local;
+
 		if (
 			!(await FileUtility.directoryExists(
 				createTimeScaffoldType,
@@ -222,8 +229,11 @@ export abstract class ArduinoDeviceBase implements Device {
 		}
 
 		let cppPropertiesTemplateFileName: string;
+
 		let changeRootPath = false;
+
 		let rootPath: string = await utils.getHomeDir();
+
 		if (platform === OSPlatform.WIN32) {
 			rootPath = path
 				.join(rootPath, "AppData", "Local")
@@ -249,13 +259,16 @@ export abstract class ArduinoDeviceBase implements Device {
 					cppPropertiesTemplateFileName,
 				),
 			);
+
 		const propertiesContent = await FileUtility.readFile(
 			type,
 			cppPropertiesTemplateFilePath,
 		);
+
 		const propertiesContentString = propertiesContent.toString();
 
 		const versionPattern = /{VERSION}/g;
+
 		let content = propertiesContentString.replace(
 			versionPattern,
 			this.version,
@@ -284,11 +297,13 @@ export abstract class ArduinoDeviceBase implements Device {
 
 	async generateCrc(channel: vscode.OutputChannel): Promise<void> {
 		const devicePath = ConfigHandler.get<string>(ConfigKey.devicePath);
+
 		if (!devicePath) {
 			throw new WorkspaceConfigNotFoundError(ConfigKey.devicePath);
 		}
 
 		const rootPath = utils.getProjectDeviceRootPath();
+
 		if (!rootPath) {
 			throw new WorkspaceNotOpenError("generate CRC");
 		}
@@ -299,6 +314,7 @@ export abstract class ArduinoDeviceBase implements Device {
 			devicePath,
 			".build",
 		);
+
 		if (!fs.isDirectorySync(deviceBuildLocation)) {
 			throw new DirectoryNotFoundError(
 				"generate CRC",
@@ -308,6 +324,7 @@ export abstract class ArduinoDeviceBase implements Device {
 		}
 
 		const binFiles = fs.listSync(deviceBuildLocation, ["bin"]);
+
 		if (!binFiles || !binFiles.length) {
 			throw new FileNotFoundError(
 				"generate CRC",
@@ -322,6 +339,7 @@ export abstract class ArduinoDeviceBase implements Device {
 			binFilePath = binFiles[0];
 		} else {
 			const binFilePickItems: vscode.QuickPickItem[] = [];
+
 			for (const file of binFiles) {
 				const fileName = path.basename(file);
 				binFilePickItems.push({ label: fileName, description: file });
