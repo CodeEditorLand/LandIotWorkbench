@@ -48,11 +48,13 @@ export class UI {
 	 */
 	static async openAndShowTextDocument(filePath: string): Promise<void> {
 		const folder: string = path.dirname(filePath);
+
 		await vscode.commands.executeCommand(
 			"vscode.openFolder",
 			vscode.Uri.file(folder),
 			false,
 		);
+
 		await vscode.window.showTextDocument(vscode.Uri.file(filePath));
 	}
 
@@ -109,6 +111,7 @@ export class UI {
 				},
 			);
 		}
+
 		items.push({
 			label: UIConstants.BROWSE_LABEL,
 			description: Constants.EMPTY_STRING,
@@ -142,6 +145,7 @@ export class UI {
 		if (!selected) {
 			throw new UserCancelledError(label);
 		}
+
 		return selected;
 	}
 
@@ -168,6 +172,7 @@ export class UI {
 		if (!selected || !selected.length) {
 			throw new UserCancelledError(label);
 		}
+
 		return selected[0].fsPath;
 	}
 
@@ -224,6 +229,7 @@ export class UI {
 		if (!input) {
 			throw new UserCancelledError(label);
 		}
+
 		return input;
 	}
 
@@ -262,6 +268,7 @@ export class UI {
 
 			return [];
 		}
+
 		const items: Array<QuickPickItemWithData<string>> = fileInfos.map(
 			(f) => {
 				return {
@@ -283,6 +290,7 @@ export class UI {
 		if (!selected || !selected.length) {
 			throw new UserCancelledError(label);
 		}
+
 		return selected.map((s) => s.data);
 	}
 
@@ -305,6 +313,7 @@ export class UI {
 
 			return Constants.EMPTY_STRING;
 		}
+
 		const items: Array<QuickPickItemWithData<string>> = fileInfos.map(
 			(f) => {
 				return {
@@ -326,6 +335,7 @@ export class UI {
 		if (!selected) {
 			throw new UserCancelledError(label);
 		}
+
 		return selected.data;
 	}
 
@@ -354,9 +364,11 @@ export class UI {
 					// skip if file is not a valid json
 					return;
 				}
+
 				if (!fileInfo) {
 					return;
 				}
+
 				if (!type || type === fileInfo.type) {
 					fileInfos.push(fileInfo);
 				}
@@ -385,6 +397,7 @@ export class UI {
 		if (!unsaved.length) {
 			return;
 		}
+
 		const nameList: string = unsaved
 			.map((f) => path.basename(f.fileName))
 			.toString();

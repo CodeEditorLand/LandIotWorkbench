@@ -16,6 +16,7 @@ export class DirectoryNotFoundError extends ResourceNotFoundError {
 		suggestedOperation: string,
 	) {
 		super(operation, `${directory}`, suggestedOperation);
+
 		this.name = "DirectoryNotFoundError";
 	}
 }

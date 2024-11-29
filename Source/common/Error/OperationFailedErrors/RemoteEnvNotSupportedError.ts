@@ -18,6 +18,7 @@ export class RemoteEnvNotSupportedError extends OperationFailedError {
 			`The operation is not supported to be run in remote environment.`,
 			suggestedOperation,
 		);
+
 		this.name = "RemoteEnvNotSupportedError";
 	}
 }

@@ -8,6 +8,7 @@ export class OperationCanceledError extends Error {
 	 */
 	constructor(errorMessage: string) {
 		super(`Operation cancelled: ${errorMessage}`);
+
 		this.name = "CancelOperationError";
 	}
 }

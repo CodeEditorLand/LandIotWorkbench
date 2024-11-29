@@ -12,6 +12,7 @@ export class FileNotFoundError extends ResourceNotFoundError {
 	 */
 	constructor(operation: string, file: string, suggestedOperation: string) {
 		super(operation, `${file}`, suggestedOperation);
+
 		this.name = "FileNotFoundError";
 	}
 }

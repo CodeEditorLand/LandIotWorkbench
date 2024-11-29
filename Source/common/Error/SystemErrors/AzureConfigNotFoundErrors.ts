@@ -10,6 +10,7 @@ export class AzureConfigNotFoundError extends SystemError {
 	 */
 	constructor(errorMsg: string) {
 		super(`Failed to get Azure configuration ${errorMsg}.`);
+
 		this.name = "AzureConfigNotFoundError";
 	}
 }

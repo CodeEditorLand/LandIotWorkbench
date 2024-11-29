@@ -13,11 +13,15 @@ interface BoardList {
 
 export interface BoardOption {
 	name?: string;
+
 	id?: string;
+
 	platform?: string;
 
 	defaultBaudRate?: number;
+
 	vendorId?: string | number;
+
 	productId?: string | number;
 }
 
@@ -79,6 +83,7 @@ export class BoardProvider {
 					return false;
 				}
 			}
+
 			return true;
 		});
 	}

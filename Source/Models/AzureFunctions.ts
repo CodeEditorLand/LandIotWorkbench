@@ -37,16 +37,25 @@ const azureUtilityModule = importLazy(() => require("./AzureUtility"))();
 
 export class AzureFunctions implements Component, Provisionable, Deployable {
 	dependencies: DependencyConfig[] = [];
+
 	private componentType: ComponentType;
+
 	private channel: vscode.OutputChannel;
+
 	private azureFunctionsPath: string;
+
 	private azureAccountExtension: AzureAccount | undefined = getExtension(
 		ExtensionName.AzureAccount,
 	);
+
 	private functionLanguage: string | null;
+
 	private functionFolder: string;
+
 	private projectRootPath: string;
+
 	private azureConfigFileHandler: AzureConfigFileHandler;
+
 	private componentId: string;
 
 	get id(): string {
@@ -93,12 +102,19 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 		dependencyComponents: Dependency[] | null = null,
 	) {
 		this.componentType = ComponentType.AzureFunctions;
+
 		this.channel = channel;
+
 		this.azureFunctionsPath = azureFunctionsPath;
+
 		this.functionLanguage = language;
+
 		this.functionFolder = functionFolder;
+
 		this.componentId = Guid.create().toString();
+
 		this.projectRootPath = projectRoot;
+
 		this.azureConfigFileHandler = new AzureConfigFileHandler(
 			this.projectRootPath,
 		);
@@ -144,6 +160,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 
 		if (componentConfig) {
 			this.componentId = componentConfig.id;
+
 			this.dependencies = componentConfig.dependencies;
 
 			if (componentConfig.componentInfo) {
@@ -155,6 +172,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 
 	async create(): Promise<void> {
 		const scaffoldType = ScaffoldType.Local;
+
 		console.log(this.azureFunctionsPath);
 
 		if (
@@ -191,6 +209,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 					"Unable to get the language for Azure Functions. Creating project for Azure Functions cancelled.",
 				);
 			}
+
 			this.functionLanguage = languageSelection.label;
 		}
 
@@ -285,11 +304,13 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				`component of config id ${iotHubId}`,
 			);
 		}
+
 		if (!componentConfig.componentInfo) {
 			throw new AzureConfigNotFoundError(
 				`componentInfo of config id ${iotHubId}`,
 			);
 		}
+
 		const iotHubConnectionString =
 			componentConfig.componentInfo.values.iotHubConnectionString;
 
@@ -298,6 +319,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				`iothubConnectionString of config id ${iotHubId}`,
 			);
 		}
+
 		const eventHubConnectionString =
 			componentConfig.componentInfo.values.eventHubConnectionString;
 
@@ -309,6 +331,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				`eventHubConnectionString of config id ${iotHubId}`,
 			);
 		}
+
 		if (!eventHubConnectionPath) {
 			throw new AzureConfigNotFoundError(
 				`evenHubConnectionPath of config id ${iotHubId}`,
@@ -337,6 +360,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				"",
 			);
 		}
+
 		resourceGroup = resourceGroupMatches[1];
 
 		const siteNameMatches = functionAppId.match(/\/sites\/([^\/]*)/);
@@ -348,9 +372,11 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				"",
 			);
 		}
+
 		const siteName = siteNameMatches[1];
 
 		const client = new WebSiteManagementClient(credential, subscriptionId);
+
 		console.log(resourceGroup, siteName);
 
 		const appSettings: StringDictionary =
@@ -358,7 +384,9 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				resourceGroup,
 				siteName,
 			);
+
 		console.log(appSettings);
+
 		appSettings.properties = appSettings.properties || {};
 
 		// for c# library, use the default setting of ~2.
@@ -370,10 +398,13 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 		} else {
 			appSettings.properties["FUNCTIONS_EXTENSION_VERSION"] = "~2";
 		}
+
 		appSettings.properties["eventHubConnectionString"] =
 			eventHubConnectionString || "";
+
 		appSettings.properties["eventHubConnectionPath"] =
 			eventHubConnectionPath || "";
+
 		appSettings.properties["iotHubConnectionString"] =
 			iotHubConnectionString || "";
 		// see detail:
@@ -406,6 +437,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				this.channel,
 				"Deploying Azure Functions App...",
 			);
+
 			deployPending = setInterval(() => {
 				this.channel.append(".");
 			}, 1000);
@@ -425,11 +457,13 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 					`component of config id ${this.id}`,
 				);
 			}
+
 			if (!componentConfig.componentInfo) {
 				throw new AzureConfigNotFoundError(
 					`componentInfo of config id ${this.id}`,
 				);
 			}
+
 			const functionAppId =
 				componentConfig.componentInfo.values.functionAppId;
 
@@ -447,18 +481,21 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 					azureFunctionsPath,
 					"bin/Release/netcoreapp2.1/publish",
 				);
+
 				await vscode.commands.executeCommand(
 					AzureFunctionsCommands.Deploy,
 					subPath,
 					functionAppId,
 				);
 			}
+
 			console.log(azureFunctionsPath, functionAppId);
 
 			return true;
 		} finally {
 			if (this.channel && deployPending) {
 				clearInterval(deployPending);
+
 				utils.channelShowAndAppendLine(this.channel, ".");
 			}
 		}
@@ -481,6 +518,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 					"component info",
 				);
 			}
+
 			await this.azureConfigFileHandler.updateComponent(
 				type,
 				componentIndex,
@@ -495,6 +533,7 @@ export class AzureFunctions implements Component, Provisionable, Deployable {
 				type: this.componentType,
 				componentInfo,
 			};
+
 			await this.azureConfigFileHandler.appendComponent(
 				type,
 				newAzureFunctionsConfig,

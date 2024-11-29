@@ -14,6 +14,7 @@ export class OperationFailedError extends Error {
 		suggestedOperation: string,
 	) {
 		super(`Failed to ${operation}. ${errorMessage} ${suggestedOperation}`);
+
 		this.name = "OperationFailedError";
 	}
 }

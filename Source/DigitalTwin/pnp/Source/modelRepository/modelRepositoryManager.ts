@@ -37,8 +37,11 @@ export enum RepositoryType {
  */
 export interface RepositoryInfo {
 	hostname: string;
+
 	apiVersion: string;
+
 	repositoryId?: string;
+
 	accessToken?: string;
 }
 
@@ -47,7 +50,9 @@ export interface RepositoryInfo {
  */
 export interface ModelFileInfo {
 	id: string;
+
 	type: ModelType;
+
 	filePath: string;
 }
 
@@ -78,6 +83,7 @@ export class ModelRepositoryManager {
 			if (!url) {
 				throw new Error(Constants.PUBLIC_REPOSITORY_URL_NOT_FOUND_MSG);
 			}
+
 			return {
 				hostname: Utility.enforceHttps(url),
 				apiVersion: Constants.MODEL_REPOSITORY_API_VERSION,
@@ -91,6 +97,7 @@ export class ModelRepositoryManager {
 			if (!connectionString) {
 				throw new Error(Constants.CONNECTION_STRING_NOT_FOUND_MSG);
 			}
+
 			return ModelRepositoryManager.getCompanyRepositoryInfo(
 				connectionString,
 			);
@@ -116,6 +123,7 @@ export class ModelRepositoryManager {
 				),
 			);
 		}
+
 		repoInfos.push(await ModelRepositoryManager.createRepositoryInfo(true));
 
 		return repoInfos;
@@ -135,8 +143,10 @@ export class ModelRepositoryManager {
 			connectionString = await UI.inputConnectionString(
 				UIConstants.INPUT_REPOSITORY_CONNECTION_STRING_LABEL,
 			);
+
 			newConnection = true;
 		}
+
 		const repoInfo: RepositoryInfo =
 			ModelRepositoryManager.getCompanyRepositoryInfo(connectionString);
 		// test connection by calling searchModel
@@ -185,6 +195,7 @@ export class ModelRepositoryManager {
 	}
 
 	private readonly express: VSCExpress;
+
 	private readonly component: string;
 
 	constructor(
@@ -193,6 +204,7 @@ export class ModelRepositoryManager {
 		private readonly outputChannel: ColorizedChannel,
 	) {
 		this.express = new VSCExpress(context, filePath);
+
 		this.component = Constants.MODEL_REPOSITORY_COMPONENT;
 	}
 
@@ -211,6 +223,7 @@ export class ModelRepositoryManager {
 		);
 
 		const operation = `Connect to ${selected.label}`;
+
 		this.outputChannel.start(operation, this.component);
 
 		if (selected.label === RepositoryType.Company) {
@@ -230,6 +243,7 @@ export class ModelRepositoryManager {
 			selected.label === RepositoryType.Company
 				? Constants.COMPANY_REPOSITORY_PAGE
 				: Constants.PUBLIC_REPOSITORY_PAGE;
+
 		this.express.open(
 			uri,
 			UIConstants.MODEL_REPOSITORY_TITLE,
@@ -239,10 +253,12 @@ export class ModelRepositoryManager {
 				enableScripts: true,
 			},
 		);
+
 		UI.showNotification(
 			MessageType.Info,
 			ColorizedChannel.formatMessage(operation),
 		);
+
 		this.outputChannel.end(operation, this.component);
 	}
 
@@ -251,6 +267,7 @@ export class ModelRepositoryManager {
 	 */
 	async signOut(): Promise<void> {
 		const operation = "Sign out company repository";
+
 		this.outputChannel.start(operation, this.component);
 
 		await CredentialStore.delete(Constants.MODEL_REPOSITORY_CONNECTION_KEY);
@@ -259,10 +276,12 @@ export class ModelRepositoryManager {
 		if (this.express) {
 			this.express.close(Constants.COMPANY_REPOSITORY_PAGE);
 		}
+
 		UI.showNotification(
 			MessageType.Info,
 			ColorizedChannel.formatMessage(operation),
 		);
+
 		this.outputChannel.end(operation, this.component);
 	}
 
@@ -298,6 +317,7 @@ export class ModelRepositoryManager {
 		try {
 			const repoInfo: RepositoryInfo =
 				await ModelRepositoryManager.createRepositoryInfo(false);
+
 			await this.doSubmitLoopSilently(repoInfo, files, telemetryContext);
 		} catch (error) {
 			const operation = `Submit models to ${RepositoryType.Company}`;
@@ -343,6 +363,7 @@ export class ModelRepositoryManager {
 				await ModelRepositoryManager.createRepositoryInfo(
 					publicRepository,
 				);
+
 			result = await ModelRepositoryClient.searchModel(
 				repoInfo,
 				type,
@@ -357,6 +378,7 @@ export class ModelRepositoryManager {
 		if (showOutput) {
 			this.outputChannel.end(operation, this.component);
 		}
+
 		return result;
 	}
 
@@ -374,6 +396,7 @@ export class ModelRepositoryManager {
 				`${RepositoryType.Public} not support delete operation`,
 			);
 		}
+
 		ModelRepositoryManager.validateModelIds(modelIds);
 
 		try {
@@ -381,6 +404,7 @@ export class ModelRepositoryManager {
 				await ModelRepositoryManager.createRepositoryInfo(
 					publicRepository,
 				);
+
 			await this.doDeleteLoopSilently(repoInfo, modelIds);
 		} catch (error) {
 			const operation = `Delete models from ${RepositoryType.Company}`;
@@ -409,6 +433,7 @@ export class ModelRepositoryManager {
 				await ModelRepositoryManager.createRepositoryInfo(
 					publicRepository,
 				);
+
 			await this.doDownloadLoopSilently([repoInfo], modelIds, folder);
 		} catch (error) {
 			const operation = `Download models from ${publicRepository ? RepositoryType.Public : RepositoryType.Company}`;
@@ -464,6 +489,7 @@ export class ModelRepositoryManager {
 			if (typeof schema !== "string" || exist.has(schema)) {
 				continue;
 			}
+
 			found = await this.doDownloadModel(repoInfos, schema, folder);
 
 			if (!found) {
@@ -472,6 +498,7 @@ export class ModelRepositoryManager {
 				if (repoInfos.length === 1) {
 					message = `${message}. ${Constants.NEED_OPEN_COMPANY_REPOSITORY_MSG}`;
 				}
+
 				throw new BadRequestError(message);
 			}
 		}
@@ -490,10 +517,12 @@ export class ModelRepositoryManager {
 	): Promise<void> {
 		for (const modelId of modelIds) {
 			const operation = `Download model by id ${modelId}`;
+
 			this.outputChannel.start(operation, this.component);
 
 			try {
 				await this.doDownloadModel(repoInfos, modelId, folder);
+
 				this.outputChannel.end(operation, this.component);
 			} catch (error) {
 				this.outputChannel.error(operation, this.component, error);
@@ -535,6 +564,7 @@ export class ModelRepositoryManager {
 				}
 			}
 		}
+
 		if (result) {
 			await Utility.createModelFile(
 				folder,
@@ -544,6 +574,7 @@ export class ModelRepositoryManager {
 
 			return true;
 		}
+
 		return false;
 	}
 
@@ -558,10 +589,12 @@ export class ModelRepositoryManager {
 	): Promise<void> {
 		for (const modelId of modelIds) {
 			const operation = `Delete model by id ${modelId}`;
+
 			this.outputChannel.start(operation, this.component);
 
 			try {
 				await ModelRepositoryClient.deleteModel(repoInfo, modelId);
+
 				this.outputChannel.end(operation, this.component);
 			} catch (error) {
 				this.outputChannel.error(operation, this.component, error);
@@ -586,10 +619,12 @@ export class ModelRepositoryManager {
 
 		for (const file of files) {
 			const operation = `Submit file ${file}`;
+
 			this.outputChannel.start(operation, this.component);
 
 			try {
 				await this.doSubmitModel(repoInfo, file, options, usageData);
+
 				this.outputChannel.end(operation, this.component);
 			} catch (error) {
 				this.outputChannel.error(operation, this.component, error);
@@ -660,6 +695,7 @@ export class ModelRepositoryManager {
 				}
 			}
 		}
+
 		await ModelRepositoryClient.updateModel(repoInfo, modelId, content);
 
 		// record submitted model id
@@ -667,8 +703,10 @@ export class ModelRepositoryManager {
 
 		if (!modelIds) {
 			modelIds = [];
+
 			usageData.set(modelType, modelIds);
 		}
+
 		modelIds.push(modelId);
 	}
 
@@ -689,6 +727,7 @@ export class ModelRepositoryManager {
 
 		for (const [key, value] of usageData) {
 			succeedCount += value.length;
+
 			hashId = value
 				.map((id) => Utility.hash(id))
 				.join(Constants.DEFAULT_SEPARATOR);
@@ -707,7 +746,9 @@ export class ModelRepositoryManager {
 				default:
 			}
 		}
+
 		telemetryContext.measurements.totalCount = totalCount;
+
 		telemetryContext.measurements.succeedCount = succeedCount;
 	}
 }

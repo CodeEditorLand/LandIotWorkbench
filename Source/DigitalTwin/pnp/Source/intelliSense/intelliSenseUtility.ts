@@ -29,6 +29,7 @@ export enum JsonNodeType {
  */
 export interface ModelContent {
 	jsonNode: parser.Node;
+
 	version: number;
 }
 
@@ -37,6 +38,7 @@ export interface ModelContent {
  */
 export interface PropertyPair {
 	name: parser.Node;
+
 	value: parser.Node;
 }
 
@@ -102,6 +104,7 @@ export class IntelliSenseUtility {
 		if (!propertyNode.range) {
 			return [];
 		}
+
 		return propertyNode.range.map((classNode) => {
 			if (classNode.label) {
 				return classNode.label;
@@ -136,11 +139,13 @@ export class IntelliSenseUtility {
 		if (!contextNode) {
 			return undefined;
 		}
+
 		const version = IntelliSenseUtility.getDigitalTwinVersion(contextNode);
 
 		if (!version) {
 			return undefined;
 		}
+
 		return { jsonNode, version };
 	}
 
@@ -161,6 +166,7 @@ export class IntelliSenseUtility {
 				if (child.type !== JsonNodeType.String) {
 					return 0;
 				}
+
 				const version: number = IntelliSenseUtility.graph.getVersion(
 					child.value as string,
 				);
@@ -170,6 +176,7 @@ export class IntelliSenseUtility {
 				}
 			}
 		}
+
 		return 0;
 	}
 
@@ -201,6 +208,7 @@ export class IntelliSenseUtility {
 		if (classNode.isAbstract || classNode.enums || !classNode.label) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -216,6 +224,7 @@ export class IntelliSenseUtility {
 		) {
 			return undefined;
 		}
+
 		return { name: node.children[0], value: node.children[1] };
 	}
 
@@ -261,6 +270,7 @@ export class IntelliSenseUtility {
 				}
 			}
 		}
+
 		return enums;
 	}
 
@@ -292,6 +302,7 @@ export class IntelliSenseUtility {
 				}
 			}
 		}
+
 		return classes;
 	}
 
@@ -307,6 +318,7 @@ export class IntelliSenseUtility {
 		if (!propertyNode.range) {
 			return [];
 		}
+
 		return propertyNode.range.filter((node) =>
 			IntelliSenseUtility.isAvailableByVersion(version, node.version),
 		);
@@ -324,6 +336,7 @@ export class IntelliSenseUtility {
 		if (!classNode.children) {
 			return [];
 		}
+
 		return classNode.children.filter((node) =>
 			IntelliSenseUtility.isAvailableByVersion(version, node.version),
 		);
@@ -341,6 +354,7 @@ export class IntelliSenseUtility {
 		if (!classNode.properties) {
 			return [];
 		}
+
 		return classNode.properties.filter((node) =>
 			IntelliSenseUtility.isAvailableByVersion(version, node.version),
 		);
@@ -362,9 +376,11 @@ export class IntelliSenseUtility {
 		if (versionNode.includeSince && versionNode.includeSince > version) {
 			return false;
 		}
+
 		if (versionNode.excludeSince && versionNode.excludeSince <= version) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -378,6 +394,7 @@ export class IntelliSenseUtility {
 		if (propertyName !== DigitalTwinConstants.SCHEMA) {
 			return propertyName;
 		}
+
 		const node: parser.Node = propertyPair.name;
 		// get outer object node
 		if (node.parent && node.parent.parent) {
@@ -392,6 +409,7 @@ export class IntelliSenseUtility {
 				}
 			}
 		}
+
 		return propertyName;
 	}
 
@@ -403,11 +421,13 @@ export class IntelliSenseUtility {
 		if (node.type !== JsonNodeType.Object) {
 			return undefined;
 		}
+
 		let outerProperty: parser.Node | undefined = node.parent;
 
 		if (outerProperty && outerProperty.type === JsonNodeType.Array) {
 			outerProperty = outerProperty.parent;
 		}
+
 		return outerProperty
 			? IntelliSenseUtility.parseProperty(outerProperty)
 			: undefined;
@@ -422,5 +442,6 @@ export class IntelliSenseUtility {
 	}
 
 	private static graph: DigitalTwinGraph;
+
 	private constructor() {}
 }

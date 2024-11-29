@@ -18,6 +18,7 @@ export class RemoteExtension {
 				"",
 			);
 		}
+
 		return extension.extensionKind === vscode.ExtensionKind.Workspace;
 	}
 

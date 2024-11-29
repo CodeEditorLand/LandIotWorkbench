@@ -25,6 +25,7 @@ export function getExtension(name: ExtensionName): any {
 			}
 		}
 	}
+
 	return undefined;
 }
 
@@ -65,6 +66,7 @@ export async function checkExtensionAvailable(
 				),
 			);
 		}
+
 		return false;
 	}
 

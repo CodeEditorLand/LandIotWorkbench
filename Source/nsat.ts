@@ -48,7 +48,9 @@ export class NSAT {
 		}
 
 		const sessionCount = globalState.get(SESSION_COUNT_KEY, 0) + 1;
+
 		await globalState.update(LAST_SESSION_DATE_KEY, date);
+
 		await globalState.update(SESSION_COUNT_KEY, sessionCount);
 
 		if (sessionCount < SESSION_COUNT_THRESHOLD) {
@@ -70,6 +72,7 @@ export class NSAT {
 		if (!extension) {
 			return;
 		}
+
 		const extensionVersion = extension.packageJSON.version || "unknown";
 
 		if (!isCandidate) {
@@ -83,18 +86,23 @@ export class NSAT {
 			run: async (): Promise<void> => {
 				telemetryContext.properties.message =
 					"nsat.survey/takeShortSurvey";
+
 				telemetryWorker.sendEvent(
 					EventNames.nsatsurvery,
 					telemetryContext,
 				);
+
 				commands.executeCommand(
 					VscodeCommands.VscodeOpen,
 					Uri.parse(
 						`${NSAT_SURVEY_URL}?o=${encodeURIComponent(process.platform)}&v=${encodeURIComponent(extensionVersion)}`,
 					),
 				);
+
 				await globalState.update(IS_CANDIDATE_KEY, false);
+
 				await globalState.update(SKIP_VERSION_KEY, extensionVersion);
+
 				await globalState.update(TAKE_SURVEY_DATE_KEY, date);
 			},
 		};
@@ -104,10 +112,12 @@ export class NSAT {
 			run: async (): Promise<void> => {
 				telemetryContext.properties.message =
 					"nsat.survey/remindMeLater";
+
 				telemetryWorker.sendEvent(
 					EventNames.nsatsurvery,
 					telemetryContext,
 				);
+
 				await globalState.update(SESSION_COUNT_KEY, 0);
 			},
 		};
@@ -117,16 +127,22 @@ export class NSAT {
 			run: async (): Promise<void> => {
 				telemetryContext.properties.message =
 					"nsat.survey/dontShowAgain";
+
 				telemetryWorker.sendEvent(
 					EventNames.nsatsurvery,
 					telemetryContext,
 				);
+
 				await globalState.update(IS_CANDIDATE_KEY, false);
+
 				await globalState.update(SKIP_VERSION_KEY, extensionVersion);
+
 				await globalState.update(DONT_SHOW_DATE_KEY, date);
 			},
 		};
+
 		telemetryContext.properties.message = "nsat.survey/userAsked";
+
 		telemetryWorker.sendEvent(EventNames.nsatsurvery, telemetryContext);
 
 		const button = await window.showInformationMessage(
@@ -135,6 +151,7 @@ export class NSAT {
 			remind,
 			never,
 		);
+
 		await (button || remind).run();
 	}
 }

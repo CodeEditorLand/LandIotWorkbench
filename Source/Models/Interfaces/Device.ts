@@ -14,7 +14,9 @@ export enum DeviceType {
 
 export interface Device extends Component, Compilable, Uploadable {
 	getDeviceType(): DeviceType;
+
 	configDeviceSettings(): Promise<void>;
+
 	configDeviceEnvironment(
 		deviceRootPath: string,
 		scaffoldType: ScaffoldType,

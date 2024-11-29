@@ -14,13 +14,19 @@ import { IntelliSenseUtility } from "./intelliSenseUtility";
  */
 export interface ClassNode {
 	id: string;
+
 	label?: string;
+
 	isAbstract?: boolean;
+
 	children?: ClassNode[];
+
 	properties?: PropertyNode[];
+
 	enums?: string[];
 
 	constraint?: ConstraintNode;
+
 	version?: VersionNode;
 }
 
@@ -29,12 +35,17 @@ export interface ClassNode {
  */
 export interface PropertyNode {
 	id: string;
+
 	label?: string;
+
 	isArray?: boolean;
+
 	comment?: string;
+
 	range?: ClassNode[];
 
 	constraint?: ConstraintNode;
+
 	version?: VersionNode;
 }
 
@@ -43,10 +54,15 @@ export interface PropertyNode {
  */
 export interface ConstraintNode {
 	minItems?: number;
+
 	maxItems?: number;
+
 	minLength?: number;
+
 	maxLength?: number;
+
 	pattern?: string;
+
 	required?: string[];
 }
 
@@ -55,6 +71,7 @@ export interface ConstraintNode {
  */
 export interface VersionNode {
 	includeSince?: number;
+
 	excludeSince?: number;
 }
 
@@ -63,6 +80,7 @@ export interface VersionNode {
  */
 interface ContextNode {
 	name: string;
+
 	container: ContainerType;
 }
 
@@ -117,8 +135,10 @@ export class DigitalTwinGraph {
 	): Promise<DigitalTwinGraph> {
 		if (!DigitalTwinGraph.instance) {
 			DigitalTwinGraph.instance = new DigitalTwinGraph();
+
 			await DigitalTwinGraph.instance.init(context);
 		}
+
 		return DigitalTwinGraph.instance;
 	}
 
@@ -160,6 +180,7 @@ export class DigitalTwinGraph {
 		if (!container || typeof container !== "string") {
 			return ContainerType.None;
 		}
+
 		switch (container) {
 			case DigitalTwinConstants.LIST:
 			case DigitalTwinConstants.SET:
@@ -195,19 +216,32 @@ export class DigitalTwinGraph {
 	}
 
 	private classNodes: Map<string, ClassNode>;
+
 	private propertyNodes: Map<string, PropertyNode>;
+
 	private contextNodes: Map<string, ContextNode>;
+
 	private constraintNodes: Map<string, ConstraintNode>;
+
 	private reversedIndex: Map<string, string>;
+
 	private contextVersions: Map<string, number>;
+
 	private vocabulary: string;
+
 	private constructor() {
 		this.classNodes = new Map<string, ClassNode>();
+
 		this.propertyNodes = new Map<string, PropertyNode>();
+
 		this.contextNodes = new Map<string, ContextNode>();
+
 		this.constraintNodes = new Map<string, ConstraintNode>();
+
 		this.reversedIndex = new Map<string, string>();
+
 		this.contextVersions = new Map<string, number>();
+
 		this.vocabulary = Constants.EMPTY_STRING;
 	}
 
@@ -267,6 +301,7 @@ export class DigitalTwinGraph {
 				context,
 				Constants.CONSTRAINT_FILE_NAME,
 			);
+
 			graphJson = await DigitalTwinGraph.resolveDefinition(
 				context,
 				Constants.GRAPH_FILE_NAME,
@@ -276,7 +311,9 @@ export class DigitalTwinGraph {
 		}
 		// build graph by definitions
 		this.buildContext(contextJson);
+
 		this.buildConstraint(constraintJson);
+
 		this.buildGraph(graphJson);
 	}
 
@@ -297,16 +334,19 @@ export class DigitalTwinGraph {
 		let id: string;
 
 		const context = contextJson[DigitalTwinConstants.CONTEXT];
+
 		this.vocabulary = context[DigitalTwinConstants.VOCABULARY] as string;
 
 		for (const key in context) {
 			if (IntelliSenseUtility.isReservedName(key)) {
 				continue;
 			}
+
 			const value = context[key];
 
 			if (typeof value === "string") {
 				id = this.getId(value);
+
 				this.contextNodes.set(id, {
 					name: key,
 					container: ContainerType.None,
@@ -314,12 +354,15 @@ export class DigitalTwinGraph {
 			} else {
 				const containerType: ContainerType =
 					DigitalTwinGraph.resolveContainerType(value);
+
 				id = this.getId(value[DigitalTwinConstants.ID] as string);
+
 				this.contextNodes.set(id, {
 					name: key,
 					container: containerType,
 				});
 			}
+
 			this.reversedIndex.set(key, id);
 		}
 	}
@@ -357,8 +400,11 @@ export class DigitalTwinGraph {
 				this.handleEdge(edge);
 			}
 		}
+
 		this.adjustNode();
+
 		this.expandProperties();
+
 		this.buildEntryNode();
 	}
 
@@ -438,6 +484,7 @@ export class DigitalTwinGraph {
 				if (!enumNode.enums) {
 					enumNode.enums = [];
 				}
+
 				enumNode.enums.push(enumValue);
 			}
 		}
@@ -461,6 +508,7 @@ export class DigitalTwinGraph {
 		if (propertyNode) {
 			return;
 		}
+
 		const classNode: ClassNode = this.ensureClassNode(id);
 
 		if (!classNode.label) {
@@ -493,6 +541,7 @@ export class DigitalTwinGraph {
 		if (!classNode.properties) {
 			classNode.properties = [];
 		}
+
 		classNode.properties.push(propertyNode);
 	}
 
@@ -514,6 +563,7 @@ export class DigitalTwinGraph {
 		if (!propertyNode.range) {
 			propertyNode.range = [];
 		}
+
 		propertyNode.range.push(classNode);
 	}
 
@@ -535,6 +585,7 @@ export class DigitalTwinGraph {
 		if (!baseClassNode.children) {
 			baseClassNode.children = [];
 		}
+
 		baseClassNode.children.push(classNode);
 	}
 
@@ -580,8 +631,10 @@ export class DigitalTwinGraph {
 					classNode.constraint = constraintNode;
 				}
 			}
+
 			this.classNodes.set(id, classNode);
 		}
+
 		return classNode;
 	}
 
@@ -600,6 +653,7 @@ export class DigitalTwinGraph {
 
 			if (contextNode) {
 				propertyNode.label = contextNode.name;
+
 				propertyNode.isArray =
 					contextNode.container === ContainerType.Array;
 				// handle language node
@@ -607,9 +661,12 @@ export class DigitalTwinGraph {
 					const languageNode: ClassNode = this.ensureClassNode(
 						DigitalTwinConstants.LANGUAGE,
 					);
+
 					languageNode.label = DigitalTwinConstants.LANGUAGE;
+
 					propertyNode.range = [languageNode];
 				}
+
 				const constraintNode: ConstraintNode | undefined =
 					this.constraintNodes.get(contextNode.name);
 
@@ -617,8 +674,10 @@ export class DigitalTwinGraph {
 					propertyNode.constraint = constraintNode;
 				}
 			}
+
 			this.propertyNodes.set(id, propertyNode);
 		}
+
 		return propertyNode;
 	}
 
@@ -628,10 +687,12 @@ export class DigitalTwinGraph {
 	private adjustNode(): void {
 		// build reserved property
 		const stringNode: ClassNode = this.ensureClassNode(ValueSchema.String);
+
 		this.buildReservedProperty(DigitalTwinConstants.ID, stringNode);
 
 		// mark abstract class
 		this.markAbstractClass(DigitalTwinConstants.SCHEMA_NODE);
+
 		this.markAbstractClass(DigitalTwinConstants.UNIT_NODE);
 
 		// handle interfaceSchema
@@ -652,6 +713,7 @@ export class DigitalTwinGraph {
 		if (constraintNode) {
 			propertyNode.constraint = constraintNode;
 		}
+
 		this.propertyNodes.set(id, propertyNode);
 	}
 
@@ -682,6 +744,7 @@ export class DigitalTwinGraph {
 
 			if (propertyNode.range) {
 				propertyNode.range.push(classNode);
+
 				propertyNode.constraint = this.constraintNodes.get(
 					DigitalTwinConstants.ID,
 				);
@@ -700,6 +763,7 @@ export class DigitalTwinGraph {
 		if (!classNode) {
 			return;
 		}
+
 		const queue: ClassNode[] = [];
 
 		while (classNode) {
@@ -709,15 +773,19 @@ export class DigitalTwinGraph {
 					if (child.enums) {
 						continue;
 					}
+
 					if (classNode.properties) {
 						if (!child.properties) {
 							child.properties = [];
 						}
+
 						child.properties.push(...classNode.properties);
 					}
+
 					queue.push(child);
 				}
 			}
+
 			classNode = queue.shift();
 		}
 	}
@@ -739,6 +807,7 @@ export class DigitalTwinGraph {
 				id: DigitalTwinConstants.ENTRY_NODE,
 				range: [interfaceNode, capabilityModelNode],
 			};
+
 			this.propertyNodes.set(entryNode.id, entryNode);
 		}
 	}

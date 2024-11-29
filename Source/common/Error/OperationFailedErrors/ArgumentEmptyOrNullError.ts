@@ -20,6 +20,7 @@ export class ArgumentEmptyOrNullError extends OperationFailedError {
 			`Argument ${argument} is empty or null.`,
 			suggestedOperation || "",
 		);
+
 		this.name = "ArgumentEmptyOrNullError";
 	}
 }

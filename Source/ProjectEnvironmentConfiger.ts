@@ -66,7 +66,9 @@ export class ProjectEnvironmentConfiger {
 				);
 
 				const message = `Successfully configured development container for CMake project.`;
+
 				utils.channelShowAndAppendLine(channel, message);
+
 				vscode.window.showInformationMessage(message);
 			},
 		);
@@ -94,12 +96,14 @@ export class ProjectEnvironmentConfiger {
 
 			if (projectHostType !== ProjectHostType.Workspace) {
 				const message = `This is not an iot workbench Arduino project. You cannot configure it as Arduino platform.`;
+
 				vscode.window.showWarningMessage(message);
 
 				throw new OperationCanceledError(message);
 			}
 
 			const projectRootPath = path.join(projectFileRootPath, "..");
+
 			project = new ioTWorkspaceProjectModule.IoTWorkspaceProject(
 				context,
 				channel,

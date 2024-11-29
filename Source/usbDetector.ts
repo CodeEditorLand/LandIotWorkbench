@@ -15,6 +15,7 @@ import { shouldShowLandingPage } from "./utils";
 
 export interface DeviceInfo {
 	vendorId: number;
+
 	productId: number;
 }
 
@@ -55,6 +56,7 @@ export class UsbDetector {
 
 			return board;
 		}
+
 		return undefined;
 	}
 
@@ -78,9 +80,11 @@ export class UsbDetector {
 							board.id +
 							"&url=" +
 							encodeURIComponent(board.exampleUrl || "");
+
 						UsbDetector._vscexpress =
 							UsbDetector._vscexpress ||
 							new VSCExpress(this.context, "views");
+
 						UsbDetector._vscexpress.open(
 							exampleUrl,
 							board.examplePageName +

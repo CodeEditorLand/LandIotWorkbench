@@ -16,6 +16,7 @@ export class ResourceNotFoundError extends OperationFailedError {
 		suggestedOperation: string,
 	) {
 		super(operation, `Unable to find ${resource}.`, suggestedOperation);
+
 		this.name = "ResourceNotFoundError";
 	}
 }

@@ -11,6 +11,7 @@ export class ProjectConfigNotFoundError extends SystemError {
 	constructor(configKey: string, projectConfigurationFile: string) {
 		super(`Failed to get configuration value of key ${configKey} \
     from project configuration file ${projectConfigurationFile}.`);
+
 		this.name = "ProjectConfigNotFoundError";
 	}
 }

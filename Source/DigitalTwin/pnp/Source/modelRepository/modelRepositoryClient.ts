@@ -48,6 +48,7 @@ export class ModelRepositoryClient {
 		if (expand) {
 			options.qs.expand = "true";
 		}
+
 		return new Promise<GetResult>((resolve, reject) => {
 			request(options)
 				.then((response) => {
@@ -94,6 +95,7 @@ export class ModelRepositoryClient {
 			continuationToken,
 			pageSize,
 		};
+
 		options.body = payload;
 
 		return new Promise<SearchResult>((resolve, reject) => {
@@ -127,6 +129,7 @@ export class ModelRepositoryClient {
 				repoInfo,
 				modelId,
 			);
+
 		options.body = content;
 
 		return new Promise<string>((resolve, reject) => {
@@ -209,6 +212,7 @@ export class ModelRepositoryClient {
 		if (repoInfo.repositoryId) {
 			qs.repositoryId = repoInfo.repositoryId;
 		}
+
 		const accessToken = repoInfo.accessToken || Constants.EMPTY_STRING;
 
 		const options: request.OptionsWithUri = {

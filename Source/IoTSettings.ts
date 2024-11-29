@@ -12,6 +12,7 @@ import { getHomeDir, getPlatform } from "./utils";
 
 export class IoTWorkbenchSettings {
 	private workbenchPath = "";
+
 	private static instance: IoTWorkbenchSettings | undefined;
 
 	private constructor() {}
@@ -19,9 +20,11 @@ export class IoTWorkbenchSettings {
 	static async getInstance(): Promise<IoTWorkbenchSettings> {
 		if (!IoTWorkbenchSettings.instance) {
 			IoTWorkbenchSettings.instance = new IoTWorkbenchSettings();
+
 			IoTWorkbenchSettings.instance.workbenchPath =
 				ConfigHandler.get<string>(ConfigKey.workbench) ||
 				(await this.getDefaultWorkbenchPath());
+
 			await ConfigHandler.update(
 				ConfigKey.workbench,
 				IoTWorkbenchSettings.instance.workbenchPath,
@@ -83,6 +86,7 @@ export class IoTWorkbenchSettings {
 				userWorkbenchPath,
 				vscode.ConfigurationTarget.Global,
 			);
+
 			await vscode.window.showInformationMessage(
 				"Change workbench successfully.",
 			);
@@ -117,6 +121,7 @@ export class IoTWorkbenchSettings {
 				"Workbench path selection cancelled.",
 			);
 		}
+
 		return selection;
 	}
 

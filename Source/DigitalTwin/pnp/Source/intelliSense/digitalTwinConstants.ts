@@ -30,31 +30,57 @@ export enum DiagnosticMessage {
  */
 export class DigitalTwinConstants {
 	static readonly JSON_LANGUAGE_ID = "json";
+
 	static readonly SCHEMA_SEPARATOR = "#";
+
 	static readonly BASE_CLASS = "Entity";
+
 	static readonly NAME = "name";
+
 	static readonly SCHEMA = "schema";
+
 	static readonly CONTENTS = "contents";
+
 	static readonly IMPLEMENTS = "implements";
+
 	static readonly INTERFACE_SCHEMA = "interfaceSchema";
+
 	static readonly RESERVED = "@";
+
 	static readonly CONTEXT = "@context";
+
 	static readonly VOCABULARY = "@vocab";
+
 	static readonly ID = "@id";
+
 	static readonly TYPE = "@type";
+
 	static readonly CONTAINER = "@container";
+
 	static readonly LIST = "@list";
+
 	static readonly SET = "@set";
+
 	static readonly LANGUAGE = "@language";
+
 	static readonly ENTRY_NODE = "@entry";
+
 	static readonly DUMMY_NODE = "@dummy";
+
 	static readonly INTERFACE_NODE = "Interface";
+
 	static readonly CAPABILITY_MODEL_NODE = "CapabilityModel";
+
 	static readonly SCHEMA_NODE = "Schema";
+
 	static readonly UNIT_NODE = "Unit";
+
 	static readonly INTERFACE_SCHEMA_NODE = "InterfaceInstance/schema";
+
 	static readonly WORD_STOP = ' \t\n\r\v":{[,';
+
 	static readonly REQUIRED_PROPERTY_LABEL = "(required)";
+
 	static readonly SUPPORT_SEMANTIC_TYPES = new Set<string>([
 		"Telemetry",
 		"Property",

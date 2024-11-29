@@ -41,6 +41,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 		rootFolderPath: string,
 	) {
 		super(context, channel, telemetryContext);
+
 		this.projectHostType = ProjectHostType.Container;
 
 		if (!rootFolderPath) {
@@ -50,11 +51,14 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 				"Please initialize iot containerized project with root folder path.",
 			);
 		}
+
 		this.projectRootPath = rootFolderPath;
+
 		this.iotWorkbenchProjectFilePath = path.join(
 			this.projectRootPath,
 			FileNames.iotWorkbenchProjectFileName,
 		);
+
 		this.telemetryContext.properties.projectHostType = this.projectHostType;
 	}
 
@@ -88,6 +92,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 				`${this.iotWorkbenchProjectFilePath}`,
 			);
 		}
+
 		await this.initDevice(boardId, scaffoldType);
 	}
 
@@ -135,6 +140,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 			createTimeScaffoldType,
 			templateFilesInfo,
 		);
+
 		projectConfig[`${ConfigKey.boardId}`] = boardId;
 
 		// Update workspace config to workspace config file
@@ -145,6 +151,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 				"Please initialize the project first.",
 			);
 		}
+
 		await FileUtility.writeJsonFile(
 			createTimeScaffoldType,
 			this.iotWorkbenchProjectFilePath,
@@ -192,6 +199,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 
 		// 1. Ask to customize
 		let openInContainer = false;
+
 		openInContainer = await this.askToOpenInContainer();
 
 		this.telemetryContext.properties.openInContainer =
@@ -208,6 +216,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 					openScenario === OpenScenario.createNewProject
 						? EventNames.createNewProjectEvent
 						: EventNames.configProjectEnvironmentEvent;
+
 				telemetryWorker.sendEvent(eventNames, this.telemetryContext);
 			} catch {
 				// If sending telemetry failed, skip the error to avoid blocking user.
@@ -279,6 +288,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 
 		if (device) {
 			this.componentList.push(device);
+
 			await device.load();
 		}
 	}
@@ -289,6 +299,7 @@ export class IoTContainerizedProject extends IoTWorkbenchProjectBase {
 	 */
 	private async askToOpenInContainer(): Promise<boolean> {
 		const openInContainerOption: vscode.QuickPickItem[] = [];
+
 		openInContainerOption.push(
 			{
 				label: `Yes`,

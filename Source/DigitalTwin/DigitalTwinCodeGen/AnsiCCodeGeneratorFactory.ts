@@ -11,6 +11,7 @@ export class AnsiCCodeGeneratorFactory implements CodeGeneratorFactory {
 		private channel: vscode.OutputChannel,
 		private telemetryContext: TelemetryContext,
 	) {}
+
 	createCodeGeneratorImpl(language: string): CodeGenerator | null {
 		if (language === CodeGenLanguage.ANSIC.toString()) {
 			return new AnsiCCodeGenerator(

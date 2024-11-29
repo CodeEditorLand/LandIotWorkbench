@@ -47,6 +47,7 @@ const ioTHubDeviceModule = importLazy(() => require("./IoTHubDevice"))();
 
 export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 	private deviceRootPath = "";
+
 	private workspaceConfigFilePath = "";
 
 	static folderName = {
@@ -61,6 +62,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 		rootFolderPath: string,
 	) {
 		super(context, channel, telemetryContext);
+
 		this.projectHostType = ProjectHostType.Workspace;
 
 		if (!rootFolderPath) {
@@ -70,7 +72,9 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 				"Please initialize iot workspace project with root folder path.",
 			);
 		}
+
 		this.projectRootPath = rootFolderPath;
+
 		this.telemetryContext.properties.projectHostType = this.projectHostType;
 	}
 
@@ -83,6 +87,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 		if (!devicePath) {
 			throw new WorkspaceConfigNotFoundError(ConfigKey.devicePath);
 		}
+
 		this.deviceRootPath = path.join(this.projectRootPath, devicePath);
 
 		if (
@@ -103,6 +108,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 			this.deviceRootPath,
 			FileNames.iotWorkbenchProjectFileName,
 		);
+
 		await updateProjectHostTypeConfig(
 			scaffoldType,
 			this.iotWorkbenchProjectFilePath,
@@ -177,7 +183,9 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 		workspace.folders.push({
 			path: IoTWorkspaceProject.folderName.deviceDefaultFolderName,
 		});
+
 		workspace.settings[`IoTWorkbench.${ConfigKey.boardId}`] = boardId;
+
 		workspace.settings[`IoTWorkbench.${ConfigKey.devicePath}`] =
 			IoTWorkspaceProject.folderName.deviceDefaultFolderName;
 
@@ -193,6 +201,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 			new azureComponentConfigModule.AzureConfigFileHandler(
 				this.projectRootPath,
 			);
+
 		await azureConfigFileHandler.createIfNotExists(createTimeScaffoldType);
 
 		// Update iot workbench project file
@@ -207,6 +216,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 			this.projectRootPath,
 			`${path.basename(this.projectRootPath)}${FileNames.workspaceExtensionName}`,
 		);
+
 		await FileUtility.writeJsonFile(
 			createTimeScaffoldType,
 			this.workspaceConfigFilePath,
@@ -266,6 +276,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 					openScenario === OpenScenario.createNewProject
 						? EventNames.createNewProjectEvent
 						: EventNames.configProjectEnvironmentEvent;
+
 				telemetryWorker.sendEvent(eventNames, this.telemetryContext);
 			} catch {
 				// If sending telemetry failed, skip the error to avoid blocking user.
@@ -341,7 +352,9 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 			this.projectRootPath,
 			this.channel,
 		);
+
 		await iotHub.updateConfigSettings(scaffoldType);
+
 		this.componentList.push(iotHub);
 
 		// Init iotHub Device
@@ -355,7 +368,9 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 				},
 			],
 		);
+
 		await iotHubDevice.updateConfigSettings(scaffoldType);
+
 		this.componentList.push(iotHubDevice);
 
 		// Init azure function
@@ -380,7 +395,9 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 					},
 				],
 			);
+
 			await functionApp.updateConfigSettings(scaffoldType);
+
 			this.componentList.push(functionApp);
 		}
 	}
@@ -401,7 +418,9 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 						this.projectRootPath,
 						this.channel,
 					);
+
 					await iotHub.load();
+
 					this.componentList.push(iotHub);
 
 					const iothubDevice = new ioTHubDeviceModule.IoTHubDevice(
@@ -415,14 +434,18 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 							},
 						],
 					);
+
 					await iothubDevice.load();
+
 					this.componentList.push(iothubDevice);
 
 					break;
 				}
+
 				case ComponentType.IoTHubDevice: {
 					break;
 				}
+
 				case ComponentType.AzureFunctions: {
 					const functionPath = ConfigHandler.get<string>(
 						ConfigKey.functionPath,
@@ -447,11 +470,15 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 								functionPath,
 								this.channel,
 							);
+
 						await functionApp.load();
+
 						this.componentList.push(functionApp);
 					}
+
 					break;
 				}
+
 				default: {
 					throw new TypeNotSupportedError(
 						"component type",
@@ -473,6 +500,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 			new azureComponentConfigModule.AzureConfigFileHandler(
 				this.projectRootPath,
 			);
+
 		await azureConfigFileHandler.createIfNotExists(scaffoldType);
 
 		const componentConfigs =
@@ -515,10 +543,12 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 					this.projectRootPath,
 					this.channel,
 				);
+
 				this.componentList.push(iothub);
 
 				break;
 			}
+
 			case ProjectTemplateType.AzureFunctions: {
 				const iothub = new ioTHubModule.IoTHub(
 					this.projectRootPath,
@@ -549,15 +579,18 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 					path: IoTWorkspaceProject.folderName
 						.functionDefaultFolderName,
 				});
+
 				workspaceConfig.settings[
 					`IoTWorkbench.${ConfigKey.functionPath}`
 				] = IoTWorkspaceProject.folderName.functionDefaultFolderName;
 
 				this.componentList.push(iothub);
+
 				this.componentList.push(azureFunctions);
 
 				break;
 			}
+
 			default:
 				break;
 		}
@@ -585,6 +618,7 @@ export class IoTWorkspaceProject extends IoTWorkbenchProjectBase {
 				"",
 			);
 		}
+
 		this.workspaceConfigFilePath = path.join(
 			this.projectRootPath,
 			workspaceFile,

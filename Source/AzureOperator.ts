@@ -21,6 +21,7 @@ export class AzureOperator {
 		if (!iotProject) {
 			return;
 		}
+
 		const status = await iotProject.provision();
 
 		if (status) {

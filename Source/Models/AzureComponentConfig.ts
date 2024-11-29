@@ -18,15 +18,21 @@ export enum DependencyType {
 
 export interface DependencyConfig {
 	id: string;
+
 	type: DependencyType;
 }
 
 export interface AzureComponentConfig {
 	id: string;
+
 	type: ComponentType;
+
 	name: string;
+
 	folder: string;
+
 	dependencies: DependencyConfig[];
+
 	componentInfo?: ComponentInfo;
 }
 
@@ -36,15 +42,18 @@ export interface AzureConfigs {
 
 export interface Dependency {
 	component: Component;
+
 	type: DependencyType;
 }
 
 export class AzureConfigFileHandler {
 	private projectRootPath: string;
+
 	private configFilePath: string;
 
 	constructor(projectRoot: string) {
 		this.projectRootPath = projectRoot;
+
 		this.configFilePath = path.join(
 			this.projectRootPath,
 			AzureComponentsStorage.folderName,
@@ -63,6 +72,7 @@ export class AzureConfigFileHandler {
 		if (!(await FileUtility.directoryExists(type, azureConfigFolderPath))) {
 			await FileUtility.mkdirRecursively(type, azureConfigFolderPath);
 		}
+
 		const azureConfigFilePath = path.join(
 			azureConfigFolderPath,
 			AzureComponentsStorage.fileName,
@@ -133,6 +143,7 @@ export class AzureConfigFileHandler {
 				}
 
 				sortedComponentIds.push(componentConfig.id);
+
 				components.push(componentConfig);
 			}
 		} while (
@@ -183,7 +194,9 @@ export class AzureConfigFileHandler {
 			type,
 			this.configFilePath,
 		);
+
 		azureConfigs.componentConfigs.push(component);
+
 		await FileUtility.writeJsonFile(
 			type,
 			this.configFilePath,
@@ -210,7 +223,9 @@ export class AzureConfigFileHandler {
 				`component of config index ${index}`,
 			);
 		}
+
 		component.componentInfo = componentInfo;
+
 		await FileUtility.writeJsonFile(
 			type,
 			this.configFilePath,

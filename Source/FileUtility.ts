@@ -16,6 +16,7 @@ export class FileUtility {
 			if (!(await sdk.FileSystem.exists(dirPath))) {
 				return false;
 			}
+
 			const isDirectory = await sdk.FileSystem.isDirectory(dirPath);
 
 			return isDirectory;
@@ -27,6 +28,7 @@ export class FileUtility {
 
 						return;
 					}
+
 					resolve(stats.isDirectory());
 
 					return;
@@ -45,6 +47,7 @@ export class FileUtility {
 			if (!directoryExists) {
 				return false;
 			}
+
 			const isFile = await sdk.FileSystem.isFile(filePath);
 
 			return isFile;
@@ -56,6 +59,7 @@ export class FileUtility {
 
 						return;
 					}
+
 					resolve(stats.isFile());
 
 					return;
@@ -75,6 +79,7 @@ export class FileUtility {
 
 						return;
 					}
+
 					resolve();
 
 					return;
@@ -90,6 +95,7 @@ export class FileUtility {
 		if (await FileUtility.directoryExists(type, dirPath)) {
 			return;
 		}
+
 		const dirname = path.dirname(dirPath);
 
 		if (path.normalize(dirname) === path.normalize(dirPath)) {
@@ -98,6 +104,7 @@ export class FileUtility {
 			await FileUtility.mkdir(type, dirPath);
 		} else {
 			await FileUtility.mkdirRecursively(type, dirname);
+
 			await FileUtility.mkdir(type, dirPath);
 		}
 	}
@@ -118,6 +125,7 @@ export class FileUtility {
 
 						return;
 					}
+
 					resolve();
 
 					return;
@@ -147,6 +155,7 @@ export class FileUtility {
 		if (!(await FileUtility.directoryExists(type, fileDir))) {
 			await FileUtility.mkdirRecursively(type, fileDir);
 		}
+
 		await FileUtility.writeFile(type, fileDestPath, jsonString);
 	}
 
@@ -166,6 +175,7 @@ export class FileUtility {
 
 							return;
 						}
+
 						resolve(data);
 
 						return;
@@ -208,7 +218,9 @@ export class FileUtility {
 					hash.update(data);
 				}
 			});
+
 			input.on("error", reject);
+
 			input.on("end", () => {
 				hashvalue = hash.digest("hex");
 

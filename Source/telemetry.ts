@@ -13,7 +13,9 @@ import { WorkbenchExtension } from "./WorkbenchExtension";
 
 interface PackageInfo {
 	name: string;
+
 	version: string;
+
 	aiKey: string;
 }
 
@@ -31,13 +33,17 @@ export enum TelemetryResult {
  */
 export interface TelemetryContext {
 	properties: { [key: string]: string };
+
 	measurements: { [key: string]: number };
 }
 
 export class TelemetryWorker {
 	private _reporter: TelemetryReporter | undefined;
+
 	private _extensionContext: vscode.ExtensionContext | undefined;
+
 	private static _instance: TelemetryWorker | undefined;
+
 	private _isInternal = false;
 
 	private constructor(context: vscode.ExtensionContext) {
@@ -50,6 +56,7 @@ export class TelemetryWorker {
 
 			return;
 		}
+
 		if (!packageInfo.aiKey) {
 			console.log(
 				"Unable to initialize telemetry, please make sure AIKey is set in package.json",
@@ -57,12 +64,14 @@ export class TelemetryWorker {
 
 			return;
 		}
+
 		this._reporter = new TelemetryReporter(
 			packageInfo.name,
 			packageInfo.version,
 			packageInfo.aiKey,
 			true,
 		);
+
 		this._isInternal = TelemetryWorker.isInternalUser();
 	}
 
@@ -70,6 +79,7 @@ export class TelemetryWorker {
 		if (!TelemetryWorker._instance) {
 			TelemetryWorker._instance = new TelemetryWorker(context);
 		}
+
 		return TelemetryWorker._instance;
 	}
 
@@ -89,7 +99,9 @@ export class TelemetryWorker {
 	 */
 	createContext(): TelemetryContext {
 		const context: TelemetryContext = { properties: {}, measurements: {} };
+
 		context.properties.result = TelemetryResult.Succeeded;
+
 		context.properties.isInternal = this._isInternal.toString();
 
 		if (this._extensionContext) {
@@ -99,6 +111,7 @@ export class TelemetryWorker {
 				? DevelopEnvironment.RemoteEnv
 				: DevelopEnvironment.LocalEnv;
 		}
+
 		return context;
 	}
 
@@ -111,9 +124,11 @@ export class TelemetryWorker {
 		if (!this._reporter) {
 			return;
 		}
+
 		if (!telemetryContext) {
 			telemetryContext = this.createContext();
 		}
+
 		if (telemetryContext.properties.result === TelemetryResult.Succeeded) {
 			this._reporter.sendTelemetryEvent(
 				eventName,
@@ -194,13 +209,16 @@ export class TelemetryWorker {
 
 			if (error instanceof OperationCanceledError) {
 				telemetryContext.properties.result = TelemetryResult.Cancelled;
+
 				isPopupErrorMsg = false;
 			} else {
 				telemetryContext.properties.result = TelemetryResult.Failed;
 			}
+
 			ExceptionHelper.logError(outputChannel, error, isPopupErrorMsg);
 		} finally {
 			const end: number = Date.now();
+
 			telemetryContext.measurements.duration = (end - start) / 1000;
 
 			try {
@@ -245,6 +263,7 @@ export class TelemetryWorker {
 				return packageInfo;
 			}
 		}
+
 		return undefined;
 	}
 }

@@ -11,21 +11,25 @@ export class ExceptionHelper {
 		error: Error,
 		popupErrorMsg: string,
 	): void;
+
 	static logError(
 		channel: vscode.OutputChannel | undefined,
 		errorMsg: string,
 		popupErrorMsg: string,
 	): void;
+
 	static logError(
 		channel: vscode.OutputChannel | undefined,
 		error: Error,
 		isPopupErrorMsg: boolean,
 	): void;
+
 	static logError(
 		channel: vscode.OutputChannel | undefined,
 		errorMsg: string,
 		isPopupErrorMsg: boolean,
 	): void;
+
 	static logError(
 		channel: vscode.OutputChannel | undefined,
 		errorValue: string | Error,
@@ -37,9 +41,11 @@ export class ExceptionHelper {
 
 		if (typeof errorValue === "string") {
 			_error = new Error(errorValue);
+
 			_message = errorValue;
 		} else {
 			_error = errorValue;
+
 			_message = errorValue.message;
 		}
 

@@ -70,6 +70,7 @@ export function channelShowAndAppend(
 	message: string,
 ): void {
 	channel.show();
+
 	channel.append(message);
 }
 
@@ -78,6 +79,7 @@ export function channelShowAndAppendLine(
 	message: string,
 ): void {
 	channel.show();
+
 	channel.appendLine(message);
 }
 
@@ -95,6 +97,7 @@ export function getRegistryValues(
 					if (e) {
 						return reject(e);
 					}
+
 					if (exists) {
 						regKey.get(name, (err, result) => {
 							if (!err) {
@@ -126,6 +129,7 @@ export function mkdirRecursivelySync(dirPath: string): void {
 	if (directoryExistsSync(dirPath)) {
 		return;
 	}
+
 	const dirname = path.dirname(dirPath);
 
 	if (path.normalize(dirname) === path.normalize(dirPath)) {
@@ -134,6 +138,7 @@ export function mkdirRecursivelySync(dirPath: string): void {
 		fs.mkdirSync(dirPath);
 	} else {
 		mkdirRecursivelySync(dirname);
+
 		fs.mkdirSync(dirPath);
 	}
 }
@@ -244,6 +249,7 @@ export async function selectWorkspaceItem(
 			},
 		);
 	}
+
 	folderPicks.push({ label: "Browse...", description: "", data: undefined });
 
 	const folder = await vscode.window.showQuickPick(folderPicks, {
@@ -289,9 +295,11 @@ export function executeCommand(command: string): Promise<string> {
 			if (error) {
 				reject(error);
 			}
+
 			if (stderr) {
 				reject(stderr);
 			}
+
 			resolve(stdout);
 		});
 	});
@@ -312,15 +320,21 @@ export function runCommand(
 			cwd: workingDir,
 			shell: true,
 		});
+
 		process.stdout.on("data", (data: string) => {
 			console.log(data);
+
 			outputChannel.appendLine(data);
 		});
+
 		process.stderr.on("data", (data: string) => {
 			console.log(data);
+
 			outputChannel.appendLine(data);
 		});
+
 		process.on("error", (error) => reject({ error, stderr, stdout }));
+
 		process.on("close", (status) => {
 			if (status === 0) {
 				resolve({ status, stdout, stderr });
@@ -375,7 +389,9 @@ export async function askToConfigureEnvironment(
 
 		const message = `Configuration of project environmnet done. \
     You can run the ${operation.toLocaleLowerCase()} operation now.`;
+
 		channelShowAndAppendLine(channel, message);
+
 		vscode.window.showInformationMessage(message);
 	} else {
 		const message = `${operation} operation failed and user cancels to configure project environment.`;
@@ -412,6 +428,7 @@ export async function askAndOpenProject(
 			"Operation failed and user opens project folder as workspace.";
 
 		const workspaceFilePath = path.join(rootPath, workspaceFile);
+
 		await vscode.commands.executeCommand(
 			IoTCubeCommands.OpenLocally,
 			workspaceFilePath,
@@ -448,6 +465,7 @@ export async function askAndOpenInRemote(
 
 	if (result === DialogResponses.yes) {
 		telemetryContext.properties.errorMessage = `${operation} operation failed and user reopens project in container.`;
+
 		await RemoteExtension.checkRemoteExtension("open project in container");
 
 		await vscode.commands.executeCommand(
@@ -479,6 +497,7 @@ export async function takeNoDeviceSurvey(
 	if (result === DialogResponses.yes) {
 		// Open the survey page
 		telemetryContext.properties.message = "User takes no-device survey.";
+
 		telemetryContext.properties.result = TelemetryResult.Succeeded;
 
 		const extension = WorkbenchExtension.getExtension(context);
@@ -486,7 +505,9 @@ export async function takeNoDeviceSurvey(
 		if (!extension) {
 			return;
 		}
+
 		const extensionVersion = extension.packageJSON.version || "unknown";
+
 		await vscode.commands.executeCommand(
 			VscodeCommands.VscodeOpen,
 			vscode.Uri.parse(
@@ -494,6 +515,7 @@ export async function takeNoDeviceSurvey(
 			),
 		);
 	}
+
 	return;
 }
 
@@ -524,6 +546,7 @@ export async function getTemplateFilesInfo(
 		);
 
 		const fileContent = fs.readFileSync(filePath, "utf8");
+
 		templateFilesInfo.push({
 			fileName: fileInfo.fileName,
 			sourcePath: fileInfo.sourcePath,
@@ -563,6 +586,7 @@ export async function generateTemplateFile(
 			);
 		}
 	}
+
 	return;
 }
 
@@ -574,6 +598,7 @@ export function channelPrintJsonObject(
 	const indentationSpace = 4;
 
 	const jsonString = JSON.stringify(data, null, indentationSpace);
+
 	channelShowAndAppendLine(channel, jsonString);
 }
 
@@ -593,6 +618,7 @@ export async function handleExternalProject(
 		static configureAsContainerProject: vscode.MessageItem = {
 			title: "Configure as Embedded Linux Project",
 		};
+
 		static createNewProject: vscode.MessageItem = {
 			title: "Create IoT Project",
 		};
@@ -608,12 +634,14 @@ export async function handleExternalProject(
 	if (result === Choice.configureAsContainerProject) {
 		telemetryContext.properties.errorMessage =
 			"Operation failed and user configures external project to be an IoT Embedded Linux Project";
+
 		await vscode.commands.executeCommand(
 			WorkbenchCommands.ConfigureProjectEnvironment,
 		);
 	} else if (result === Choice.createNewProject) {
 		telemetryContext.properties.errorMessage =
 			"Operation failed and user creates new project";
+
 		await vscode.commands.executeCommand(
 			WorkbenchCommands.InitializeProject,
 		);
@@ -651,6 +679,7 @@ export async function getProjectConfig(
 			projectConfig = JSON.parse(projectConfigContent);
 		}
 	}
+
 	return projectConfig;
 }
 
@@ -658,6 +687,7 @@ export function getWorkspaceFile(rootPath: string): string {
 	if (!rootPath) {
 		throw new ArgumentEmptyOrNullError("get workspace file", "root path");
 	}
+
 	const workspaceFiles = fs
 		.readdirSync(rootPath)
 		.filter((file) =>
@@ -704,6 +734,7 @@ export async function updateProjectHostTypeConfig(
 	if (!projectConfig[`${ConfigKey.workbenchVersion}`]) {
 		projectConfig[`${ConfigKey.workbenchVersion}`] = workbenchVersion;
 	}
+
 	await FileUtility.writeJsonFile(
 		type,
 		iotWorkbenchProjectFilePath,
@@ -732,6 +763,7 @@ export async function configExternalCMakeProjectToIoTContainerProject(
 
 	if (!(await FileUtility.fileExists(scaffoldType, cmakeFile))) {
 		const message = `Missing ${FileNames.cmakeFileName} to be configured as Embedded Linux project.`;
+
 		vscode.window.showWarningMessage(message);
 
 		throw new OperationCanceledError(message);
@@ -754,6 +786,7 @@ export async function configExternalCMakeProjectToIoTContainerProject(
 		scaffoldType,
 		iotWorkbenchProjectFile,
 	);
+
 	projectConfig[`${ConfigKey.boardId}`] =
 		raspberryPiDeviceModule.RaspberryPiDevice.boardId;
 
@@ -776,6 +809,7 @@ export async function properlyOpenIoTWorkspaceProject(
 	if (!rootPath) {
 		throw new WorkspaceNotOpenError("properly open IoT workspace project");
 	}
+
 	const workbenchFileName = path.join(
 		rootPath,
 		IoTWorkspaceProject.folderName.deviceDefaultFolderName,
@@ -807,6 +841,7 @@ export function isWorkspaceProject(): boolean {
 	if (fs.existsSync(workbenchFileName) && workspaceFile) {
 		return true;
 	}
+
 	return false;
 }
 
@@ -842,6 +877,7 @@ export async function constructAndLoadIoTProject(
 		);
 	} else if (projectHostType === ProjectHostType.Workspace) {
 		const projectRootPath = path.join(projectFileRootPath, "..");
+
 		iotProject = new ioTWorkspaceProjectModule.IoTWorkspaceProject(
 			context,
 			channel,
@@ -858,6 +894,7 @@ export async function constructAndLoadIoTProject(
 				// Just try to load the project at extension load time. Ignore error
 			}
 		}
+
 		return;
 	}
 
@@ -874,6 +911,7 @@ export async function constructAndLoadIoTProject(
 			// If external project
 			await handleExternalProject(telemetryContext);
 		}
+
 		return;
 	}
 
@@ -892,6 +930,7 @@ export function getEnumKeyByEnumValue(myEnum: any, enumValue: any): any {
 	if (key === null) {
 		return undefined;
 	}
+
 	return myEnum[key];
 }
 
@@ -946,6 +985,7 @@ export async function askToOverwriteFile(
 	fileName: string,
 ): Promise<vscode.QuickPickItem> {
 	const overwriteTasksJsonOption: vscode.QuickPickItem[] = [];
+
 	overwriteTasksJsonOption.push(
 		{
 			label: OverwriteLabel.No,
@@ -1029,6 +1069,7 @@ export async function fetchAndExecuteTask(
 
 	if (!tasks || tasks.length < 1) {
 		const message = `Failed to fetch tasks.`;
+
 		channelShowAndAppendLine(channel, message);
 
 		await askToConfigureEnvironment(
@@ -1050,6 +1091,7 @@ export async function fetchAndExecuteTask(
 
 	if (!operationTask || operationTask.length < 1) {
 		const message = `Failed to fetch default ${operationType.toLowerCase()} task with task name ${taskName}.`;
+
 		channelShowAndAppendLine(channel, message);
 
 		await askToConfigureEnvironment(
@@ -1074,6 +1116,7 @@ export async function fetchAndExecuteTask(
 			"",
 		);
 	}
+
 	return;
 }
 
@@ -1140,6 +1183,7 @@ export async function getEnvTemplateFilesAndAskOverwrite(
 			"template Json file",
 		);
 	}
+
 	const templateFolderName = projectEnvTemplate[0].path;
 
 	const templateFolder = context.asAbsolutePath(
@@ -1155,6 +1199,7 @@ export async function getEnvTemplateFilesAndAskOverwrite(
 
 	// Ask overwrite or not
 	let overwriteAll = false;
+
 	overwriteAll = await askToOverwrite(
 		scaffoldType,
 		projectPath,
@@ -1217,6 +1262,7 @@ export function getHashFromString(
 	algorithm = "md5",
 ): string {
 	const hash = crypto.createHash(algorithm);
+
 	hash.update(stringToHash);
 
 	const hashValue = hash.digest("hex");

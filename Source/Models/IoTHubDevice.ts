@@ -28,10 +28,12 @@ async function getDeviceNumber(
 		(resolve: (value: number) => void, reject: (error: Error) => void) => {
 			const registry: iothub.Registry =
 				iothub.Registry.fromConnectionString(iotHubConnectionString);
+
 			registry.list((err, list) => {
 				if (err) {
 					return reject(err);
 				}
+
 				if (!list) {
 					return resolve(0);
 				} else {
@@ -71,14 +73,19 @@ async function getProvisionIothubDeviceSelection(
 			},
 		];
 	}
+
 	return provisionIothubDeviceSelection;
 }
 
 export class IoTHubDevice implements Component, Provisionable {
 	private componentType: ComponentType;
+
 	private channel: vscode.OutputChannel;
+
 	private projectRootPath: string;
+
 	private componentId: string;
+
 	private azureConfigFileHandler: AzureConfigFileHandler;
 
 	get id(): string {
@@ -93,9 +100,13 @@ export class IoTHubDevice implements Component, Provisionable {
 		dependencyComponents: Dependency[] | null = null,
 	) {
 		this.componentType = ComponentType.IoTHubDevice;
+
 		this.channel = channel;
+
 		this.componentId = Guid.create().toString();
+
 		this.projectRootPath = projectRoot;
+
 		this.azureConfigFileHandler = new AzureConfigFileHandler(
 			this.projectRootPath,
 		);
@@ -129,6 +140,7 @@ export class IoTHubDevice implements Component, Provisionable {
 
 		if (componentConfig) {
 			this.componentId = componentConfig.id;
+
 			this.dependencies = componentConfig.dependencies;
 		}
 	}
@@ -153,11 +165,13 @@ export class IoTHubDevice implements Component, Provisionable {
 				`component of config id ${iotHubId}`,
 			);
 		}
+
 		if (!componentConfig.componentInfo) {
 			throw new AzureConfigNotFoundError(
 				`componentInfo of config id ${iotHubId}`,
 			);
 		}
+
 		const iotHubConnectionString =
 			componentConfig.componentInfo.values.iotHubConnectionString;
 
@@ -166,6 +180,7 @@ export class IoTHubDevice implements Component, Provisionable {
 				`iotHubConnectionString of config id ${iotHubId}`,
 			);
 		}
+
 		const selection = await vscode.window.showQuickPick(
 			getProvisionIothubDeviceSelection(iotHubConnectionString),
 			{
@@ -208,6 +223,7 @@ export class IoTHubDevice implements Component, Provisionable {
 						},
 					});
 				}
+
 				break;
 
 			case "create":
@@ -228,11 +244,13 @@ export class IoTHubDevice implements Component, Provisionable {
 						},
 					});
 				}
+
 				break;
 
 			default:
 				break;
 		}
+
 		return true;
 	}
 
@@ -253,6 +271,7 @@ export class IoTHubDevice implements Component, Provisionable {
 					"component info",
 				);
 			}
+
 			await this.azureConfigFileHandler.updateComponent(
 				type,
 				iotHubComponentIndex,
@@ -267,6 +286,7 @@ export class IoTHubDevice implements Component, Provisionable {
 				type: this.componentType,
 				componentInfo,
 			};
+
 			await this.azureConfigFileHandler.appendComponent(
 				type,
 				newIotHubConfig,

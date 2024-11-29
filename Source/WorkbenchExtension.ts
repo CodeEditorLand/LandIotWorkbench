@@ -11,9 +11,11 @@ export class WorkbenchExtension {
 	vscode.Extension<any> | undefined {
 		if (!WorkbenchExtension.extension) {
 			const extensionId = WorkbenchExtension.getExtensionId(context);
+
 			WorkbenchExtension.extension =
 				vscode.extensions.getExtension(extensionId);
 		}
+
 		return WorkbenchExtension.extension;
 	}
 

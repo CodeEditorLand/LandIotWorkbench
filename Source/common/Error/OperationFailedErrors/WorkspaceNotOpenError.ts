@@ -14,6 +14,7 @@ export class WorkspaceNotOpenError extends OperationFailedError {
 			"You have not yet opened a folder in Visual Studio Code.",
 			"Please select a folder first.",
 		);
+
 		this.name = "WorkspaceNotOpenError";
 	}
 }

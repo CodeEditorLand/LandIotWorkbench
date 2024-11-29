@@ -23,10 +23,15 @@ import { Provisionable } from "./Interfaces/Provisionable";
 
 export class IoTHub implements Component, Provisionable {
 	dependencies: DependencyConfig[] = [];
+
 	private componentType: ComponentType;
+
 	private channel: vscode.OutputChannel;
+
 	private projectRootPath: string;
+
 	private componentId: string;
+
 	private azureConfigFileHandler: AzureConfigFileHandler;
 
 	get id(): string {
@@ -35,9 +40,13 @@ export class IoTHub implements Component, Provisionable {
 
 	constructor(projectRoot: string, channel: vscode.OutputChannel) {
 		this.componentType = ComponentType.IoTHub;
+
 		this.channel = channel;
+
 		this.componentId = Guid.create().toString();
+
 		this.projectRootPath = projectRoot;
+
 		this.azureConfigFileHandler = new AzureConfigFileHandler(
 			this.projectRootPath,
 		);
@@ -62,6 +71,7 @@ export class IoTHub implements Component, Provisionable {
 
 		if (componentConfig) {
 			this.componentId = componentConfig.id;
+
 			this.dependencies = componentConfig.dependencies;
 		}
 	}
@@ -166,6 +176,7 @@ export class IoTHub implements Component, Provisionable {
 				iothub.properties.eventHubEndpoints.events.path;
 
 			const scaffoldType = ScaffoldType.Workspace;
+
 			await this.updateConfigSettings(scaffoldType, {
 				values: {
 					iotHubConnectionString: iothub.iotHubConnectionString,
@@ -180,6 +191,7 @@ export class IoTHub implements Component, Provisionable {
 					"IoT Hub provision succeeded.",
 				);
 			}
+
 			return true;
 		} else if (!iothub) {
 			return false;
@@ -209,6 +221,7 @@ export class IoTHub implements Component, Provisionable {
 					"component info",
 				);
 			}
+
 			await this.azureConfigFileHandler.updateComponent(
 				type,
 				iotHubComponentIndex,
@@ -223,6 +236,7 @@ export class IoTHub implements Component, Provisionable {
 				type: this.componentType,
 				componentInfo,
 			};
+
 			await this.azureConfigFileHandler.appendComponent(
 				type,
 				newIoTHubConfig,

@@ -29,12 +29,19 @@ export enum CodeGenPlatform {
 
 export interface CodeGenExecutionItem {
 	outputDirectory: string;
+
 	capabilityModelFilePath: string;
+
 	interfaceDirecoty: string;
+
 	projectName: string;
+
 	languageLabel: string;
+
 	codeGenProjectType: CodeGenProjectType;
+
 	deviceSdkReferenceType: DeviceSdkReferenceType;
+
 	deviceConnectionType: DeviceConnectionType;
 }
 

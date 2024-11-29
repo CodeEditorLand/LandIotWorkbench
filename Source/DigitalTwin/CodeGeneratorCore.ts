@@ -40,16 +40,23 @@ import request = require("request-promise");
 
 interface CodeGeneratorDownloadLocation {
 	win32Md5: string;
+
 	win32PackageUrl: string;
+
 	macOSMd5: string;
+
 	macOSPackageUrl: string;
+
 	ubuntuMd5: string;
+
 	ubuntuPackageUrl: string;
 }
 
 interface CodeGeneratorConfigItem {
 	codeGeneratorVersion: string;
+
 	iotWorkbenchMinimalVersion: string;
+
 	codeGeneratorLocation: CodeGeneratorDownloadLocation;
 }
 
@@ -84,13 +91,16 @@ function compareVersion(verion1: string, verion2: string): 1 | -1 | 0 {
 	/* default is 0, version format should be 1.1.0 */
 	while (i < 3) {
 		v1 = Number(ver1[i]);
+
 		v2 = Number(ver2[i]);
 
 		if (v1 > v2) return 1;
 
 		if (v1 < v2) return -1;
+
 		i++;
 	}
+
 	return 0;
 }
 
@@ -196,6 +206,7 @@ export class CodeGeneratorCore {
 		};
 
 		const scaffoldType = ScaffoldType.Local;
+
 		await this.saveCodeGenConfig(
 			scaffoldType,
 			rootPath,
@@ -288,6 +299,7 @@ export class CodeGeneratorCore {
 					channel,
 					`${DigitalTwinConstants.dtPrefix} Regenerate device code using an existing CodeGen configure:`,
 				);
+
 				CodeGenUtility.printCodeGenConfig(
 					codeGenExecutionItem,
 					channel,
@@ -321,6 +333,7 @@ export class CodeGeneratorCore {
 				if (!projectName || projectName.length === 0) {
 					return `The project name can't be empty.`;
 				}
+
 				if (
 					!DigitalTwinConstants.codegenProjectNameRegex.test(
 						projectName,
@@ -328,6 +341,7 @@ export class CodeGeneratorCore {
 				) {
 					return `Project name can only contain ${DigitalTwinConstants.codegenProjectNameRegexDescription}.`;
 				}
+
 				return;
 			},
 		});
@@ -385,6 +399,7 @@ export class CodeGeneratorCore {
 		channel: vscode.OutputChannel,
 	): Promise<string> {
 		const languageItems: vscode.QuickPickItem[] = [];
+
 		languageItems.push({ label: CodeGenLanguage.ANSIC, description: "" });
 
 		const languageSelection = await vscode.window.showQuickPick(
@@ -416,6 +431,7 @@ export class CodeGeneratorCore {
 	): Promise<DeviceConnectionType> {
 		// Load available Azure IoT connection types from JSON configuration
 		const connectionTypeItems: vscode.QuickPickItem[] = [];
+
 		codegenOptionsConfig.connectionTypes.forEach(
 			(element: PnpDeviceConnection) => {
 				connectionTypeItems.push({
@@ -490,6 +506,7 @@ export class CodeGeneratorCore {
 		);
 
 		const projectTemplateItems: vscode.QuickPickItem[] = [];
+
 		projectTemplates.forEach((element: CodeGenProjectTemplate) => {
 			projectTemplateItems.push({
 				label: element.name,
@@ -571,6 +588,7 @@ export class CodeGeneratorCore {
 			case CodeGenProjectType.CMakeLinux: {
 				// Load available Azure IoT connection types from JSON configuration
 				const sdkReferenceTypeItems: vscode.QuickPickItem[] = [];
+
 				codegenOptionsConfig.deviceSdkReferenceTypes.forEach(
 					(element: DeviceSdkReference) => {
 						sdkReferenceTypeItems.push({
@@ -628,6 +646,7 @@ export class CodeGeneratorCore {
 
 				break;
 			}
+
 			default:
 				throw new TypeNotSupportedError(
 					"project type",
@@ -712,6 +731,7 @@ export class CodeGeneratorCore {
 					codeGenConfigPath,
 					"utf8",
 				);
+
 				codeGenExecutions = JSON.parse(codeGenConfig as string);
 
 				if (codeGenExecutions) {
@@ -721,6 +741,7 @@ export class CodeGeneratorCore {
 								item.capabilityModelFilePath !==
 								capabilityModelFilePath,
 						);
+
 					codeGenExecutions.codeGenExecutionItems.push(
 						codeGenExecutionInfo,
 					);
@@ -730,6 +751,7 @@ export class CodeGeneratorCore {
 					codeGenExecutionItems: [codeGenExecutionInfo],
 				};
 			}
+
 			if (codeGenExecutions) {
 				await FileUtility.writeJsonFile(
 					type,
@@ -798,6 +820,7 @@ export class CodeGeneratorCore {
 		if (!targetConfigItem) {
 			const message = `${DigitalTwinConstants.dtPrefix} \
       Failed to get download information for ${DigitalTwinConstants.codeGenCli}.`;
+
 			utils.channelShowAndAppendLine(channel, message);
 		}
 
@@ -843,13 +866,16 @@ export class CodeGeneratorCore {
 
 		if (platform === OSPlatform.WIN32) {
 			packageUri = targetConfigItem.codeGeneratorLocation.win32PackageUrl;
+
 			md5value = targetConfigItem.codeGeneratorLocation.win32Md5;
 		} else if (platform === OSPlatform.DARWIN) {
 			packageUri = targetConfigItem.codeGeneratorLocation.macOSPackageUrl;
+
 			md5value = targetConfigItem.codeGeneratorLocation.macOSMd5;
 		} else {
 			packageUri =
 				targetConfigItem.codeGeneratorLocation.ubuntuPackageUrl;
+
 			md5value = targetConfigItem.codeGeneratorLocation.ubuntuMd5;
 		}
 
@@ -873,7 +899,9 @@ export class CodeGeneratorCore {
 		);
 
 		const filePath = path.join(tempPath, `${md5value}.zip`);
+
 		fs.writeFileSync(filePath, zipData);
+
 		utils.channelShowAndAppendLine(channel, " download complete.");
 
 		// Verify
@@ -912,8 +940,11 @@ export class CodeGeneratorCore {
 
 		// Extract files
 		const codeGenCommandPath = localCodeGenCliPath();
+
 		utils.channelShowAndAppend(channel, `Step 3: Extracting files ...`);
+
 		await FileUtility.extractZipFile(filePath, codeGenCommandPath);
+
 		utils.channelShowAndAppendLine(channel, " done.");
 
 		// Update the config
@@ -968,6 +999,7 @@ export class CodeGeneratorCore {
 				installOrUpgrade = CodeGenCliOperation.Upgrade;
 			}
 		}
+
 		if (installOrUpgrade === CodeGenCliOperation.None) {
 			// Already exists
 			utils.channelShowAndAppendLine(
@@ -989,10 +1021,12 @@ export class CodeGeneratorCore {
 			installOrUpgrade === CodeGenCliOperation.Install
 				? ` not installed, start installing:`
 				: ` new version detected, start upgrading from ${currentVersion} to ${newVersion}:`;
+
 		utils.channelShowAndAppendLine(channel, message);
 
 		// Start donwloading
 		let result = false;
+
 		await vscode.window.withProgress(
 			{
 				location: vscode.ProgressLocation.Notification,

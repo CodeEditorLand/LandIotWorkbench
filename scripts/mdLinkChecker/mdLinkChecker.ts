@@ -16,11 +16,13 @@ const args = require("yargs").argv;
  */
 interface Link {
 	address: string;
+
 	lineNumber: number;
 }
 
 interface FileReport {
 	all: string[];
+
 	errors: string[];
 }
 
@@ -33,9 +35,11 @@ function executeCommand(command: string): Promise<string> {
 			if (error) {
 				reject(error);
 			}
+
 			if (stderr) {
 				reject(stderr);
 			}
+
 			resolve(stdout);
 		});
 	});
@@ -84,12 +88,14 @@ function checkLinksCore(file: string, links: Link[]): Promise<FileReport> {
 						const fullPath = path
 							.resolve(currentWorkingDirectory, link.address)
 							.split(splitPattern)[0];
+
 						isBroken = !fs.existsSync(fullPath);
 					} catch (error) {
 						// If there's an error, log the link
 						console.log(
 							`Error: ${link.address} on line ${link.lineNumber} is not an HTTP/s or relative link.`,
 						);
+
 						isBroken = true;
 					}
 				}
@@ -97,12 +103,16 @@ function checkLinksCore(file: string, links: Link[]): Promise<FileReport> {
 				// Print log
 				if (isBroken) {
 					const message = `Error: [${file}] ${link.address} on line ${link.lineNumber} is unreachable.`;
+
 					fileReport.errors.push(message);
+
 					fileReport.all.push(message);
 				} else {
 					const message = `Info: [${file}] ${link.address} on line ${link.lineNumber}.`;
+
 					fileReport.all.push(message);
 				}
+
 				resolve(fileReport);
 			});
 		});
@@ -141,6 +151,7 @@ function getLinks(file: string): Promise<Link[]> {
 					const captureAddressPattern = /\[[\s\S]*?\]\(([\S]*?)\)/;
 
 					const address = links[i].match(captureAddressPattern)[1];
+
 					linksToReturn.push({
 						address: address,
 						lineNumber: lineNumber,
@@ -192,6 +203,7 @@ async function checkLinks(file: string): Promise<string[]> {
 	} else {
 		return new Promise((resolve) => {
 			console.log(`\n###### Checking file: ${file}`);
+
 			console.log(`No links found.`);
 
 			resolve([]);
@@ -215,6 +227,7 @@ async function main(): Promise<void> {
 		const command =
 			`find ${rootDir}` +
 			" -name '*.md' ! -path './node_modules/*' ! -path './out/*'";
+
 		files = (await executeCommand(command)).trim().split("\n");
 	} else if (file) {
 		files[0] = file;
@@ -223,12 +236,14 @@ async function main(): Promise<void> {
 	// Check links for each file
 	for (let i = 0; i < files.length; i++) {
 		const errorLinksInFile = await checkLinks(files[i]);
+
 		errorLinks = errorLinks.concat(errorLinksInFile);
 	}
 
 	// Log out error message
 	if (errorLinks.length > 0) {
 		console.log("\n####### Issues :( ");
+
 		console.log(`Error links in total: ${errorLinks.length}`);
 
 		for (let i = 0; i < errorLinks.length; i++) {

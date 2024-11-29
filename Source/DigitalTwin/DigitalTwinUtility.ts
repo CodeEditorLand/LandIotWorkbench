@@ -15,6 +15,7 @@ import { ModelRepositoryManager } from "./pnp/src/modelRepository/modelRepositor
 export class DigitalTwinUtility {
 	// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 	private static extensionInstance: any;
+
 	private static channel: vscode.OutputChannel;
 
 	/**
@@ -28,6 +29,7 @@ export class DigitalTwinUtility {
 		DigitalTwinUtility.extensionInstance = new ApiProvider(
 			modelRepositoryManager,
 		);
+
 		DigitalTwinUtility.channel = channel;
 	}
 
@@ -38,6 +40,7 @@ export class DigitalTwinUtility {
 		if (!DigitalTwinUtility.extensionInstance) {
 			throw new DigitalTwinNotInitializedError("select capability model");
 		}
+
 		let result = "";
 
 		try {
@@ -46,6 +49,7 @@ export class DigitalTwinUtility {
 		} catch {
 			// skip for UserCancelledError
 		}
+
 		if (!result) {
 			throw new OperationCanceledError(
 				`Selected device capability model file cancelled.`,
@@ -75,6 +79,7 @@ export class DigitalTwinUtility {
 				"download dependent interface",
 			);
 		}
+
 		try {
 			await DigitalTwinUtility.extensionInstance.downloadDependentInterface(
 				folder,
@@ -88,6 +93,7 @@ export class DigitalTwinUtility {
 
 			return false;
 		}
+
 		return true;
 	}
 }

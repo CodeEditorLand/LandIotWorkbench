@@ -36,6 +36,7 @@ export class AnsiCCodeGenerator implements CodeGenerator {
 					this.telemetryContext,
 					codegenInfo.outputDirectory,
 				);
+
 				project.openProject(
 					ScaffoldType.Local,
 					true,
@@ -104,12 +105,15 @@ export class AnsiCCodeGenerator implements CodeGenerator {
 
 		try {
 			await utils.runCommand(command, [], cmdPath, this.channel);
+
 			message = `${DigitalTwinConstants.dtPrefix} generate PnP device code completed.`;
+
 			utils.channelShowAndAppendLine(this.channel, message);
 
 			return true;
 		} catch {
 			message = `${DigitalTwinConstants.dtPrefix} generate PnP device code failed.`;
+
 			utils.channelShowAndAppendLine(this.channel, message);
 
 			return false;

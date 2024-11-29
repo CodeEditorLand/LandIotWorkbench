@@ -37,6 +37,7 @@ export class Utility {
 		const content: string = Utility.replaceAll(template, replacement);
 
 		const jsonContent = JSON.parse(content);
+
 		await fs.writeJson(filePath, jsonContent, {
 			spaces: Constants.JSON_SPACE,
 			encoding: Constants.UTF8,
@@ -74,9 +75,11 @@ export class Utility {
 		if (!name || name.trim() === Constants.EMPTY_STRING) {
 			return `Name ${Constants.NOT_EMPTY_MSG}`;
 		}
+
 		if (!Constants.MODEL_NAME_REGEX.test(name)) {
 			return `Name can only contain ${Constants.MODEL_NAME_REGEX_DESCRIPTION}`;
 		}
+
 		const filename: string = DeviceModelManager.generateModelFileName(
 			name,
 			type,
@@ -85,6 +88,7 @@ export class Utility {
 		if (await fs.pathExists(path.join(folder, filename))) {
 			return `${type} ${name} already exists in folder ${folder}`;
 		}
+
 		return undefined;
 	}
 
@@ -100,6 +104,7 @@ export class Utility {
 		if (!name || name.trim() === Constants.EMPTY_STRING) {
 			return `${placeholder} ${Constants.NOT_EMPTY_MSG}`;
 		}
+
 		return undefined;
 	}
 
@@ -135,7 +140,9 @@ export class Utility {
 		if (!type) {
 			throw new PnPModelTypeInvalidError("create model file", type);
 		}
+
 		const replacement = new Map<string, string>();
+
 		replacement.set(":", "_");
 
 		const modelName: string = Utility.replaceAll(modelId, replacement);
@@ -151,12 +158,15 @@ export class Utility {
 			if (!(await fs.pathExists(path.join(folder, candidate)))) {
 				break;
 			}
+
 			counter++;
+
 			candidate = DeviceModelManager.generateModelFileName(
 				`${modelName}_${counter}`,
 				type,
 			);
 		}
+
 		await fs.writeJson(path.join(folder, candidate), content, {
 			spaces: Constants.JSON_SPACE,
 			encoding: Constants.UTF8,
@@ -187,6 +197,7 @@ export class Utility {
 				filePath,
 			};
 		}
+
 		return undefined;
 	}
 

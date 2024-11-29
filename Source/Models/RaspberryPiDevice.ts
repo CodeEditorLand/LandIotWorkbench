@@ -22,23 +22,33 @@ import { RemoteExtension } from "./RemoteExtension";
 
 interface DeviceInfo {
 	id: string;
+
 	mac: string;
+
 	ip?: string;
+
 	host?: string;
+
 	ssid?: string;
 }
 
 class RaspberryPiUploadConfig {
 	static host = "hostname";
+
 	static port = 22;
+
 	static user = "username";
+
 	static password = "password";
+
 	static projectPath = "IoTProject";
+
 	static updated = false;
 }
 
 export class RaspberryPiDevice extends ContainerDeviceBase {
 	private static _boardId = "raspberrypi";
+
 	name = "Raspberry Pi";
 
 	static get boardId(): string {
@@ -77,6 +87,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 		) {
 			return;
 		}
+
 		const getBinaryFileNameCmd = `cat ${cmakeFilePath} | grep 'add_executable' \
     | sed -e 's/^add_executable(//' | awk '{$1=$1};1' | cut -d ' ' -f1 | tr -d '\n'`;
 
@@ -94,6 +105,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 		}
 
 		const chmodCmd = `cd ${RaspberryPiUploadConfig.projectPath} && [ -f ${binaryName} ] && chmod +x ${binaryName}`;
+
 		await ssh.exec(chmodCmd);
 
 		return;
@@ -117,7 +129,9 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 			if (!binaryName) {
 				const message = `No executable file specified in ${FileNames.cmakeFileName}. \
         Nothing to upload to target machine.`;
+
 				vscode.window.showWarningMessage(message);
+
 				channelShowAndAppendLine(this.channel, message);
 
 				return false;
@@ -133,7 +147,9 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 			) {
 				const message = `Executable file ${binaryName} does not exist under ${this.outputPath}. \
         Please compile device code first.`;
+
 				vscode.window.showWarningMessage(message);
+
 				channelShowAndAppendLine(this.channel, message);
 
 				return false;
@@ -144,6 +160,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 			}
 
 			const ssh = new sdk.SSH();
+
 			await ssh.open(
 				RaspberryPiUploadConfig.host,
 				RaspberryPiUploadConfig.port,
@@ -185,7 +202,9 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 			}
 
 			const message = `Successfully deploy compiled files to device board.`;
+
 			channelShowAndAppendLine(this.channel, message);
+
 			vscode.window.showInformationMessage(message);
 		} catch (error) {
 			throw new OperationFailedError(
@@ -202,6 +221,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 		const sshDevicePickItems: vscode.QuickPickItem[] = [];
 
 		const deviceInfos: DeviceInfo[] = await sdk.SSH.discover();
+
 		deviceInfos.forEach((deviceInfo) => {
 			sshDevicePickItems.push({
 				label: deviceInfo.ip as string,
@@ -262,6 +282,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 
 			do {
 				const selectDeviceItems = this.autoDiscoverDeviceIp();
+
 				selectDeviceChoice = await vscode.window.showQuickPick(
 					selectDeviceItems,
 					{
@@ -291,12 +312,14 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 				prompt: `Please input device ip or hostname here.`,
 				ignoreFocusOut: true,
 			};
+
 			raspiHost = await vscode.window.showInputBox(raspiHostOption);
 
 			if (!raspiHost) {
 				throw new OperationCanceledError("Hostname input cancelled.");
 			}
 		}
+
 		raspiHost = raspiHost || RaspberryPiUploadConfig.host;
 
 		// Raspberry Pi SSH port
@@ -312,6 +335,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 		if (!raspiPortString) {
 			throw new OperationCanceledError("Port input cancelled.");
 		}
+
 		const raspiPort =
 			raspiPortString && !isNaN(Number(raspiPortString))
 				? Number(raspiPortString)
@@ -329,6 +353,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 		if (!raspiUser) {
 			throw new OperationCanceledError("User name input cancelled.");
 		}
+
 		raspiUser = raspiUser || RaspberryPiUploadConfig.user;
 
 		// Raspberry Pi user password
@@ -344,6 +369,7 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 		if (raspiPassword === undefined) {
 			throw new OperationCanceledError("Password input cancelled.");
 		}
+
 		raspiPassword = raspiPassword || RaspberryPiUploadConfig.password;
 
 		// Raspberry Pi path
@@ -360,13 +386,19 @@ export class RaspberryPiDevice extends ContainerDeviceBase {
 				"Project destination path input cancelled.",
 			);
 		}
+
 		raspiPath = raspiPath || RaspberryPiUploadConfig.projectPath;
 
 		RaspberryPiUploadConfig.host = raspiHost;
+
 		RaspberryPiUploadConfig.port = raspiPort;
+
 		RaspberryPiUploadConfig.user = raspiUser;
+
 		RaspberryPiUploadConfig.password = raspiPassword;
+
 		RaspberryPiUploadConfig.projectPath = raspiPath;
+
 		RaspberryPiUploadConfig.updated = true;
 
 		vscode.window.showInformationMessage("Config SSH successfully.");

@@ -9,6 +9,7 @@ export class UserCancelledError extends Error {
 		const message = operation ? ` [${operation}]` : "";
 
 		super("User cancelled the operation" + message);
+
 		this.name = "UserCancelledError";
 	}
 }

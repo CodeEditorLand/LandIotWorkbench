@@ -35,10 +35,15 @@ export interface ARMParameterTemplateValue {
 	type: string;
 
 	defaultValue?: string | number | boolean | {} | Array<{}> | null;
+
 	allowedValues?: Array<string | number | boolean | null>;
+
 	minValue?: number;
+
 	maxValue?: number;
+
 	minLength?: number;
+
 	maxLength?: number;
 }
 
@@ -52,10 +57,15 @@ export interface ARMTemplate {
 
 export class AzureUtility {
 	private static _context: vscode.ExtensionContext;
+
 	private static _projectFolder: string;
+
 	private static _channel: vscode.OutputChannel | undefined;
+
 	private static _subscriptionId: string | undefined;
+
 	private static _resourceGroup: string | undefined;
+
 	private static _azureAccountExtension: AzureAccount | undefined =
 		getExtension(ExtensionName.AzureAccount);
 
@@ -66,8 +76,11 @@ export class AzureUtility {
 		subscriptionId?: string,
 	): void {
 		AzureUtility._context = context;
+
 		AzureUtility._projectFolder = projectPath;
+
 		AzureUtility._channel = channel;
+
 		AzureUtility._subscriptionId = subscriptionId;
 	}
 
@@ -84,6 +97,7 @@ export class AzureUtility {
 		}
 
 		const subscriptions = AzureUtility._azureAccountExtension.filters;
+
 		subscriptions.forEach((item) => {
 			subscriptionList.push({
 				label: item.subscription.displayName,
@@ -160,6 +174,7 @@ export class AzureUtility {
 
 			return client;
 		}
+
 		return undefined;
 	}
 
@@ -180,6 +195,7 @@ export class AzureUtility {
 
 			return client;
 		}
+
 		return undefined;
 	}
 
@@ -198,6 +214,7 @@ export class AzureUtility {
 
 			return client;
 		}
+
 		return undefined;
 	}
 
@@ -257,6 +274,7 @@ export class AzureUtility {
 		if (!locations) {
 			return undefined;
 		}
+
 		const locationList: vscode.QuickPickItem[] = [];
 
 		for (const location of locations) {
@@ -425,6 +443,7 @@ export class AzureUtility {
 						"..",
 						_key,
 					);
+
 					AzureUtility._context.asAbsolutePath(_key);
 
 					if (fs.existsSync(filePath)) {
@@ -471,6 +490,7 @@ export class AzureUtility {
 								inputValue = iotHubNameMatches[1];
 							}
 						}
+
 						break;
 
 					case "iotHubKeyName":
@@ -488,6 +508,7 @@ export class AzureUtility {
 								inputValue = iotHubKeyNameMatches[1];
 							}
 						}
+
 						break;
 
 					case "iotHubKey":
@@ -505,6 +526,7 @@ export class AzureUtility {
 								inputValue = iotHubKeyMatches[1];
 							}
 						}
+
 						break;
 
 					case "subscription":
@@ -592,6 +614,7 @@ export class AzureUtility {
 		);
 
 		const telemetryContext = telemetryWorker.createContext();
+
 		telemetryContext.properties.subscription = subscription.description;
 
 		try {
@@ -602,6 +625,7 @@ export class AzureUtility {
 		} catch {
 			// If sending telemetry failed, skip the error to avoid blocking user.
 		}
+
 		return subscription.description;
 	}
 
@@ -660,6 +684,7 @@ export class AzureUtility {
 
 		if (choice.description === "") {
 			const resourceGroup = await AzureUtility._createResouceGroup();
+
 			AzureUtility._resourceGroup = resourceGroup;
 
 			return resourceGroup;
@@ -718,16 +743,22 @@ export class AzureUtility {
 
 			if (AzureUtility._channel && deployPending) {
 				clearInterval(deployPending);
+
 				channelShowAndAppendLine(AzureUtility._channel, ".");
+
 				channelPrintJsonObject(AzureUtility._channel, deployment);
 			}
+
 			return deployment;
 		} catch (error) {
 			if (AzureUtility._channel && deployPending) {
 				clearInterval(deployPending);
+
 				channelShowAndAppendLine(AzureUtility._channel, ".");
+
 				channelShowAndAppendLine(AzureUtility._channel, error);
 			}
+
 			return undefined;
 		}
 	}
@@ -771,8 +802,11 @@ export class AzureUtility {
 		const credential = session.credentials;
 
 		const httpRequest = new WebResource();
+
 		httpRequest.method = method;
+
 		httpRequest.url = "https://management.azure.com" + resource;
+
 		httpRequest.body = body;
 
 		if (method === "GET" || method === "DELETE") {
@@ -781,7 +815,9 @@ export class AzureUtility {
 
 		const httpRequestOption: rq.UrlOptions & request.RequestPromiseOptions =
 			httpRequest;
+
 		httpRequestOption.simple = false;
+
 		httpRequestOption.json = true;
 
 		return new Promise((resolve) => {

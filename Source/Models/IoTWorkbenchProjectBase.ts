@@ -34,13 +34,17 @@ export enum OpenScenario {
 }
 export abstract class IoTWorkbenchProjectBase {
 	protected extensionContext: vscode.ExtensionContext;
+
 	protected channel: vscode.OutputChannel;
+
 	protected telemetryContext: TelemetryContext;
 
 	protected projectRootPath = "";
+
 	protected iotWorkbenchProjectFilePath = "";
 
 	protected componentList: Component[];
+
 	protected projectHostType: ProjectHostType = ProjectHostType.Unknown;
 
 	/**
@@ -55,6 +59,7 @@ export abstract class IoTWorkbenchProjectBase {
 		if (!projectFileRootPath) {
 			return ProjectHostType.Unknown;
 		}
+
 		const iotWorkbenchProjectFile = path.join(
 			projectFileRootPath,
 			FileNames.iotWorkbenchProjectFileName,
@@ -68,6 +73,7 @@ export abstract class IoTWorkbenchProjectBase {
 		) {
 			return ProjectHostType.Unknown;
 		}
+
 		const iotWorkbenchProjectFileString = (
 			(await FileUtility.readFile(
 				scaffoldType,
@@ -133,8 +139,11 @@ export abstract class IoTWorkbenchProjectBase {
 		telemetryContext: TelemetryContext,
 	) {
 		this.componentList = [];
+
 		this.extensionContext = context;
+
 		this.channel = channel;
+
 		this.telemetryContext = telemetryContext;
 	}
 
@@ -164,6 +173,7 @@ export abstract class IoTWorkbenchProjectBase {
 				}
 			}
 		}
+
 		return true;
 	}
 
@@ -181,6 +191,7 @@ export abstract class IoTWorkbenchProjectBase {
 				}
 			}
 		}
+
 		return true;
 	}
 
@@ -190,6 +201,7 @@ export abstract class IoTWorkbenchProjectBase {
 		for (const item of this.componentList) {
 			if (this.canProvision(item)) {
 				await item.checkPrerequisites("provision");
+
 				provisionItemList.push(item.name);
 			}
 		}
@@ -210,13 +222,16 @@ export abstract class IoTWorkbenchProjectBase {
 
 		if (provisionItemList.length > 0) {
 			await checkAzureLogin();
+
 			azureUtilityModule.AzureUtility.init(
 				this.extensionContext,
 				this.projectRootPath,
 				this.channel,
 			);
+
 			resourceGroup =
 				await azureUtilityModule.AzureUtility.getResourceGroup();
+
 			subscriptionId = azureUtilityModule.AzureUtility.subscriptionId;
 
 			if (!resourceGroup || !subscriptionId) {
@@ -239,6 +254,7 @@ export abstract class IoTWorkbenchProjectBase {
 							`${i + 1}. ${provisionItemList[i]}`;
 					}
 				}
+
 				const selection = await vscode.window.showQuickPick(
 					[
 						{
@@ -261,6 +277,7 @@ export abstract class IoTWorkbenchProjectBase {
 				}
 			}
 		}
+
 		return true;
 	}
 
@@ -272,6 +289,7 @@ export abstract class IoTWorkbenchProjectBase {
 		for (const item of this.componentList) {
 			if (this.canDeploy(item)) {
 				await item.checkPrerequisites("deploy device code");
+
 				deployItemList.push(item.name);
 			}
 		}
@@ -300,6 +318,7 @@ export abstract class IoTWorkbenchProjectBase {
 						_deployItemList[i] = `${i + 1}. ${deployItemList[i]}`;
 					}
 				}
+
 				const selection = await vscode.window.showQuickPick(
 					[
 						{
@@ -343,6 +362,7 @@ export abstract class IoTWorkbenchProjectBase {
 		for (const component of this.componentList) {
 			if (component.getComponentType() === ComponentType.Device) {
 				const device = component as Device;
+
 				await device.configDeviceEnvironment(
 					deviceRootPath,
 					scaffoldType,
@@ -361,9 +381,11 @@ export abstract class IoTWorkbenchProjectBase {
 		for (const component of this.componentList) {
 			if (component.getComponentType() === ComponentType.Device) {
 				const device = component as Device;
+
 				await device.configDeviceSettings();
 			}
 		}
+
 		return true;
 	}
 

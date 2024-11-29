@@ -5,7 +5,9 @@ import { ComponentInfo, DependencyConfig } from "../AzureComponentConfig";
 
 export interface Provisionable {
 	dependencies: DependencyConfig[];
+
 	provision(): Promise<boolean>;
+
 	updateConfigSettings(
 		type: ScaffoldType,
 		componentInfo?: ComponentInfo,

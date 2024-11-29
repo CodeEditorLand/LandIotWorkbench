@@ -4,6 +4,7 @@ import { OperationFailedError } from "../OperationFailedErrors/OperationFailedEr
 export class PnPModelTypeInvalidError extends OperationFailedError {
 	constructor(operation: string, type: ModelType) {
 		super(operation, `Invalid model type: ${type}`, "");
+
 		this.name = "PnPModelTypeInvalidError";
 	}
 }

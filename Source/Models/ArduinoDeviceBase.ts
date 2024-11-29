@@ -47,17 +47,27 @@ const constants = {
 
 export abstract class ArduinoDeviceBase implements Device {
 	protected deviceType: DeviceType;
+
 	protected componentType: ComponentType;
+
 	protected deviceFolder: string;
+
 	protected vscodeFolderPath: string;
+
 	protected boardFolderPath: string;
+
 	protected channel: vscode.OutputChannel;
+
 	protected extensionContext: vscode.ExtensionContext;
+
 	protected telemetryContext: TelemetryContext;
+
 	protected templateFiles: TemplateFileInfo[] = [];
 
 	abstract name: string;
+
 	abstract id: string;
+
 	abstract board: Board;
 
 	constructor(
@@ -68,20 +78,27 @@ export abstract class ArduinoDeviceBase implements Device {
 		deviceType: DeviceType,
 	) {
 		this.deviceType = deviceType;
+
 		this.componentType = ComponentType.Device;
+
 		this.deviceFolder = devicePath;
+
 		this.extensionContext = context;
+
 		this.vscodeFolderPath = path.join(
 			this.deviceFolder,
 			FileNames.vscodeSettingsFolderName,
 		);
+
 		this.boardFolderPath = context.asAbsolutePath(
 			path.join(
 				FileNames.resourcesFolderName,
 				FileNames.templatesFolderName,
 			),
 		);
+
 		this.telemetryContext = telemetryContext;
+
 		this.channel = channel;
 	}
 
@@ -134,6 +151,7 @@ export abstract class ArduinoDeviceBase implements Device {
 		if (!result) {
 			return false;
 		}
+
 		await utils.fetchAndExecuteTask(
 			this.extensionContext,
 			this.channel,
@@ -238,11 +256,14 @@ export abstract class ArduinoDeviceBase implements Device {
 			rootPath = path
 				.join(rootPath, "AppData", "Local")
 				.replace(/\\/g, "\\\\");
+
 			cppPropertiesTemplateFileName = constants.cppPropertiesFileNameWin;
+
 			changeRootPath = true;
 		} else if (platform === OSPlatform.LINUX) {
 			cppPropertiesTemplateFileName =
 				constants.cppPropertiesFileNameLinux;
+
 			changeRootPath = true;
 		} else {
 			// TODO: Let's use the MacOS template file for OS that is not win32/linux.
@@ -276,6 +297,7 @@ export abstract class ArduinoDeviceBase implements Device {
 
 		if (changeRootPath) {
 			const rootPathPattern = /{ROOTPATH}/g;
+
 			content = content.replace(rootPathPattern, rootPath);
 		}
 
@@ -292,6 +314,7 @@ export abstract class ArduinoDeviceBase implements Device {
 
 		// Create c_cpp_properties.json file
 		const platform = await utils.getPlatform();
+
 		await this.writeCppPropertiesFile(board.id, type, platform);
 	}
 
@@ -342,6 +365,7 @@ export abstract class ArduinoDeviceBase implements Device {
 
 			for (const file of binFiles) {
 				const fileName = path.basename(file);
+
 				binFilePickItems.push({ label: fileName, description: file });
 			}
 
@@ -374,12 +398,19 @@ export abstract class ArduinoDeviceBase implements Device {
 		vscode.window.showInformationMessage("Generate CRC succeeded.");
 
 		channel.show();
+
 		channel.appendLine("========== CRC Information ==========");
+
 		channel.appendLine("");
+
 		channel.appendLine("fwPath: " + binFilePath);
+
 		channel.appendLine("fwPackageCheckValue: " + res.crc);
+
 		channel.appendLine("fwSize: " + res.size);
+
 		channel.appendLine("");
+
 		channel.appendLine("======================================");
 	}
 
@@ -413,6 +444,7 @@ export abstract class ArduinoDeviceBase implements Device {
 		}
 
 		const message = "Arduino device configuration done.";
+
 		utils.channelShowAndAppendLine(this.channel, message);
 	}
 }

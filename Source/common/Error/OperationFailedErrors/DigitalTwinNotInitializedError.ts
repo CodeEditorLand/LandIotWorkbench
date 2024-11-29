@@ -13,6 +13,7 @@ export class DigitalTwinNotInitializedError extends OperationFailedError {
 			"Azure Digital Twin extension is not initialized.",
 			"Please initialize the extension first.",
 		);
+
 		this.name = "DigitalTwinNotInitializedError";
 	}
 }

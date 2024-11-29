@@ -15,6 +15,7 @@ export enum MetaModelType {
  */
 export interface LocalizedData {
 	locale: string;
+
 	value: string;
 }
 
@@ -23,17 +24,29 @@ export interface LocalizedData {
  */
 export interface DigitalTwinModelBase {
 	contents?: string;
+
 	comment?: string;
+
 	description?: string;
+
 	displayName?: LocalizedData[];
+
 	urnId: string;
+
 	modelName: string;
+
 	version: number;
+
 	type: string;
+
 	etag: string;
+
 	publisherId: string;
+
 	publisherName: string;
+
 	createdOn: string;
+
 	updatedOn: string;
 }
 
@@ -42,8 +55,11 @@ export interface DigitalTwinModelBase {
  */
 export interface SearchOptions {
 	searchKeyword: string;
+
 	modelFilterType: MetaModelType;
+
 	continuationToken: string | null;
+
 	pageSize?: number;
 }
 
@@ -52,6 +68,7 @@ export interface SearchOptions {
  */
 export interface SearchResult {
 	continuationToken?: string;
+
 	results: DigitalTwinModelBase[];
 }
 
@@ -60,6 +77,8 @@ export interface SearchResult {
  */
 export interface GetResult {
 	etag: string;
+
 	modelId: string;
+
 	content: { [key: string]: string };
 }

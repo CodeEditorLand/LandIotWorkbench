@@ -13,6 +13,7 @@ export class ProcessError extends Error {
 		readonly component: string,
 	) {
 		super(ColorizedChannel.formatMessage(operation, error));
+
 		this.name = "ProcessError";
 
 		if (Error.captureStackTrace) {

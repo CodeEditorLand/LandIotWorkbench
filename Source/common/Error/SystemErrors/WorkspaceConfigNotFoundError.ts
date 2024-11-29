@@ -12,6 +12,7 @@ export class WorkspaceConfigNotFoundError extends SystemError {
 		super(
 			`Failed to get workspace configuration value of key ${configKey}.`,
 		);
+
 		this.name = "WorkspaceConfigNotFoundError";
 	}
 }

@@ -8,6 +8,7 @@ import { Board, BoardInstallation } from "./Models/Interfaces/Board";
 
 export class ArduinoPackageManager {
 	private static INSTALLED_BOARDS: Board[] = [];
+
 	private static async setAdditionalUrl(url: string): Promise<void> {
 		const existedUrls = vscode.workspace
 			.getConfiguration()
@@ -29,11 +30,13 @@ export class ArduinoPackageManager {
 			} else {
 				_existedUrls = existedUrls;
 			}
+
 			for (const additionalUrl of _existedUrls) {
 				if (additionalUrl === url) {
 					return;
 				}
 			}
+
 			_existedUrls.push(url);
 
 			if (typeof existedUrls === "string") {
@@ -82,11 +85,13 @@ export class ArduinoPackageManager {
 			await ArduinoPackageManager.setAdditionalUrl(
 				board.installation.additionalUrl,
 			);
+
 			await vscode.commands.executeCommand(
 				ArduinoCommands.InstallBoard,
 				board.installation.packageName,
 				board.installation.architecture,
 			);
+
 			ArduinoPackageManager.INSTALLED_BOARDS.push(board);
 		} catch (ignore) {
 			// If we failed to install board package,
@@ -96,6 +101,7 @@ export class ArduinoPackageManager {
 			// to install Arduino extension somewhere
 			// else already
 		}
+
 		return;
 	}
 }

@@ -17,6 +17,7 @@ export class SystemResourceNotFoundError extends SystemError {
 	) {
 		super(`Unable to find available ${targetResource} using ${searchingKey} \
     from system resource ${systemResource}.`);
+
 		this.name = "SystemResourceNotFoundError";
 	}
 }

@@ -23,6 +23,7 @@ export class DeviceOperator {
 		if (!iotProject) {
 			return;
 		}
+
 		await iotProject.compile();
 	}
 
@@ -40,6 +41,7 @@ export class DeviceOperator {
 		if (!iotProject) {
 			return;
 		}
+
 		await iotProject.upload();
 	}
 
@@ -57,6 +59,7 @@ export class DeviceOperator {
 		if (!iotProject) {
 			return;
 		}
+
 		await iotProject.configDeviceSettings();
 	}
 }

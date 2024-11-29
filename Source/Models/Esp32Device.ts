@@ -52,6 +52,7 @@ export class Esp32Device extends ArduinoDeviceBase {
 				"board list",
 			);
 		}
+
 		return esp32;
 	}
 
@@ -66,6 +67,7 @@ export class Esp32Device extends ArduinoDeviceBase {
 			const homeDir = os.homedir();
 
 			const localAppData: string = path.join(homeDir, "AppData", "Local");
+
 			packageRootPath = path.join(
 				localAppData,
 				"Arduino15",
@@ -102,13 +104,17 @@ export class Esp32Device extends ArduinoDeviceBase {
 		templateFiles?: TemplateFileInfo[],
 	) {
 		super(context, devicePath, channel, telemetryContext, DeviceType.Esp32);
+
 		this.channel = channel;
+
 		this.componentId = Guid.create().toString();
 
 		if (templateFiles) {
 			this.templateFiles = templateFiles;
 		}
+
 		const projectFolder = devicePath + "/..";
+
 		this.azureConfigFileHandler = new AzureConfigFileHandler(projectFolder);
 	}
 
@@ -170,6 +176,7 @@ export class Esp32Device extends ArduinoDeviceBase {
 					"iotHubDeviceConnectionString",
 				);
 			}
+
 			clipboardy.writeSync(deviceConnectionString);
 
 			return;

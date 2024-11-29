@@ -4,6 +4,7 @@ import * as fs from "fs-plus";
 export class OTA {
 	static generateCrc(filePath: string): {
 		crc: string;
+
 		size: number;
 	} {
 		const data = fs.readFileSync(filePath);

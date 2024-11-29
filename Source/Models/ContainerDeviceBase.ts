@@ -39,11 +39,17 @@ export abstract class ContainerDeviceBase implements Device {
 	get id(): string {
 		return this.componentId;
 	}
+
 	protected deviceType: DeviceType;
+
 	protected componentType: ComponentType;
+
 	protected projectFolder: string;
+
 	protected channel: vscode.OutputChannel;
+
 	protected extensionContext: vscode.ExtensionContext;
+
 	protected telemetryContext: TelemetryContext;
 
 	protected outputPath: string;
@@ -59,15 +65,22 @@ export abstract class ContainerDeviceBase implements Device {
 		protected templateFilesInfo: TemplateFileInfo[] = [],
 	) {
 		this.deviceType = deviceType;
+
 		this.componentType = ComponentType.Device;
+
 		this.channel = channel;
+
 		this.componentId = Guid.create().toString();
+
 		this.extensionContext = context;
+
 		this.projectFolder = projectPath;
+
 		this.outputPath = path.join(
 			this.projectFolder,
 			FileNames.outputPathName,
 		);
+
 		this.telemetryContext = telemetryContext;
 	}
 
@@ -88,6 +101,7 @@ export abstract class ContainerDeviceBase implements Device {
 		const scaffoldType = ScaffoldType.Workspace;
 
 		const operation = "load container device";
+
 		this.validateProjectFolder(operation, scaffoldType);
 	}
 
@@ -96,6 +110,7 @@ export abstract class ContainerDeviceBase implements Device {
 		const createTimeScaffoldType = ScaffoldType.Local;
 
 		const operation = "create container device";
+
 		this.validateProjectFolder(operation, createTimeScaffoldType);
 
 		await this.generateTemplateFiles(
@@ -144,12 +159,14 @@ export abstract class ContainerDeviceBase implements Device {
 					);
 				}
 			}
+
 			await utils.generateTemplateFile(
 				this.projectFolder,
 				type,
 				fileInfo,
 			);
 		}
+
 		return true;
 	}
 
@@ -207,6 +224,7 @@ export abstract class ContainerDeviceBase implements Device {
 		if (!containerSelection) {
 			throw new OperationCanceledError(`Container selection cancelled.`);
 		}
+
 		const templateName = containerSelection.label;
 
 		const templateFilesInfo =
@@ -241,6 +259,7 @@ export abstract class ContainerDeviceBase implements Device {
 		}
 
 		const message = "Container device configuration done.";
+
 		utils.channelShowAndAppendLine(this.channel, message);
 	}
 
@@ -257,6 +276,7 @@ export abstract class ContainerDeviceBase implements Device {
 		);
 
 		const containerList: vscode.QuickPickItem[] = [];
+
 		containerTemplates.forEach((container: ProjectTemplate) => {
 			containerList.push({
 				label: container.name,

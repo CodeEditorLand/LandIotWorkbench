@@ -27,7 +27,9 @@ const request = importLazy(() => require("request-promise"))();
 
 export class ExampleExplorer {
 	private _exampleName = "";
+
 	private _exampleUrl = "";
+
 	private _boardId = "";
 
 	private static _vscexpress: VSCExpress | undefined;
@@ -46,6 +48,7 @@ export class ExampleExplorer {
 				break;
 			}
 		}
+
 		if (!examplePath) {
 			return false;
 		}
@@ -84,20 +87,26 @@ export class ExampleExplorer {
 		const zipData = (await request(options).promise()) as string;
 
 		const tempPath = path.join(fsPath, ".temp");
+
 		fs.writeFileSync(path.join(tempPath, "example.zip"), zipData);
 
 		const zip = new AdmZip(path.join(tempPath, "example.zip"));
 
 		try {
 			zip.extractAllTo(tempPath, true);
+
 			clearInterval(loading);
+
 			utils.channelShowAndAppendLine(channel, "");
+
 			utils.channelShowAndAppendLine(channel, "Example loaded.");
+
 			await this.moveTempFiles(fsPath);
 
 			return true;
 		} catch (error) {
 			clearInterval(loading);
+
 			utils.channelShowAndAppendLine(channel, "");
 
 			throw error;
@@ -166,6 +175,7 @@ export class ExampleExplorer {
 				if (exampleName === null) {
 					return;
 				}
+
 				const name = path.join(workbench, "examples", exampleName);
 
 				if (
@@ -179,6 +189,7 @@ export class ExampleExplorer {
 					) {
 						return 'Folder name can only contain letters, numbers, "-" and ".", and cannot start or end with "-" or ".".';
 					}
+
 					return;
 				} else {
 					const items = fs.listSync(name);
@@ -186,6 +197,7 @@ export class ExampleExplorer {
 					if (items.length === 0) {
 						return;
 					}
+
 					return `${exampleName} exists, please use other folder name.`;
 				}
 			},
@@ -225,6 +237,7 @@ export class ExampleExplorer {
 		const boardItemList: BoardQuickPickItem[] = [];
 
 		const boards = boardProvider.list.filter((board) => board.exampleUrl);
+
 		boards.forEach((board: Board) => {
 			boardItemList.push({
 				name: board.name,
@@ -268,6 +281,7 @@ export class ExampleExplorer {
 			if (board) {
 				// To avoid block example gallery, use async to install board here
 				// await ArduinoPackageManager.installBoard(board);
+
 				ArduinoPackageManager.installBoard(board);
 
 				const exampleUrl =
@@ -275,9 +289,11 @@ export class ExampleExplorer {
 					board.id +
 					"&url=" +
 					encodeURIComponent(board.exampleUrl || "");
+
 				ExampleExplorer._vscexpress =
 					ExampleExplorer._vscexpress ||
 					new VSCExpress(context, "views");
+
 				ExampleExplorer._vscexpress.open(
 					exampleUrl,
 					board.examplePageName +
@@ -303,9 +319,12 @@ export class ExampleExplorer {
 	): Promise<void> {
 		if (name && url && boardId) {
 			this._exampleName = name;
+
 			this._exampleUrl = url;
+
 			this._boardId = boardId;
 		}
+
 		const res = await this.initializeExampleInternal(
 			context,
 			channel,
@@ -321,7 +340,9 @@ export class ExampleExplorer {
 
 	setSelectedExample(name: string, url: string, boardId: string): void {
 		this._exampleName = name;
+
 		this._exampleUrl = url;
+
 		this._boardId = boardId;
 	}
 
@@ -351,6 +372,7 @@ export class ExampleExplorer {
 		const board = boardsJson.boards.find(
 			(board) => board.id === this._boardId,
 		);
+
 		telemetryContext.properties.board = board ? board.name : "";
 
 		const url = this._exampleUrl;
@@ -377,6 +399,7 @@ export class ExampleExplorer {
 			channel,
 			"Downloading example package...",
 		);
+
 		await this.downloadExamplePackage(channel, url, fsPath);
 		// Follow the same pattern in Arduino extension to open examples in new
 		// VSCode instance

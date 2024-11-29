@@ -44,8 +44,11 @@ const trimStart = importLazy(() => require("lodash.trimstart"))();
 
 interface SerialPortInfo {
 	path: string;
+
 	manufacturer: string;
+
 	vendorId: string;
+
 	productId: string;
 }
 
@@ -76,6 +79,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		if (!AZ3166Device._serialport) {
 			AZ3166Device._serialport = require("node-usb-native").SerialPort;
 		}
+
 		return AZ3166Device._serialport;
 	}
 
@@ -110,13 +114,17 @@ export class AZ3166Device extends ArduinoDeviceBase {
 			telemetryContext,
 			DeviceType.MXChipAZ3166,
 		);
+
 		this.channel = channel;
+
 		this.componentId = Guid.create().toString();
 
 		if (templateFiles) {
 			this.templateFiles = templateFiles;
 		}
+
 		const projectFolder = devicePath + "/..";
+
 		this.azureConfigFileHandler = new AzureConfigFileHandler(projectFolder);
 	}
 
@@ -134,6 +142,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				"board list",
 			);
 		}
+
 		return az3166;
 	}
 
@@ -182,6 +191,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				// Open the download page
 				const installUri =
 					"http://www.st.com/en/development-tools/stsw-link009.html";
+
 				opn(installUri);
 
 				return true;
@@ -275,6 +285,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				"Please check out error message in the output channel.",
 			);
 		}
+
 		let deviceSettingTypeForLog;
 
 		switch (deviceSettingType) {
@@ -363,6 +374,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 		);
 
 		const configSelectionItems: vscode.QuickPickItem[] = [];
+
 		configSelectionItemsContent.configSelectionItems.forEach(
 			(element: DeviceConfig) => {
 				configSelectionItems.push({
@@ -414,6 +426,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				return deviceConnectionString;
 			}
 		}
+
 		deviceConnectionString = await this.getInputDeviceConnectionString();
 
 		return deviceConnectionString;
@@ -513,6 +526,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 			if (result === DialogResponses.yes) {
 				opn(constants.informationPageUrl);
 			}
+
 			throw new OperationCanceledError(
 				"Fail to get input device connection string.",
 			);
@@ -538,6 +552,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				) {
 					return "The format of the IoT Hub Device connection string is invalid.";
 				}
+
 				return;
 			},
 		};
@@ -558,6 +573,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				"DPS credentials input cancelled.",
 			);
 		}
+
 		return dpsCredential;
 	}
 
@@ -579,6 +595,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				) {
 					return "The format of the DPS credentials is invalid.";
 				}
+
 				return;
 			},
 		};
@@ -610,6 +627,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 			for (let i = 0; i < 64; i++) {
 				hexNum += chars[Math.floor(Math.random() * 16)];
 			}
+
 			return hexNum;
 		}
 
@@ -621,6 +639,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				if (/^([0-9a-f]){64}$/i.test(UDS) === false) {
 					return "The format of the UDS is invalid. Please provide a valid UDS.";
 				}
+
 				return "";
 			},
 		};
@@ -675,10 +694,12 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				try {
 					// Choose COM port that AZ3166 is connected
 					comPort = await this.chooseCOM();
+
 					console.log(`Opening ${comPort}.`);
 				} catch (error) {
 					return reject(error);
 				}
+
 				if (option === ConfigDeviceOptions.ConnectionString) {
 					command = "set_az_iothub";
 				} else if (option === ConfigDeviceOptions.DPS) {
@@ -686,6 +707,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				} else {
 					command = "set_dps_uds";
 				}
+
 				let errorRejected = false;
 
 				let az3166: Board;
@@ -710,6 +732,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 					if (err) {
 						errorRejected = true;
+
 						reject(err);
 
 						try {
@@ -732,10 +755,13 @@ export class AZ3166Device extends ArduinoDeviceBase {
 							const start = data.length - restDataLength;
 
 							const length = Math.min(100, restDataLength);
+
 							restDataLength -= length;
 
 							const dataChunk = data.substr(start, length);
+
 							await this.sendDataViaSerialPort(port, dataChunk);
+
 							await delay(1000);
 						}
 
@@ -758,6 +784,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 						"Please hold down button A and then push and release the reset button to enter configuration mode. After enter configuration mode, click OK.",
 						"OK",
 					);
+
 					executeSetAzIoTHub()
 						.then(() => resolve(true))
 						.catch((error) => reject(error));
@@ -766,7 +793,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 				port.on("error", (error: any) => {
 					if (errorRejected) return;
+
 					console.log(error);
+
 					rejectIfError(error);
 				});
 			},
@@ -790,10 +819,12 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				try {
 					// Choose COM port that AZ3166 is connected
 					comPort = await this.chooseCOM();
+
 					console.log(`Opening ${comPort}.`);
 				} catch (error) {
 					reject(error);
 				}
+
 				if (option === ConfigDeviceOptions.ConnectionString) {
 					command = "set_az_iothub";
 				} else if (option === ConfigDeviceOptions.DPS) {
@@ -801,6 +832,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				} else {
 					command = "set_dps_uds";
 				}
+
 				let configMode = false;
 
 				let errorRejected = false;
@@ -831,6 +863,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 					if (err) {
 						errorRejected = true;
+
 						reject(err);
 
 						try {
@@ -848,6 +881,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 						const data = `${command} "${configValue}"\r\n`;
 
 						const maxDataLength = 256;
+
 						await this.sendDataViaSerialPort(
 							port,
 							data.slice(0, maxDataLength),
@@ -855,6 +889,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 						if (data.length > maxDataLength) {
 							await delay(1000);
+
 							await this.sendDataViaSerialPort(
 								port,
 								data.slice(maxDataLength),
@@ -862,6 +897,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 						}
 
 						await delay(1000);
+
 						port.close();
 					} catch (ignore) {
 						// Ignore error if fail to close port
@@ -895,7 +931,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 
 					if (output.includes("set_")) {
 						commandExecuted = true;
+
 						configMode = true;
+
 						executeSetAzIoTHub()
 							.then(() => resolve(true))
 							.catch((error) => reject(error));
@@ -919,7 +957,9 @@ export class AZ3166Device extends ArduinoDeviceBase {
 				// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 				port.on("error", (error: any) => {
 					if (errorRejected) return;
+
 					console.log(error);
+
 					rejectIfError(error);
 				});
 
@@ -1075,10 +1115,12 @@ export class AZ3166Device extends ArduinoDeviceBase {
 					if (err) {
 						reject(err);
 					}
+
 					const hashMacAddress = crypto
 						.createHash("sha256")
 						.update(macAddress, "utf8")
 						.digest("hex");
+
 					resolve(hashMacAddress);
 				});
 			});
@@ -1140,6 +1182,7 @@ export class AZ3166Device extends ArduinoDeviceBase {
 			const content =
 				`${constants.cExtraFlag}${hashMacAddress}" ${constants.traceExtraFlag}${enableTrace}\r\n` +
 				`${constants.cppExtraFlag}${hashMacAddress}" ${constants.traceExtraFlag}${enableTrace}\r\n`;
+
 			fs.writeFileSync(targetFileName, content);
 		}
 	}

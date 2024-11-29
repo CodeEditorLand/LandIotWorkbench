@@ -44,6 +44,7 @@ export class ColorizedChannel {
 	 */
 	start(operation: string, component?: string): void {
 		const tag: string = ColorizedChannel.createTag(component);
+
 		this.channel.appendLine(`[Start]${tag} ${operation}`);
 	}
 
@@ -54,6 +55,7 @@ export class ColorizedChannel {
 	 */
 	end(operation: string, component?: string): void {
 		const tag: string = ColorizedChannel.createTag(component);
+
 		this.channel.appendLine(
 			`[Done]${tag} ${ColorizedChannel.formatMessage(operation)}`,
 		);
@@ -74,6 +76,7 @@ export class ColorizedChannel {
 	 */
 	warn(message: string, component?: string): void {
 		const tag: string = ColorizedChannel.createTag(component);
+
 		this.channel.appendLine(`[Warn]${tag} ${message}`);
 	}
 
@@ -89,6 +92,7 @@ export class ColorizedChannel {
 		const message: string = error
 			? ColorizedChannel.formatMessage(operation, error)
 			: operation;
+
 		this.channel.appendLine(`[Error]${tag} ${message}`);
 	}
 

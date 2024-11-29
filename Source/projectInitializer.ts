@@ -135,6 +135,7 @@ export class ProjectInitializer {
 							return;
 						}
 					}
+
 					templateName = templateSelection.label;
 				} else {
 					// If choose Embedded Linux platform, generate C project template
@@ -205,6 +206,7 @@ export class ProjectInitializer {
 						`${template.platform}`,
 					);
 				}
+
 				await project.create(
 					templateFilesInfo,
 					projectTemplateType,
@@ -287,6 +289,7 @@ export class ProjectInitializer {
 			}
 
 			counter++;
+
 			candidateName = `${name}_${counter}`;
 		}
 
@@ -320,6 +323,7 @@ export class ProjectInitializer {
 
 		if (projectName) {
 			const projectNameMd5 = utils.getHashFromString(projectName);
+
 			telemetryContext.properties.projectName = projectNameMd5;
 		}
 

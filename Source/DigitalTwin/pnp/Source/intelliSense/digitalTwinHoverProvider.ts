@@ -25,6 +25,7 @@ export class DigitalTwinHoverProvider implements vscode.HoverProvider {
 		if (!propertyName) {
 			return Constants.EMPTY_STRING;
 		}
+
 		switch (propertyName) {
 			case DigitalTwinConstants.ID:
 				return `An identifier for ${Constants.CHANNEL_NAME} Capability Model or interface`;
@@ -58,6 +59,7 @@ export class DigitalTwinHoverProvider implements vscode.HoverProvider {
 		if (!IntelliSenseUtility.enabled()) {
 			return undefined;
 		}
+
 		const modelContent: ModelContent | undefined =
 			IntelliSenseUtility.parseDigitalTwinModel(document.getText());
 
@@ -73,12 +75,14 @@ export class DigitalTwinHoverProvider implements vscode.HoverProvider {
 		if (!node || !node.parent) {
 			return undefined;
 		}
+
 		const propertyPair: PropertyPair | undefined =
 			IntelliSenseUtility.parseProperty(node.parent);
 
 		if (!propertyPair) {
 			return undefined;
 		}
+
 		const propertyName: string =
 			IntelliSenseUtility.resolvePropertyName(propertyPair);
 

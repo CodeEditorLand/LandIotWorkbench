@@ -88,6 +88,7 @@ export class DeviceModelManager {
 		);
 
 		const operation = `Create ${type} ${name} in folder ${folder}`;
+
 		this.outputChannel.start(operation, this.component);
 
 		let filePath: string;
@@ -99,10 +100,12 @@ export class DeviceModelManager {
 		}
 
 		await UI.openAndShowTextDocument(filePath);
+
 		UI.showNotification(
 			MessageType.Info,
 			ColorizedChannel.formatMessage(operation),
 		);
+
 		this.outputChannel.end(operation, this.component);
 	}
 
@@ -133,7 +136,9 @@ export class DeviceModelManager {
 		);
 
 		const replacement = new Map<string, string>();
+
 		replacement.set(Constants.DIGITAL_TWIN_ID_PLACEHOLDER, modelId);
+
 		await Utility.createFileFromTemplate(
 			templatePath,
 			filePath,

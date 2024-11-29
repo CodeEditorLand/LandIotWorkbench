@@ -63,6 +63,7 @@ function printHello(context: vscode.ExtensionContext): void {
 	}
 
 	const extensionId = extension.id;
+
 	console.log(
 		`Congratulations, your extension ${extensionId} is now active!`,
 	);
@@ -122,6 +123,7 @@ function initIntelliSense(
 		language: "json",
 		scheme: "file",
 	};
+
 	context.subscriptions.push(
 		vscode.languages.registerCompletionItemProvider(
 			selector,
@@ -129,6 +131,7 @@ function initIntelliSense(
 			Constants.COMPLETION_TRIGGER,
 		),
 	);
+
 	context.subscriptions.push(
 		vscode.languages.registerHoverProvider(
 			selector,
@@ -160,7 +163,9 @@ function initIntelliSense(
 			Constants.DEFAULT_TIMER_MS,
 		);
 	}
+
 	context.subscriptions.push(diagnosticCollection);
+
 	context.subscriptions.push(
 		vscode.window.onDidChangeActiveTextEditor((event) => {
 			if (event && IntelliSenseUtility.isJsonFile(event.document)) {
@@ -171,12 +176,14 @@ function initIntelliSense(
 			}
 		}),
 	);
+
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeTextDocument((event) => {
 			if (event && IntelliSenseUtility.isJsonFile(event.document)) {
 				if (pendingDiagnostic) {
 					clearTimeout(pendingDiagnostic);
 				}
+
 				pendingDiagnostic = setTimeout(
 					() =>
 						diagnosticProvider.updateDiagnostics(
@@ -188,6 +195,7 @@ function initIntelliSense(
 			}
 		}),
 	);
+
 	context.subscriptions.push(
 		vscode.workspace.onDidCloseTextDocument((document) => {
 			if (IntelliSenseUtility.isJsonFile(document)) {
@@ -207,10 +215,13 @@ function initIntelliSense(
 				if (modelContent) {
 					const telemetryContext: TelemetryContext =
 						telemetryWorker.createContext();
+
 					telemetryContext.properties.result =
 						TelemetryResult.Succeeded;
+
 					telemetryContext.properties.dtdlVersion =
 						modelContent.version.toString();
+
 					telemetryWorker.sendEvent(
 						Command.OpenFile,
 						telemetryContext,
@@ -239,25 +250,30 @@ function initDigitalTwinCommand(
 
 				const telemetryContext: TelemetryContext =
 					telemetryWorker.createContext();
+
 				args.push(telemetryContext);
 
 				try {
 					return await callback(...args);
 				} catch (error) {
 					telemetryContext.properties.errorType = error.name;
+
 					telemetryContext.properties.errorMessage = error.message;
 
 					if (error instanceof UserCancelledError) {
 						telemetryContext.properties.result =
 							TelemetryResult.Cancelled;
+
 						outputChannel.warn(error.message);
 					} else {
 						telemetryContext.properties.result =
 							TelemetryResult.Failed;
+
 						UI.showNotification(MessageType.Error, error.message);
 
 						if (error instanceof ProcessError) {
 							const message = `${error.message}\n${error.stack}`;
+
 							outputChannel.error(message, error.component);
 						} else {
 							outputChannel.error(error.message);
@@ -266,7 +282,9 @@ function initDigitalTwinCommand(
 				} finally {
 					telemetryContext.measurements.duration =
 						(Date.now() - start) / 1000;
+
 					telemetryWorker.sendEvent(command, telemetryContext);
+
 					outputChannel.show();
 
 					if (enableSurvey) {
@@ -284,6 +302,7 @@ function initDigitalTwin(
 	outputChannel: vscode.OutputChannel,
 ): void {
 	const colorizedChannel = new ColorizedChannel(Constants.CHANNEL_NAME);
+
 	context.subscriptions.push(colorizedChannel);
 
 	const deviceModelManager = new DeviceModelManager(
@@ -298,7 +317,9 @@ function initDigitalTwin(
 	);
 
 	DigitalTwinUtility.init(modelRepositoryManager, outputChannel);
+
 	initIntelliSense(context, telemetryWorker);
+
 	initDigitalTwinCommand(
 		context,
 		telemetryWorker,
@@ -309,6 +330,7 @@ function initDigitalTwin(
 			return deviceModelManager.createModel(ModelType.Interface);
 		},
 	);
+
 	initDigitalTwinCommand(
 		context,
 		telemetryWorker,
@@ -319,6 +341,7 @@ function initDigitalTwin(
 			return deviceModelManager.createModel(ModelType.CapabilityModel);
 		},
 	);
+
 	initDigitalTwinCommand(
 		context,
 		telemetryWorker,
@@ -329,6 +352,7 @@ function initDigitalTwin(
 			return modelRepositoryManager.signIn();
 		},
 	);
+
 	initDigitalTwinCommand(
 		context,
 		telemetryWorker,
@@ -339,6 +363,7 @@ function initDigitalTwin(
 			return modelRepositoryManager.signOut();
 		},
 	);
+
 	initDigitalTwinCommand(
 		context,
 		telemetryWorker,
@@ -349,6 +374,7 @@ function initDigitalTwin(
 			return modelRepositoryManager.submitFiles(telemetryContext);
 		},
 	);
+
 	initDigitalTwinCommand(
 		context,
 		telemetryWorker,
@@ -365,6 +391,7 @@ function initDigitalTwin(
 			);
 		},
 	);
+
 	initDigitalTwinCommand(
 		context,
 		telemetryWorker,
@@ -381,6 +408,7 @@ function initDigitalTwin(
 			);
 		},
 	);
+
 	initDigitalTwinCommand(
 		context,
 		telemetryWorker,
@@ -402,6 +430,7 @@ function initDigitalTwin(
 			);
 		},
 	);
+
 	initDigitalTwinCommand(
 		context,
 		telemetryWorker,
@@ -439,6 +468,7 @@ function enableUsbDetector(
 		context,
 		outputChannel,
 	);
+
 	usbDetector.startListening(context);
 }
 
@@ -451,12 +481,15 @@ export async function activate(
 
 	const outputChannel: vscode.OutputChannel =
 		vscode.window.createOutputChannel(channelName);
+
 	telemetryWorker = TelemetryWorker.getInstance(context);
+
 	context.subscriptions.push(telemetryWorker);
 
 	// Load iot Project here and do not ask to new an iot project when no iot
 	// project open since no command has been triggered yet.
 	const telemetryContext = telemetryWorker.createContext();
+
 	await constructAndLoadIoTProject(
 		context,
 		outputChannel,
@@ -721,8 +754,10 @@ export async function activate(
 					return;
 				}
 			}
+
 			const workbenchHelpUrl =
 				"https://github.com/microsoft/vscode-iot-workbench/blob/master/README.md";
+
 			await vscode.commands.executeCommand(
 				VscodeCommands.VscodeOpen,
 				vscode.Uri.parse(workbenchHelpUrl),
@@ -746,6 +781,7 @@ export async function activate(
 			);
 
 			const settings = await IoTWorkbenchSettings.getInstance();
+
 			await settings.setWorkbenchPath();
 
 			return;

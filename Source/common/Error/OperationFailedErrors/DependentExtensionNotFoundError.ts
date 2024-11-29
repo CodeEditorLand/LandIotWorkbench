@@ -16,6 +16,7 @@ export class DependentExtensionNotFoundError extends OperationFailedError {
 			`Dependent extension ${extension} is not found.`,
 			"Please install it from Marketplace.",
 		);
+
 		this.name = "DependentExtensionNotFound";
 	}
 }
